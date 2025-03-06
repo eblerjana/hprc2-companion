@@ -1,0 +1,36 @@
+
+Full Sampling pipelines:
+
+PanGenie:
+
+- start from MC VCF (falling out of MC pipeline)
+- filter and annotate VCF
+- run genotyping (full or with sampling)
+- "{results}/preprocessing/annotated-vcf/..."
+- "{results}/genotyping/pangenie/sampled-{size}/{sample}/{sample}-pangenie_bi_genotyping.vcf.gz"
+
+
+Giraffe:
+
+- start from MC graph
+- generate sampled graph
+- filter and annotate VCF
+- run genotyping (full)
+- "{results}/genotyping/giraffe/sampled-{size}/{sample}/{sample}-giraffe_bi_genotyping.vcf.gz"
+
+
+
+Evaluation pipeline:
+
+- evaluate VCF produced above against external ground truth VCF (for sample not in graph)
+- "{results}/comparisons/.."
+
+
+
+Leave-one-out pipeline:
+
+- start from MC VCF or annotated VCF ("{results}/preprocessing/annotated-vcf/...")
+- remove one sample from VCF / construct ground truth
+- run genotyping (full or with sampling)
+- evaluate the genotypes computing genotype concordance
+- "{results}/leave-one-out/pangenie/sampled-{size}/{sample}/{sample}-pangenie_bi_genotyping.vcf.gz"

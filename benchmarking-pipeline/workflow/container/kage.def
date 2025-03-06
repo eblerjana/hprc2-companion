@@ -1,0 +1,27 @@
+Bootstrap: docker
+From: ubuntu:24.04
+
+%post
+    apt-get update
+    apt-get install --assume-yes software-properties-common
+    add-apt-repository universe
+    apt-get update
+    apt-get install --assume-yes git build-essential zlib1g-dev pkg-config cmake python3-dev pipx
+    pipx install kage-genotyper
+    pipx ensurepath
+    
+%environment
+    export LC_ALL=C
+
+
+Bootstrap: docker
+From: python:latest
+
+%post
+    apt-get update
+    apt-get install --assume-yes git build-essential zlib1g-dev pkg-config cmake
+    pip install kage-genotyper
+    pip3 install numpy==1.26.4
+
+%environment
+    export LC_ALL=C

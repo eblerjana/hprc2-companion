@@ -1,0 +1,38 @@
+cluster: >-
+  pbs-submit.py ++mkdirs log/cluster_jobs/err,log/cluster_jobs/out
+  -e log/cluster_jobs/err/{rule}.{jobid}.stderr
+  -o log/cluster_jobs/out/{rule}.{jobid}.stdout
+  -N {jobid}_{rule}
+  -A {resources.project}
+  -l select=1:ncpus={threads}:ngpus={resources.gpus}:mem={resources.mem_mb}M{resources.arch}
+  -l walltime={resources.walltime}
+  -l bonus={resources.bonus}
+cluster-cancel: qdel
+cluster-status: pbs-status.py
+conda-frontend: conda
+default-resources:
+- project=PanGenotyping
+- mem_mb=1024
+- walltime="01:59:00"
+- gpus=0
+- bonus=0
+- anchor=""
+- arch=""
+immediate-submit: false
+jobs: 100
+jobscript: pbs-jobscript.sh
+keep-going: true
+keep-incomplete: false
+latency-wait: 60
+local-cores: 1
+max-jobs-per-second: 5
+max-status-checks-per-second: 10
+nolock: true
+reason: false
+rerun-incomplete: true
+restart-times: 0
+scheduler: ilp
+use-conda: true
+use-envmodules: true
+use-singularity: true
+verbose: false
