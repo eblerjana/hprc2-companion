@@ -30,7 +30,7 @@ for s in SUBSAMPLING_SIZES:
 	GENOTYPERS.append("pangenie-subset-" + str(s))
 
 
-CHROMOSOMES = set(['chr1']) # , 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22', 'chrX', 'chrY'])
+CHROMOSOMES = set(['chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22', 'chrX', 'chrY'])
 #CHROMOSOMES = set([])
 #for line in gzip.open(PANEL_MULTI, 'rt'):
 #	if line.startswith('#'):
@@ -39,7 +39,7 @@ CHROMOSOMES = set(['chr1']) # , 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 
 #	CHROMOSOMES.add(fields[0])
 CHROMOSOMES = list(CHROMOSOMES)
 
-#include: "rules/pangenie.smk"
+
 include: "rules/leave-one-out_prepare.smk"
 include: "rules/leave-one-out_pangenie.smk"
 include: "rules/leave-one-out_kage.smk"
@@ -54,4 +54,4 @@ rule all:
 		expand("{results}/leave-one-out/plots/resources.pdf", results = OUTNAME),
 		expand("{results}/leave-one-out/plots/panel-stats.pdf", results = OUTNAME),
 		expand("{results}/leave-one-out/plots/recombination-stats.pdf", results = OUTNAME),
-#		expand("{results}/leave-one-out/plots/afs-missed-alleles.pdf", results = OUTNAME)
+		expand("{results}/leave-one-out/plots/afs-missed-alleles.pdf", results = OUTNAME)

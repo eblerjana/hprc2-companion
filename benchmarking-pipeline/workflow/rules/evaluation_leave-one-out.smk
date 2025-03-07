@@ -133,8 +133,8 @@ rule evaluation_remove_untypable:
 		ids = "{results}/leave-one-out/untypable-ids/{sample}-untypable-all.tsv",
 		ref_idx = REFERENCE + ".fai"
 	output:
-		vcf = "{results}/leave-one-out/{path}{sample}{other}-typable-{vartype}.vcf.gz",
-		tbi = "{results}/leave-one-out/{path}{sample}{other}-typable-{vartype}.vcf.gz.tbi"
+		vcf = temp("{results}/leave-one-out/{path}{sample}{other}-typable-{vartype}.vcf.gz"),
+		tbi = temp("{results}/leave-one-out/{path}{sample}{other}-typable-{vartype}.vcf.gz.tbi")
 	wildcard_constraints:
 		sample = "|".join(LEAVE_ONE_OUT_SAMPLES),
 		vartype = "|".join(ALLOWED_VARIANTS)

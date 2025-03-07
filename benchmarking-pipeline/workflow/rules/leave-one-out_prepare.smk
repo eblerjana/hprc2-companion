@@ -35,7 +35,7 @@ rule leave_one_out_prepare_panel_multi:
 	input:
 		PANEL_MULTI
 	output:
-		temp("{results}/leave-one-out/input-panel/panel-{sample}_multi.vcf")
+		vcf = temp("{results}/leave-one-out/input-panel/panel-{sample}_multi.vcf")
 	conda:
 		"../envs/genotyping.yml"
 	priority: 1
@@ -45,7 +45,7 @@ rule leave_one_out_prepare_panel_multi:
 		mem_mb=20000
 	shell:
 		"""
-		bcftools view --samples ^{wildcards.sample} {input} | bcftools view --min-ac 1 2> {log} 1> {output}
+		bcftools view --samples ^{wildcards.sample} {input} | bcftools view --min-ac 1 2> {log} 1> {output.vcf}
 		"""
 
 
@@ -56,7 +56,7 @@ rule leave_one_out_prepare_panel_bi:
 	input:
 		PANEL_BI
 	output:
-		temp("{results}/leave-one-out/input-panel/panel-{sample}_bi.vcf")
+		vcf = temp("{results}/leave-one-out/input-panel/panel-{sample}_bi.vcf")
 	conda:
 		"../envs/genotyping.yml"
 	priority: 1
@@ -66,6 +66,6 @@ rule leave_one_out_prepare_panel_bi:
 		mem_mb=20000
 	shell:
 		"""
-		bcftools view --samples ^{wildcards.sample} {input} | bcftools view --min-ac 1 2> {log} 1> {output}
+		bcftools view --samples ^{wildcards.sample} {input} | bcftools view --min-ac 1 | bcftools +fill-tags -- -t AF 2> {log} 1> {output.vcf}
 		"""
 

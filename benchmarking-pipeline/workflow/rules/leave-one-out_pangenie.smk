@@ -17,13 +17,13 @@ rule leave_one_out_pangenie_index:
 	log:
 		"{results}/leave-one-out/pangenie/index-{sample}.log"
 	resources:
-		mem_mb = 100000,
-		walltime = "5:00:00"
+		mem_mb = 110000,
+		walltime = "4:00:00"
 	threads: 24
 	params:
 		out_prefix = "{results}/leave-one-out/pangenie/index-{sample}/index"
 	benchmark:
-		"{results}/leave-one-out/pangenie/index-{sample}/index-{sample}.benchmark.txt"
+		"{results}/leave-one-out/pangenie/index-{sample}.benchmark.txt"
 	singularity:
 		"workflow/container/pangenie.sif"
 	shell:
@@ -70,13 +70,13 @@ rule leave_one_out_pangenie_genotype_sampling:
 		index = "{results}/leave-one-out/pangenie/index-{sample}/"
 	output:
 		genotypes = temp("{results}/leave-one-out/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_genotyping.vcf"),
-		panel = "{results}/leave-one-out/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_panel.vcf",
-		paths = expand("{{results}}/leave-one-out/pangenie-sampled-{{size}}/{{sample}}/{{sample}}_pangenie-sampled-{{size}}_multi_paths_{chromosome}.tsv", chromosome = CHROMOSOMES)
+		panel = temp("{results}/leave-one-out/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_panel.vcf"),
+		paths = temp(expand("{{results}}/leave-one-out/pangenie-sampled-{{size}}/{{sample}}/{{sample}}_pangenie-sampled-{{size}}_multi_paths_{chromosome}.tsv", chromosome = CHROMOSOMES))
 	log:
 		"{results}/leave-one-out/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_genotyping.log"
 	resources:
-		mem_mb = 100000,
-		walltime = "5:00:00"
+		mem_mb = 60000,
+		walltime = "3:00:00"
 	wildcard_constraints:
 		size = "[0-9,-.,x]+"
 	params:
@@ -121,3 +121,12 @@ rule leave_one_out_convert_genotypes_to_biallelic:
 		"""
 
 
+rule leave_one_out_compress_pangenie_paths:
+	input:
+		"{results}/leave-one-out/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_paths_{chromosome}.tsv"
+	output:
+		"{results}/leave-one-out/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_paths_{chromosome}.tsv.gz"
+	shell:
+		"""
+		bgzip -c {input} > {output}
+		"""

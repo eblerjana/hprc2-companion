@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: python:latest
+From: python:3.10
 
 %post
     pip install kage-genotyper
