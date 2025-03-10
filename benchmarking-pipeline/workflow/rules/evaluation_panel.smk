@@ -86,7 +86,7 @@ rule evaluation_panel_collect_recomb:
 	of a specific sample.
 	"""
 	input:
-		expand("{{results}}/leave-one-out/pangenie-sampled-{{size}}/{{sample}}/{{sample}}_pangenie-sampled-{{size}}_multi_paths_{chromosome}.tsv.gz", chromosome = CHROMOSOMES),
+		expand("{{results}}/leave-one-out/pangenie-sampled-{{size}}/{{sample}}/{{sample}}_pangenie-sampled-{{size}}_multi_paths_{chromosome}.tsv", chromosome = CHROMOSOMES)
 	output:
 		tsv = "{results}/leave-one-out/pangenie-sampled-{size}/{sample}/panel-stats/recombination_bubble_{sample}_{size}.tsv",
 		summary_stats = "{results}/leave-one-out/pangenie-sampled-{size}/{sample}/panel-stats/recombination_summary_{sample}_{size}.tsv"

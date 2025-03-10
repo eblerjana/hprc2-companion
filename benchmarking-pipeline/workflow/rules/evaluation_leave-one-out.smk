@@ -144,7 +144,7 @@ rule evaluation_remove_untypable:
 	priority: 1
 	shell:
 		"""
-		cat {input.vcf} | python3 workflow/scripts/skip-untypable.py {input.ids} | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | python3 fix-header.py {input.ref_idx} | bgzip -c > {output.vcf}
+		cat {input.vcf} | python3 workflow/scripts/skip-untypable.py {input.ids} | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | python3 workflow/scripts/fix-header.py {input.ref_idx} | bgzip -c > {output.vcf}
 		tabix -p vcf {output.vcf}
 		"""
 

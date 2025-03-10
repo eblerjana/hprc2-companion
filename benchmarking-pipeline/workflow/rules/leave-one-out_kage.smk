@@ -5,13 +5,13 @@ rule kage_index:
 	"""
 	input:
 		reference = REFERENCE,
-		vcf = "{results}/leave-one-out/input-panel/panel-{sample}_bi.vcf.gz"
+		vcf = "{results}/leave-one-out/input-panel/panel-{sample}_bi.vcf"
 	output:
 		temp("{results}/leave-one-out/kage/index-{sample}/index-{sample}.npz")
 	log:
 		"{results}/leave-one-out/kage/index-{sample}/index-{sample}.log"
 	resources:
-		mem_mb = 200000,
+		mem_mb = 800000,
 		walltime = "10:00:00"
 	benchmark:
 		"{results}/leave-one-out/kage/index-{sample}/index-{sample}.benchmark.txt"

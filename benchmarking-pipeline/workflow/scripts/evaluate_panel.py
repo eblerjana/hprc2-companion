@@ -106,7 +106,7 @@ def write_bubble_stats(truthfile, panelfile, outname):
 		outfile.write('\t'.join(['#chromosome', 'position', 'bubble_len', 'nr_bubble_alleles', 'nr_unique_kmers', 'true_genotype', 'nr_alleles_in_truth', 'nr_alleles_in_panel', 'missed_alleles_AF', 'allele_ids']) + '\n')
 		nr_missed = 0
 		nr_considered = 0
-		for line in gz.open(panelfile, 'rt'):
+		for line in gzip.open(panelfile, 'rt'):
 			if line.startswith('#'):
 				continue
 			fields = line.strip().split()

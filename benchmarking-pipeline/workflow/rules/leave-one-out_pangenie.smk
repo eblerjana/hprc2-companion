@@ -28,6 +28,7 @@ rule leave_one_out_pangenie_index:
 		"workflow/container/pangenie.sif"
 	shell:
 		"""
+		mkdir {output}
 		PanGenie-index -v {input.vcf} -r {input.fasta} -o {params.out_prefix} -t {threads}  &> {log}
 		"""
 
