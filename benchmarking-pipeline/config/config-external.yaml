@@ -1,12 +1,22 @@
 
-# PanGenie inputs
+##### General parameters and input files #####
+
 panel_bi: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/preliminary-experiments/prepare-vcf-MC/results-2-mc-chm13-eval-nov22/vcf/mc-chm13-eval-nov22/mc-chm13-eval-nov22_filtered_ids_biallelic.vcf.gz"
 panel_multi: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/preliminary-experiments/prepare-vcf-MC/results-2-mc-chm13-eval-nov22/vcf/mc-chm13-eval-nov22/mc-chm13-eval-nov22_filtered_ids.vcf.gz"
 reference: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/data/fasta/CHM13v11Y.fa"
 sample-info: "1kg-reads-updated.tsv" 
-
+sampling_sizes:
+        - 5-5x0.01
+subsetting_sizes:
+        - 108
+evaluation_regions: {}
+outname: "results-external"
 avg_illumina_cov: 30
 
+
+###### Parameters for leave-one-out experiments ######
+
+# optional. Set to [] if not provided.
 leave_one_out_samples:
         - HG01891
 #        - HG02055
@@ -49,16 +59,16 @@ leave_one_out_samples:
 #        - HG02559
 #        - NA21309
 
-sampling_sizes:
-        - 5-5x0.01
-        - 10-5x0.01
-        - 15-5x0.01
-        - 25-5x0.01
 
-subsetting_sizes:
-        - 108
+###### Parameters and files for external callset evaluation step #####
 
-evaluation_regions: {}
+# optional. Set to {} if not provided.
+external_callsets:
+        test:
+                vcf: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/preliminary-experiments/prepare-vcf-MC/results-2-mc-chm13-eval-nov22/vcf/mc-chm13-eval-nov22/mc-chm13-eval-nov22_filtered_ids_biallelic.vcf.gz"
+                callable_regions: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/data/fasta/CHM13v11Y.fa"
+                variants: ["snp-indel", "sv"]
+                evaluation_samples:
+                        - HG01891
 
-# name of the output folder
-outname: "results-hprc2-4944555"
+

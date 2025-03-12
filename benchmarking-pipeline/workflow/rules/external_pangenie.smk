@@ -119,7 +119,8 @@ rule external_convert_genotypes_to_biallelic:
 		vcf = "{results}/external-calls/pangenie-{mode}/{sample}/{sample}_pangenie-{mode}_multi_genotyping.vcf",
 		biallelic = PANEL_BI
 	output:
-		bi = temp("{results}/external-calls/pangenie-{mode}/{sample}/{sample}_pangenie-{mode}_bi_genotyping.vcf"),
+		bi = temp("{results}/external-calls/pangenie-{mode}/{sample}/{sample}_pangenie-{mode}_bi_genotyping.vcf.gz"),
+		bi_tbi = temp("{results}/external-calls/pangenie-{mode}/{sample}/{sample}_pangenie-{mode}_bi_genotyping.vcf.gz.tbi"),
 		multi = "{results}/external-calls/pangenie-{mode}/{sample}/{sample}_pangenie-{mode}_multi_genotyping.vcf.gz"
 	conda:
 		"../envs/genotyping.yml"
@@ -129,7 +130,8 @@ rule external_convert_genotypes_to_biallelic:
 	shell:
 		"""
 		bgzip -c {input.vcf} > {output.multi}
-		zcat {output.multi} | python3 workflow/scripts/convert-to-biallelic.py {input.biallelic} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' > {output.bi}
+		zcat {output.multi} | python3 workflow/scripts/convert-to-biallelic.py {input.biallelic} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' | bgzip > {output.bi}
+		tabix -p vcf {output.bi}
 		"""
 
 

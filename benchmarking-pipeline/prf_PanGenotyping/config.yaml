@@ -7,6 +7,7 @@ cluster: >-
   -l select=1:ncpus={threads}:ngpus={resources.gpus}:mem={resources.mem_mb}M{resources.arch}
   -l walltime={resources.walltime}
   -l bonus={resources.bonus}
+  -q HiMem
 cluster-cancel: qdel
 cluster-status: pbs-status.py
 conda-frontend: conda

@@ -57,21 +57,24 @@ def parse_precision_recall_truvari(filename):
 			continue
 		if "}" in line:
 			continue
+		if line == "":
+			continue
 		fields = line.strip().split()
-		assert len(fields) == 2
 		if "precision" in fields[0]:
 			assert precision is None
-			precision = float(fields[1])
+			precision = float(fields[-1][:-1])
 		if "recall" in fields[0]:
 			assert recall is None
-			recall = float(fields[1])
+			recall = float(fields[-1][:-1])
 		if "f1" in fields[0]:
 			assert fscore is None
-			fscore = float(fields[1])
+			fscore = float(fields[-1][:-1])
 	assert precision is not None
 	assert recall is not None
 	assert fscore is not None
 	return precision, recall, fscore
+
+
 
 
 def collect_concordances(files, outname):

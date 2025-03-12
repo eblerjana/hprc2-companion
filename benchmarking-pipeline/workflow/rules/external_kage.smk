@@ -3,10 +3,13 @@ rule external_kage_prepare_panel:
 	input:
 		vcf = PANEL_BI
 	output:
-		temp("{results}/external-calls/panel-bi.vcf")
+		vcf = temp("{results}/external-calls/panel-bi.vcf"),
+		gz = temp("{results}/external-calls/panel-bi.vcf.gz")
 	shell:
 		"""
-		gunzip -c {input} > {output}
+		gunzip -c {input} > {output.vcf}
+		bgzip -c {output.vcf} > {output.gz}
+		tabix -p vcf {output.gz}
 		"""
 
 
@@ -68,10 +71,11 @@ rule external_kage_postprocess:
 	"""
 	input:
 		kage = "{results}/external-calls/kage/{sample}/{sample}_kage_bi_genotyping_tmp.vcf",
-		vcf = "{results}/external-calls/input-panel/panel-{sample}_bi.vcf.gz"
+		vcf = "{results}/external-calls/panel-bi.vcf"
 	output:
-		"{results}/external-calls/kage/{sample}/{sample}_kage_bi_genotyping.vcf"
+		"{results}/external-calls/kage/{sample}/{sample}_kage_bi_genotyping.vcf.gz"
 	shell:
 		"""
-		cat {input.kage} | python3 workflow/scripts/add-ids.py {input.vcf} > {output}
+		cat {input.kage} | python3 workflow/scripts/add-ids.py {input.vcf} | bgzip > {output}
+		tabix -p vcf {output}
 		"""

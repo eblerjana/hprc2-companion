@@ -111,7 +111,7 @@ rule evaluation_generally_untypable_ids:
 	"""
 	input:
 		biallelic = PANEL_BI,
-		multiallelic = "{results}/leave-one-out/input-panel/panel-{sample}_multi.vcf",
+		multiallelic = "{results}/leave-one-out/input-panel/panel-{sample}_multi.vcf.gz",
 		untypables = "{results}/leave-one-out/untypable-ids-{sample}.tsv"
 	output:
 		"{results}/leave-one-out/untypable-ids/{sample}-untypable-all.tsv"
@@ -129,7 +129,7 @@ rule evaluation_remove_untypable:
 	Remove untypable variant alleles from VCF.
 	"""
 	input:
-		vcf = "{results}/leave-one-out/{path}{sample}{other}.vcf",
+		vcf = "{results}/leave-one-out/{path}{sample}{other}.vcf.gz",
 		ids = "{results}/leave-one-out/untypable-ids/{sample}-untypable-all.tsv",
 		ref_idx = REFERENCE + ".fai"
 	output:
@@ -144,7 +144,7 @@ rule evaluation_remove_untypable:
 	priority: 1
 	shell:
 		"""
-		cat {input.vcf} | python3 workflow/scripts/skip-untypable.py {input.ids} | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | python3 workflow/scripts/fix-header.py {input.ref_idx} | bgzip -c > {output.vcf}
+		zcat {input.vcf} | python3 workflow/scripts/skip-untypable.py {input.ids} | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | python3 workflow/scripts/fix-header.py {input.ref_idx} | bgzip -c > {output.vcf}
 		tabix -p vcf {output.vcf}
 		"""
 
@@ -233,7 +233,8 @@ rule evaluation_truvari:
 		vartype = "|".join([v for v in ALLOWED_VARIANTS if "large" in v])
 	params:
 		tmp = "{results}/leave-one-out/{method}/{sample}/truvari-typable/{regions}_{vartype}_tmp",
-		outname = "{results}/leave-one-out/{method}/{sample}/truvari-typable/{regions}_{vartype}"
+		outname = "{results}/leave-one-out/{method}/{sample}/truvari-typable/{regions}_{vartype}",
+		summary = "{results}/leave-one-out/{method}/{sample}/truvari-typable/{regions}_{vartype}/summary.json"
 	log:
 		"{results}/leave-one-out/{method}/{sample}/truvari-typable/{regions}_{vartype}.log"
 	resources:
@@ -241,8 +242,9 @@ rule evaluation_truvari:
 		walltime = "01:00:00"
 	shell:
 		"""
-		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --multimatch --includebed {input.regions} -r 2000 --no-ref a -C 2000 --passonly &> {log}
+		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick ac --includebed {input.regions} -r 2000 --no-ref a -C 5000 --passonly --refine &> {log}
 		mv {params.tmp}/* {params.outname}/
+		cp {params.summary} {output}
 		rm -r {params.tmp}
 		"""
 
