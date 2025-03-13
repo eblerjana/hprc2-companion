@@ -22,7 +22,7 @@ AVG_ILLUMINA_COV = config["avg_illumina_cov"]
 
 SAMPLING_SIZES = config["sampling_sizes"]
 SUBSAMPLING_SIZES = config["subsetting_sizes"]
-GENOTYPERS = ["kage"]
+GENOTYPERS = [] #["kage"]
 
 for s in SAMPLING_SIZES:
 	GENOTYPERS.append("pangenie-sampled-" + str(s))

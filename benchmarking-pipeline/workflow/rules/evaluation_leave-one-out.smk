@@ -238,11 +238,11 @@ rule evaluation_truvari:
 	log:
 		"{results}/leave-one-out/{method}/{sample}/truvari-typable/{regions}_{vartype}.log"
 	resources:
-		mem_mb = 30000,
+		mem_mb = 70000,
 		walltime = "01:00:00"
 	shell:
 		"""
-		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick ac --includebed {input.regions} -r 2000 --no-ref a -C 5000 --passonly --refine &> {log}
+		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick ac --includebed {input.regions} -r 2000 --no-ref a -C 5000 --passonly &> {log}
 		mv {params.tmp}/* {params.outname}/
 		cp {params.summary} {output}
 		rm -r {params.tmp}
