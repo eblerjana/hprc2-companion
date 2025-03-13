@@ -1,0 +1,7 @@
+from snakemake.utils import validate
+
+configfile: "config/config.yaml"
+validate(config, "config.schema.yaml")
+
+include: "rules/parse-inputs.smk"
+

@@ -81,9 +81,7 @@ rule external_pangenie_genotype_sampling:
 		reads = lambda wildcards: ILLUMINA[wildcards.sample],
 		index = "{results}/external-calls/pangenie/index/"
 	output:
-		genotypes = temp("{results}/external-calls/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_genotyping.vcf"),
-		panel = temp("{results}/external-calls/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_panel.vcf"),
-		paths = temp(expand("{{results}}/external-calls/pangenie-sampled-{{size}}/{{sample}}/{{sample}}_pangenie-sampled-{{size}}_multi_paths_{chromosome}.tsv", chromosome = CHROMOSOMES))
+		temp("{results}/external-calls/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_genotyping.vcf")
 	log:
 		"{results}/external-calls/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_genotyping.log"
 	resources:
@@ -105,7 +103,7 @@ rule external_pangenie_genotype_sampling:
 		"workflow/container/pangenie.sif"
 	shell:
 		"""
-		PanGenie -f {params.index} -i <(gunzip -c {input.reads}) -o {params.out_prefix} -t {threads} -j {threads} -d -x {params.size} -y {params.penalty} -b {params.pop_size}  &> {log}
+		PanGenie -f {params.index} -i <(gunzip -c {input.reads}) -o {params.out_prefix} -t {threads} -j {threads} -x {params.size} -y {params.penalty} -b {params.pop_size}  &> {log}
 		"""
 
 
@@ -132,15 +130,4 @@ rule external_convert_genotypes_to_biallelic:
 		bgzip -c {input.vcf} > {output.multi}
 		zcat {output.multi} | python3 workflow/scripts/convert-to-biallelic.py {input.biallelic} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' | bgzip > {output.bi}
 		tabix -p vcf {output.bi}
-		"""
-
-
-rule external_compress_pangenie_paths:
-	input:
-		"{results}/external-calls/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_paths_{chromosome}.tsv"
-	output:
-		"{results}/external-calls/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_paths_{chromosome}.tsv.gz"
-	shell:
-		"""
-		bgzip -c {input} > {output}
 		"""
