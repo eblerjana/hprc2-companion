@@ -66,6 +66,6 @@ rule leave_one_out_prepare_panel_bi:
 		mem_mb=20000
 	shell:
 		"""
-		bcftools view --samples ^{wildcards.sample} {input} | bcftools view --min-ac 1 | bcftools +fill-tags -- -t AF 2> {log} 1> {output.vcf}
+		bcftools view --samples ^{wildcards.sample} {input} | bcftools view --min-ac 1 | bcftools +fill-tags -- -t AC,AN,AF 2> {log} 1> {output.vcf}
 		"""
 

@@ -78,8 +78,8 @@ rule genotyping_convert_genotypes_to_biallelic:
 		vcf = "{results}/genotyping/pangenie/{sample}_pangenie_multi_genotyping.vcf",
 		biallelic = PANEL_BI
 	output:
-		bi = temp("{results}/genotyping/pangenie/{sample}_pangenie_bi_genotyping.vcf.gz"),
-		bi_tbi = temp("{results}/genotyping/pangenie/{sample}_pangenie_bi_genotyping.vcf.gz.tbi"),
+		bi = "{results}/genotyping/pangenie/{sample}_pangenie_bi_genotyping.vcf.gz",
+		bi_tbi = "{results}/genotyping/pangenie/{sample}_pangenie_bi_genotyping.vcf.gz.tbi",
 		multi = "{results}/genotyping/pangenie/{sample}_pangenie_multi_genotyping.vcf.gz"
 	conda:
 		"../envs/genotyping.yml"

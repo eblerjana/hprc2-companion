@@ -12,13 +12,13 @@ rule kage_index:
 		"{results}/leave-one-out/kage/index-{sample}/index-{sample}.log"
 	resources:
 		mem_mb = 800000,
-		walltime = "10:00:00"
+		walltime = "30:00:00"
 	benchmark:
 		"{results}/leave-one-out/kage/index-{sample}/index-{sample}.benchmark.txt"
 	singularity:
 		"workflow/container/kage.sif"
 	threads:
-		24
+		32
 	shell:
 		"""
 		kage index -r {input.reference} -v {input.vcf} -o {output} -k 31 -t {threads}  &> {log}

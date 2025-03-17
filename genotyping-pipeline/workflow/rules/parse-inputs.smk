@@ -17,16 +17,35 @@ if not PANEL_BI or not PANEL_MULTI:
 
 REFERENCE = config["reference"]
 assert os.path.isfile(REFERENCE), "File " + REFERENCE + " does not exist."
+assert os.path.isfile(REFERENCE + ".fai"), "File " + REFERENCE + ".fai (index) does not exist."
 
+SAMPLE_SHEET = config["sample-sheet"]
 ILLUMINA = {}
 ONT = {}
-assert os.path.isfile(config["sample-sheet"]), "File " + config["sample-sheet"] + " does not exist."
+assert os.path.isfile(SAMPLE_SHEET), "File " + SAMPLE_SHEET + " does not exist."
 
-for line in open(config["sample-sheet"], 'r'):
+for line in open(SAMPLE_SHEET, 'r'):
 	if line.startswith("#"):
 		continue
 	fields = line.strip().split()
 	ILLUMINA[fields[1]] = fields[7]
 	assert os.path.isfile(fields[7]), "File " + fields[7] + " does not exist."
-	ONT[fields[1]] = fields[8]
-	assert os.path.isfile(fields[8]), "File " + fields[8] + " does not exist."
+#	ONT[fields[1]] = fields[8]
+#	assert os.path.isfile(fields[8]), "File " + fields[8] + " does not exist."
+
+
+# parse chromosomes and define regions needed for merging
+CHROMOSOMES = []
+MERGING_REGIONS = []
+
+step_size = 1000000
+for line in open(REFERENCE + ".fai", 'r'):
+	fields = line.strip().split()
+	chrom = fields[0]
+	CHROMOSOMES.append(chrom)
+	pos = 1
+	chrom_len = int(fields[1])
+	while pos < chrom_len:
+		end_pos = min(pos+step_size-1, chrom_len)
+		MERGING_REGIONS.append('{}:{}-{}'.format(chrom, pos, end_pos))
+		pos = pos + step_size
