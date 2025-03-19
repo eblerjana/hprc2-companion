@@ -52,6 +52,7 @@ def parse_precision_recall_truvari(filename):
 	precision = None
 	recall = None
 	fscore = None
+	concordance = None
 	for line in open(filename, 'r'):
 		if "{" in line:
 			continue
@@ -69,10 +70,14 @@ def parse_precision_recall_truvari(filename):
 		if "f1" in fields[0]:
 			assert fscore is None
 			fscore = float(fields[-1][:-1])
+		if "gt_concordance" in fields[0]:
+			assert concordance is None
+			concordance = float(fields[-1][:-1]) * 100.0
 	assert precision is not None
 	assert recall is not None
 	assert fscore is not None
-	return precision, recall, fscore
+	assert concordance is not None
+	return precision, recall, fscore, concordance
 
 
 
@@ -88,14 +93,16 @@ def collect_concordances(files, outname):
 
 def collect_precision_recall(files, outname, method):
 	with open(outname, 'w') as outfile:
-		outfile.write('\t'.join(['sample', 'precision', 'recall', 'fscore']) + '\n')
+		header = ['sample', 'precision', 'recall', 'fscore', 'gt_concordance'] if method == "truvari" else ['sample', 'precision', 'recall', 'fscore']
+		outfile.write('\t'.join(header) + '\n')
 		for f in sorted(files):
 			sample = f.split('/')[-4]
 			if method == "vcfeval":
 				precision, recall, fscore = parse_precision_recall_vcfeval(f)
+				outfile.write('\t'.join([sample, str(precision), str(recall), str(fscore)]) + '\n')
 			else:
-				precision, recall, fscore = parse_precision_recall_truvari(f)
-			outfile.write('\t'.join([sample, str(precision), str(recall), str(fscore)]) + '\n')
+				precision, recall, fscore, conc = parse_precision_recall_truvari(f)
+				outfile.write('\t'.join([sample, str(precision), str(recall), str(fscore), str(conc)]) + '\n')
 
 
 if __name__ == '__main__':

@@ -156,7 +156,7 @@ def plot_untyped_all(files, outname, sources):
 
 
 
-def plot_fscores_all(files, outname, sources, variants, method):
+def plot_fscores_vcfeval(files, outname, sources, variants):
 	var_to_name = {
 		'snp' : 'SNPs',
 		'indels': 'indels (1-49bp)',
@@ -204,7 +204,7 @@ def plot_fscores_all(files, outname, sources, variants, method):
 			plt.plot(x_values, fscores, label=source, color=colors[i], marker='o')
 		plt.title(var_to_name[var])
 		plt.xticks(x_values, all_samples, rotation='vertical')
-		plt.ylabel('adjusted F-score [%] (' + method + ')' )
+		plt.ylabel('adjusted F-score (vcfeval)' )
 		plt.grid(color='grey', linestyle='-', linewidth=0.25, alpha=0.3)
 		plt.tight_layout()
 	# create legend
@@ -218,6 +218,75 @@ def plot_fscores_all(files, outname, sources, variants, method):
 	plt.figlegend(handles, labels)
 	plt.savefig(outname)
 
+
+
+def plot_fscores_truvari(files, outname, sources, variants):
+	var_to_name = {
+		'snp' : 'SNPs',
+		'indels': 'indels (1-49bp)',
+		'large-insertion': 'SV insertions (>=50bp)',
+		'large-deletion': 'SV deletions (>=50bp)',
+		'large-complex': 'SV complex (>=50bp)'
+		}
+
+	colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#808080', '#f7ce37', '#bc202c', '#251188']
+	type_to_file = {}
+	n_rows = 2
+	n_cols = len(variants)
+#	plt.figure(figsize=(65,5))
+	plt.figure(figsize=(20,5))
+	for source in sources:
+		for f in files:
+			if not ('_' + source + '_') in f:
+				continue
+			vartype = f.split('_')[-1][:-4]
+			type_to_file[(source, vartype)] = f
+	plot_index = 0
+	fig, axs = plt.subplots(n_rows, n_cols, figsize=(20,10))
+	for var in variants:
+		all_samples = []
+		x_values = []
+		is_first = True
+		for i,source in enumerate(sources):
+			print('source', source)
+			samples = []
+			fscores = []
+			concordances = []
+			if not (source,var) in type_to_file:
+				continue
+			for line in open(type_to_file[(source,var)], 'r'):
+				if line.startswith('sample'):
+					continue
+				fields = line.split()
+				samples.append(fields[0])
+				fscores.append(float(fields[3]))
+				concordances.append(float(fields[4]))
+			if is_first:
+				all_samples = samples
+			else:
+				assert all_samples == samples
+			is_first = False
+			x_values = [i*6 for i in range(len(samples))]
+			axs[0, plot_index].plot(x_values, fscores, label=source, color=colors[i], marker='o')
+			axs[1, plot_index].plot(x_values, concordances, label=source, color=colors[i], marker='o')
+		for idx, metric in zip([0,1], ['adjusted F-score (truvari)', 'gt_concordance [%] (truvari)']):
+			axs[idx, plot_index].set_title(var_to_name[var])
+			axs[idx, plot_index].set_xticks(x_values)
+			axs[idx, plot_index].set_xticklabels(all_samples, rotation='vertical')
+			axs[idx, plot_index].set_ylabel(metric)
+			axs[idx, plot_index].grid(color='grey', linestyle='-', linewidth=0.25, alpha=0.3)
+		plt.tight_layout()
+		plot_index += 1
+	# create legend
+	handles = []
+	labels = []
+	for i, source in enumerate(sources):
+		label = source
+		line = matplotlib.lines.Line2D([],[], color=colors[i], markersize=100, linewidth=2.0, linestyle='-', label=label)
+		handles.append(line)
+		labels.append(label)
+	plt.figlegend(handles, labels)
+	plt.savefig(outname)
 
 
 def plot_concordance_vs_untyped(files, outname, sources):
@@ -295,8 +364,8 @@ if args.metric == 'concordance':
 elif args.metric == 'untyped':
 	plot_untyped_all(args.files, args.outname, args.sources)
 elif args.metric == 'vcfeval-typable':
-	plot_fscores_all(args.files, args.outname, args.sources, ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex'], "vcfeval")
+	plot_fscores_vcfeval(args.files, args.outname, args.sources, ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex'])
 elif args.metric == "truvari-typable":
-	plot_fscores_all(args.files, args.outname, args.sources, ['large-deletion', 'large-insertion', 'large-complex'], "truvari")
+	plot_fscores_truvari(args.files, args.outname, args.sources, ['large-deletion', 'large-insertion', 'large-complex'])
 else:
 	plot_concordance_vs_untyped(args.files, args.outname, args.sources)

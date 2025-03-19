@@ -1,9 +1,18 @@
+Build Definition File
 Bootstrap: docker
 From: python:3.10
 
 %post
     pip install kage-genotyper
     pip3 install numpy==1.26.4
+    apt-get update
+    apt-get install --assume-yes liblzma-dev tabix
+    wget https://github.com/samtools/bcftools/releases/download/1.21/bcftools-1.21.tar.bz2 -O bcftools.tar.bz2
+    tar -xjvf bcftools.tar.bz2
+    cd bcftools-1.21
+    make
+    make prefix=/usr/local/bin install
+    ln -s /usr/local/bin/bin/bcftools /usr/bin/bcftools
 
 %environment
     export LC_ALL=C
