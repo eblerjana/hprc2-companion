@@ -1,4 +1,19 @@
 
+rule genotyping_inputs:
+	"""
+	Helper rule.
+	"""
+	input:
+		PANEL_MULTI,
+		PANEL_BI
+	output:
+		"{results}/genotyping/input-panel-ready.txt"
+	shell:
+		"""
+		echo "Panels ready" > {output}
+		"""
+
+
 rule genotyping_pangenie_prepare_panel:
 	"""
 	Prepare (uncompressed) PanGenie input panel.

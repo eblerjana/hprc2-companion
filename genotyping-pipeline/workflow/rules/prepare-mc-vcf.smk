@@ -81,7 +81,7 @@ rule mc_annotate_vcf:
 	output:
 		multi = "{results}/mc-vcf/mc_filtered_ids.vcf.gz",
 		multi_tmp = temp("{results}/mc-vcf/mc_filtered_ids-tmp.vcf"),
-		biallelic = "{results}/mc-vcf/mc_filtered_ids_biallelic.vcf.gz",
+		biallelic = "{results}/mc-vcf/mc_filtered_ids_biallelic_no-norm.vcf.gz",
 		bi_tmp = temp("{results}/mc-vcf/mc_filtered_ids-tmp_biallelic.vcf")
 	log:
 		"{results}/mc-vcf/mc_decomposition.log"
@@ -101,4 +101,28 @@ rule mc_annotate_vcf:
 		cat {output.bi_tmp} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}' | bgzip > {output.biallelic}
 		tabix -p vcf {output.multi}
 		tabix -p vcf {output.biallelic}
+		"""
+
+rule mc_norm_biallelic:
+	"""
+	Normalize decomposed VCF.
+	"""
+	input:
+		biallelic = "{results}/mc-vcf/mc_filtered_ids_biallelic_no-norm.vcf.gz",
+		reference = REFERENCE,
+	output:
+		"{results}/mc-vcf/mc_filtered_ids_biallelic.vcf.gz"
+	log:
+		"{results}/mc-vcf/mc_normalization.log"
+	benchmark:
+		"{results}/mc-vcf/mc_normalization.benchmark.txt"
+	conda:
+		"../envs/genotyping.yml"
+	resources:
+		mem_mb = 80000,
+		walltime = "06:00:00"
+	shell:
+		"""
+		bcftools norm -f {input.reference} {input.biallelic} -Oz -o {output}
+		tabix -p vcf {output}
 		"""

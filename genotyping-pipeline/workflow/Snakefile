@@ -11,6 +11,23 @@ include: "rules/merge-vcfs.smk"
 
 rule all:
 	input:
-#		expand("{results}/genotyping/pangenie_all-samples_unfiltered.vcf.gz", results = config["outname"]),
-#		expand("{results}/genotyping/merge-regions/pangenie_{region}_genotypes_deleted.txt", results = config["outname"], region = MERGING_REGIONS),
-		expand("{results}/filtering/all_genotyping_statistics.tsv", results = config["outname"])
+		expand("{results}/genotyping/pangenie_all-samples_unfiltered.vcf.gz", results = config["outname"]),
+		expand("{results}/genotyping/merge-regions/pangenie_{region}_genotypes_deleted.txt", results = config["outname"], region = MERGING_REGIONS),
+		expand("{results}/filtering/all_genotyping_statistics.tsv", results = config["outname"]),
+		expand("{results}/filtering/pangenie_plot.log", results = config["outname"]),
+		expand("{results}/filtering/pangenie_all-samples_{filter}.vcf.gz", results = config["outname"], filter="lenient")
+
+rule prepare_mc_vcf:
+	input:
+		expand("{results}/genotyping/input-panel-ready.txt", results = config["outname"])
+
+rule genotyping:
+	input:
+		expand("{results}/genotyping/pangenie_all-samples_unfiltered.vcf.gz", results = config["outname"]),
+		expand("{results}/genotyping/merge-regions/pangenie_{region}_genotypes_deleted.txt", results = config["outname"], region = MERGING_REGIONS)
+
+rule filtering:
+	input:
+		expand("{results}/filtering/all_genotyping_statistics.tsv", results = config["outname"]),
+		expand("{results}/filtering/pangenie_plot.log", results = config["outname"]),
+		expand("{results}/filtering/pangenie_all-samples_{filter}.vcf.gz", results = config["outname"], filter="lenient")

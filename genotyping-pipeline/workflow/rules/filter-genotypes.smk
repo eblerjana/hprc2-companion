@@ -1,4 +1,8 @@
-
+callset_to_prefix = {
+	"panel": "panel",
+	"pangenie_all-samples_unfiltered": "pangenie-all",
+	"pangenie_unrelated-samples_unfiltered": "pangenie-unrelated"
+}
 
 rule filter_collect_samples:
 	"""
@@ -112,10 +116,11 @@ rule filter_compute_genotype_statistics:
 		mem_mb = 30000,
 		walltime = "08:00:00"
 	params:
-		flag = lambda wildcards: "" if wildcards.callset == "panel" else "--genotyping-stats"
+		flag = lambda wildcards: "" if wildcards.callset == "panel" else "--genotyping-stats",
+		column_prefix = lambda wildcards: callset_to_prefix[wildcards.callset]
 	shell:
 		"""
-		python3 workflow/scripts/collect-vcf-stats.py -outname {output} -column_prefix {wildcards.callset} {params.flag}
+		zcat {input} | python3 workflow/scripts/collect-vcf-stats.py -outname {output} -column_prefix {params.column_prefix} {params.flag}
 		"""
 
 rule filter_self_genotyping_statistics:
@@ -137,7 +142,7 @@ rule filter_self_genotyping_statistics:
 		walltime = "02:00:00",
 	shell:
 		"""
-		python3 workflow/scripts/evaluate-self-genotyping.py {input.panel} {input.genotypes} {output} {input.samples} pangenie &> {log}
+		python3 workflow/scripts/evaluate-self-genotyping.py {input.panel} {input.genotypes} {output} {input.samples} pangenie_self-genotyping &> {log}
 		"""
 
 rule filter_concat_tables:
@@ -192,4 +197,75 @@ rule filter_merge_tables:
 	shell:
 		"""
 		python3 workflow/scripts/merge-tables.py {input} {output}
+		"""
+
+
+
+rule filter_perform_regression:
+	input:
+		"{results}/filtering/all_genotyping_statistics.tsv"
+	output:
+		filters = "{results}/filtering/pangenie_filters.tsv",
+		regression = "{results}/filtering/pangenie_regression.tsv"
+	params:
+		outprefix = "{results}/filtering/pangenie",
+		threshold= 10 if len(ILLUMINA.keys()) < 1000 else 50
+	log:
+		"{results}/filtering/pangenie_regression.log"
+	benchmark:
+		"{results}/filtering/pangenie_regression.benchmark.txt"
+	conda:
+		'../envs/plotting.yml'
+	resources:
+		mem_mb=200000,
+		walltime = "12:00:00"
+	shell:
+		"python3 workflow/scripts/regression.py -t {input} -o {params.outprefix} -n {params.threshold} --regression-only &> {log}"
+
+
+rule filter_plot_statistics:
+	input:
+		"{results}/filtering/pangenie_regression.tsv"
+	output:
+		"{results}/filtering/pangenie_plot.log"
+	benchmark:
+		"{results}/filtering/pangenie_plot.benchmark.txt"
+	params:
+		outprefix="{results}/filtering/pangenie",
+		threshold= 10 if len(ILLUMINA.keys()) < 1000 else 50
+	conda:
+		'../envs/plotting.yml'
+	resources:
+		mem_mb = 50000,
+		walltime = "05:00:00"
+	shell:
+		"python3 workflow/scripts/regression.py -t {input} -o {params.outprefix} -n {params.threshold} --plot-only &> {output}"
+
+
+
+rule filter_final_callsets:
+	"""
+	Create VCF with filtered variants.
+	"""
+	input:
+		vcf = "{results}/genotyping/pangenie_all-samples_unfiltered.vcf.gz",
+		filters = "{results}/filtering/pangenie_filters.tsv",
+		fai = REFERENCE + ".fai"
+	output:
+		tmp = temp("{results}/filtering/tmp-pangenie_all-samples_{filter}.vcf.gz"),
+		vcf = "{results}/filtering/pangenie_all-samples_{filter}.vcf.gz"
+	benchmark:
+		"{results}/filtering/pangenie_all-samples_{filter}.benchmark.txt"
+	resources:
+		mem_mb = 20000,
+		walltime = "05:00:00"
+	wildcard_constraints:
+		filter = "lenient|strict"
+	conda:
+		"../envs/genotyping.yml"
+	shell:
+		"""
+		zcat {input.vcf} | python3 workflow/scripts/select_ids.py {input.filters} {wildcards.filter} | bgzip -c > {output.tmp} 
+		bcftools reheader --fai {input.fai} {output.tmp} > {output.vcf}
+		tabix -p vcf {output.vcf}
 		"""

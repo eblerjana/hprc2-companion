@@ -30,7 +30,7 @@ rule external_annotate_variants_callset:
 
 rule external_rtg_format_callsets:
 	"""
-	Create SDF file (required by truvari)
+	Create SDF file (required by vcfeval)
 	"""
 	input:
 		reference = REFERENCE
@@ -99,7 +99,7 @@ rule external_determine_false_negatives_truvari:
 	conda:
 		"../envs/truvari.yml"
 	params:
-		tmp = "{results}/external-calls/evaluation/{truthset}/{evalsample}/untypables-{evalsample}/samples/truvari_temp",
+		tmp = "{results}/external-calls/evaluation/{truthset}/{evalsample}/untypables-{evalsample}/samples/{sample}/truvari_temp",
 		outname = "{results}/external-calls/evaluation/{truthset}/{evalsample}/untypables-{evalsample}/samples/{sample}/truvari"
 	resources:
 		mem_mb=30000,
@@ -111,8 +111,6 @@ rule external_determine_false_negatives_truvari:
 		bcftools view --samples {wildcards.sample} {input.panel} | bcftools view --min-ac 1 | python3 workflow/scripts/fix-header.py {input.ref_index} | bgzip -c > {output.sample_vcf}
 		tabix -p vcf {output.sample_vcf}
 		truvari bench -b {input.truthset} -c {output.sample_vcf} -f {input.reference} -o {params.tmp} --pick ac -r 2000 -C 5000 --passonly --no-ref a  &> {log}
-		bgzip {params.tmp}/fn.vcf
-		tabix -p vcf {params.tmp}/fn.vcf.gz
 		mv {params.tmp}/* {params.outname}/
 		rm -r {params.tmp}
 		"""
@@ -168,7 +166,7 @@ rule external_extract_variant_type_callset:
 		"../envs/genotyping.yml"
 	shell:
 		"""
-		bcftools view --samples {wildcards.evalsample} | python3 workflow/scripts/fix-header.py {input.ref_index} |  python3 workflow/scripts/skip-untypable.py {input.untypable} | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | bgzip -c > {output.vcf}
+		bcftools view --samples {wildcards.evalsample} {input.vcf} | python3 workflow/scripts/fix-header.py {input.ref_index} |  python3 workflow/scripts/skip-untypable.py {input.untypable} | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | bgzip -c > {output.vcf}
 		tabix -p vcf {output.vcf}
 		"""
 
