@@ -1,13 +1,17 @@
 
 
 rule filter_collect_samples:
+	"""
+	Collect different sample sets.
+	"""
 	input:
 		SAMPLE_SHEET
 	output:
 		unrelated = "{results}/filtering/unrelated-samples.tsv",
-		all = "{results}/filtering/all-samples.tsv"
+		all = "{results}/filtering/all-samples.tsv",
+		panel = "{results}/filtering/overlap-panel-samples.tsv"
 	run:
-		with open(output.all, 'w') as all_samples, open(output.unrelated, 'w') as unrelated_samples, open(input[0], 'r') as infile:
+		with open(output.all, 'w') as all_samples, open(output.unrelated, 'w') as unrelated_samples, open(output.panel, 'w') as panel_samples, open(input[0], 'r') as infile:
 			for line in infile:
 				if line.startswith('#'):
 					continue
@@ -17,9 +21,10 @@ rule filter_collect_samples:
 				if (fields[2] == '0') and (fields[3] == '0'):
 					# unrelated sample
 					unrelated_samples.write(sample + '\n')
-				else:
-					# related sample
-					related_samples.write(sample, '\n')
+				if sample in PANEL_SAMPLES:
+					# overlap with panel samples
+					panel_samples.write(sample + '\n')
+
 
 
 rule filter_extract_unrelated_samples:
@@ -49,7 +54,7 @@ rule filter_extract_chromosome:
 	Extract a chromosome from the VCF
 	"""
 	input:
-		lambda wildcards: PANEL_BI if wildcards.callset == "panel" else "{results}/genotyping/pangenie_{subset}_unfiltered.vcf.gz"
+		lambda wildcards: PANEL_BI if wildcards.callset == "panel" else "{results}/genotyping/{callset}.vcf.gz"
 	output:
 		temp("{results}/filtering/chromosome-wise/{callset}_{chrom}.vcf.gz")
 	benchmark:
@@ -110,7 +115,81 @@ rule filter_compute_genotype_statistics:
 		flag = lambda wildcards: "" if wildcards.callset == "panel" else "--genotyping-stats"
 	shell:
 		"""
-		python3 workflow/scripts/collect-vcf-stats.py {params.flag}
-		"""	
-		
-			
+		python3 workflow/scripts/collect-vcf-stats.py -outname {output} -column_prefix {wildcards.callset} {params.flag}
+		"""
+
+rule filter_self_genotyping_statistics:
+	"""
+	Evaluate genotyping of samples in panel.
+	"""
+	input:
+		genotypes = "{results}/filtering/chromosome-wise/pangenie_all-samples_unfiltered_{chrom}.vcf.gz",
+		panel = "{results}/filtering/chromosome-wise/panel_{chrom}.vcf.gz",
+		samples = "{results}/filtering/overlap-panel-samples.tsv"
+	output:
+		"{results}/filtering/pangenie_all-samples_unfiltered_self-genotyping_{chrom}.tsv"
+	log:
+		"{results}/filtering/pangenie_all-samples_unfiltered_self-genotyping_{chrom}.log"
+	benchmark:
+		"{results}/filtering/pangenie_all-samples_unfiltered_self-genotyping_{chrom}.log"
+	resources:
+		mem_mb = 60000,
+		walltime = "02:00:00",
+	shell:
+		"""
+		python3 workflow/scripts/evaluate-self-genotyping.py {input.panel} {input.genotypes} {output} {input.samples} pangenie &> {log}
+		"""
+
+rule filter_concat_tables:
+	"""
+	Concat chromosome-wise tables.
+	"""
+	input:
+		expand("{{results}}/filtering/{{table}}_{chrom}.tsv", chrom = CHROMOSOMES)
+	output:
+		"{results}/filtering/{table}.tsv"
+	wildcard_constraints:
+		table = "pangenie_all-samples_unfiltered_mendelian-consistency|panel_genotype-statistics|pangenie_all-samples_unfiltered_genotype-statistics|pangenie_unrelated-samples_unfiltered_genotype-statistics|pangenie_all-samples_unfiltered_self-genotyping"
+	shell:
+		"""
+		head -n 1 {input[0]} > {output}; tail -n +2 -q {input} >> {output}
+		"""
+
+
+rule filter_variant_id_to_bubble:
+	"""
+	Map variant IDs to bubbles.
+	"""
+	input:
+		PANEL_MULTI
+	output:
+		"{results}/filtering/panel_bubble-statistics.tsv"
+	benchmark:
+		"{results}/filtering/panel_bubble-statistics.benchmark.txt"
+	shell:
+		"zcat {input} | python3 workflow/scripts/id_to_bubble.py > {output}"
+
+
+
+
+rule filter_merge_tables:
+	input:
+		"{results}/filtering/pangenie_all-samples_unfiltered_mendelian-consistency.tsv",
+		"{results}/filtering/panel_genotype-statistics.tsv",
+		"{results}/filtering/pangenie_all-samples_unfiltered_genotype-statistics.tsv",
+		"{results}/filtering/pangenie_unrelated-samples_unfiltered_genotype-statistics.tsv",
+		"{results}/filtering/pangenie_all-samples_unfiltered_self-genotyping.tsv",
+		"{results}/filtering/panel_bubble-statistics.tsv"
+	output:
+		"{results}/filtering/all_genotyping_statistics.tsv"
+	benchmark:
+		"{results}/filtering/all_genotyping_statistics.benchmark.txt"
+	conda:
+		"../envs/plotting.yml"
+	resources:
+		mem_mb = 150000,
+		walltime = "05:00:00"
+	shell:
+		"""
+		python3 workflow/scripts/merge-tables.py {input} {output}
+		"""

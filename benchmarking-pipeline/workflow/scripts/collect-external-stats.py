@@ -24,13 +24,14 @@ def parse_precision_recall_vcfeval(filename):
 	assert precision is not None
 	assert recall is not None
 	assert fscore is not None
-	return precision, recall, fscore
+	return precision, recall, fscore, 0.0
 
 
 def parse_precision_recall_truvari(filename):
 	precision = None
 	recall = None
 	fscore = None
+	concordance = None
 	for line in open(filename, 'r'):
 		if "{" in line:
 			continue
@@ -48,22 +49,26 @@ def parse_precision_recall_truvari(filename):
 		if "f1" in fields[0]:
 			assert fscore is None
 			fscore = float(fields[-1][:-1])
+		if "gt_concordance" in fields[0]:
+			assert concordance is None
+			concordance = float(fields[-1][:-1])
 	assert precision is not None
 	assert recall is not None
 	assert fscore is not None
-	return precision, recall, fscore
+	return precision, recall, fscore, concordance
 
 
 def print_data(data, truthset, region, filters, samples, vartypes, genotypers, outname):
 	with open(outname, 'w') as outfile:
-		outfile.write('\t'.join(['truthset', 'region', 'filter', 'genotyper', 'vartype', 'sample', 'precision', 'recall', 'fscore']) + '\n')
+		outfile.write('\t'.join(['truthset', 'region', 'filter', 'genotyper', 'vartype', 'sample', 'precision', 'recall', 'fscore', 'gt_concordance']) + '\n')
 		for filter in filters:
 			for vartype in vartypes:
 				for genotyper in genotypers:
 					precision = data[(truthset, region, filter, sample, vartype, genotyper)][0] 
 					recall = data[(truthset, region, filter, sample, vartype, genotyper)][1]
 					fscore = data[(truthset, region, filter, sample, vartype, genotyper)][2]
-					outfile.write('\t'.join([truthset, region, filter, genotyper, vartype, sample, str(precision), str(recall), str(fscore)]) + '\n')
+					concordance = data[(truthset, region, filter, sample, vartype, genotyper)][3]
+					outfile.write('\t'.join([truthset, region, filter, genotyper, vartype, sample, str(precision), str(recall), str(fscore), str(concordance)]) + '\n')
 
 
 	
@@ -75,7 +80,7 @@ def plot_data(data, truthset, region, filters, samples, vartypes, genotypers, ou
 
 	colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#808080', '#f7ce37', '#bc202c', '#251188']
 	n_cols = len(vartypes)
-	n_rows = len(filters)
+	n_rows = len(filters) + 1 if 'all' in filters else len(filters)
 
 	plt.figure(figsize=(20, 10))
 	plot_index = 1
@@ -93,12 +98,31 @@ def plot_data(data, truthset, region, filters, samples, vartypes, genotypers, ou
 			plt.xticks(x_values, samples, rotation = 'vertical')
 			ylabel = ""
 			if filter == "all":
-				ylabel = "F-score [%]"
+				ylabel = "F-score"
 			else:
-				ylabel = "adjusted F-score [%]"
+				ylabel = "adjusted F-score"
 			plt.ylabel(ylabel)
 			plt.grid(color='grey', linestyle='-', linewidth=0.25, alpha=0.3)
 			plt.tight_layout()
+		# plot genotype concordances
+		if filter == "all":
+			for var in vartypes:
+				plt.subplot(n_rows, n_cols, plot_index)
+				plot_index += 1
+				for i,genotyper in enumerate(genotypers):
+					concordances = []
+					for sample in samples:
+						concordances.append(data[(truthset, region, filter, sample, var, genotyper)][3])
+					x_values = [i*6 for i in range(len(samples))]
+					plt.plot(x_values, concordances, label=genotyper, color=colors[i], marker='o')
+				plt.title(var_to_name[var])
+				plt.xticks(x_values, samples, rotation = 'vertical')
+				ylabel = "gt_concordance"
+				plt.ylabel(ylabel)
+				plt.grid(color='grey', linestyle='-', linewidth=0.25, alpha=0.3)
+				plt.tight_layout()
+		
+
         # create legend
 	handles = []
 	labels = []
@@ -135,9 +159,9 @@ if __name__ == '__main__':
 		vartype = file.strip().split('/')[-2].split('_')[-3]
 		sample = file.strip().split('/')[-4]
 		if "vcfeval" in file:
-			precision, recall, fscore = parse_precision_recall_vcfeval(file.strip())
+			precision, recall, fscore, conc = parse_precision_recall_vcfeval(file.strip())
 		else:
-			precision, recall, fscore = parse_precision_recall_truvari(file.strip())
+			precision, recall, fscore, conc = parse_precision_recall_truvari(file.strip())
 
 		truthsets.add(truthset)
 		regions.add(region)
@@ -146,7 +170,7 @@ if __name__ == '__main__':
 		vartypes.add(vartype)
 		genotypers.add(genotyper)
 
-		data[(truthset, region, filter, sample, vartype, genotyper)] = [precision, recall, fscore]
+		data[(truthset, region, filter, sample, vartype, genotyper)] = [precision, recall, fscore, conc]
 
 	truthsets = sorted(list(truthsets))
 	regions = sorted(list(regions))

@@ -1,6 +1,9 @@
 import gzip
 configfile: "config/config.yaml"
 
+
+################ Set variables ################
+
 PANEL_BI = config["panel_bi"]
 PANEL_MULTI = config["panel_multi"]
 REFERENCE = config["reference"]
@@ -12,7 +15,6 @@ for line in open(config["sample-info"], 'r'):
 	fields = line.strip().split()
 	ILLUMINA[fields[1]] = fields[7]
 
-
 SAMPLES = [s for s in ILLUMINA.keys()]
 OUTNAME = config["outname"]
 ALLOWED_VARIANTS = ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex']
@@ -22,7 +24,7 @@ AVG_ILLUMINA_COV = config["avg_illumina_cov"]
 
 SAMPLING_SIZES = config["sampling_sizes"]
 SUBSAMPLING_SIZES = config["subsetting_sizes"]
-GENOTYPERS = []#["kage"]
+GENOTYPERS = [] # ["kage"]
 
 for s in SAMPLING_SIZES:
 	GENOTYPERS.append("pangenie-sampled-" + str(s))
@@ -39,19 +41,51 @@ CHROMOSOMES = set(['chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8
 #	CHROMOSOMES.add(fields[0])
 CHROMOSOMES = list(CHROMOSOMES)
 
+EXTERNAL = config["external_callsets"]
+PANEL_SAMPLES = []
+for line in gzip.open(PANEL_BI, 'rt'):
+	if line.startswith('##'):
+		continue
+	if line.startswith('#'):
+		fields = line.strip().split()
+		PANEL_SAMPLES = [s for s in fields[9:] if s != "CHM13" and s != "GRCh38"]
+		break
+
+
+
+################ Define target files ################
+
 
 include: "rules/leave-one-out_prepare.smk"
 include: "rules/leave-one-out_pangenie.smk"
 include: "rules/leave-one-out_kage.smk"
 include: "rules/evaluation_leave-one-out.smk"
 include: "rules/evaluation_panel.smk"
+include: "rules/evaluation_external.smk"
+include: "rules/external_pangenie.smk"
+include: "rules/external_kage.smk"
+
+leave_one_out_results = []
+if LEAVE_ONE_OUT_SAMPLES:
+	leave_one_out_results.extend(expand("{results}/leave-one-out/plots/{metric}_{regions}.pdf", results = OUTNAME, metric = ["concordance", "vcfeval-typable", "truvari-typable"], regions = ["biallelic", "multiallelic"] + [k for k in EVALUATION_REGIONS.keys()]))
+	leave_one_out_results.extend(expand("{results}/leave-one-out/plots/concordance-vs-untyped_{regions}.pdf", results = OUTNAME, regions = ["biallelic", "multiallelic"] + [k for k in EVALUATION_REGIONS.keys()]))
+	leave_one_out_results.extend(expand("{results}/leave-one-out/plots/resources.pdf", results = OUTNAME))
+	leave_one_out_results.extend(expand("{results}/leave-one-out/plots/panel-stats.pdf", results = OUTNAME))
+	leave_one_out_results.extend(expand("{results}/leave-one-out/plots/recombination-stats.pdf", results = OUTNAME))
+	leave_one_out_results.extend(expand("{results}/leave-one-out/plots/afs-missed-alleles.pdf", results = OUTNAME))
+
+external_callsets_results = expand("{results}/external-calls/evaluation/plots/{truthset}/external_{truthset}_{region}.pdf", results = OUTNAME, truthset = EXTERNAL.keys(), region = ["all"] + [k for k in EVALUATION_REGIONS.keys()] )
 
 
 rule all:
 	input:
-		expand("{results}/leave-one-out/plots/{metric}_{regions}.pdf", results = OUTNAME, metric = ["concordance", "vcfeval-typable", "truvari-typable"], regions = ["biallelic", "multiallelic"] + [k for k in EVALUATION_REGIONS.keys()]),
-		expand("{results}/leave-one-out/plots/concordance-vs-untyped_{regions}.pdf", results = OUTNAME, regions = ["biallelic", "multiallelic"] + [k for k in EVALUATION_REGIONS.keys()]),
-		expand("{results}/leave-one-out/plots/resources.pdf", results = OUTNAME),
-		expand("{results}/leave-one-out/plots/panel-stats.pdf", results = OUTNAME),
-		expand("{results}/leave-one-out/plots/recombination-stats.pdf", results = OUTNAME),
-		expand("{results}/leave-one-out/plots/afs-missed-alleles.pdf", results = OUTNAME)
+		leave_one_out_results,
+		external_callsets_results
+
+rule leave_one_out:
+	input:
+		leave_one_out_results
+
+rule external_callsets:
+	input:
+		external_callsets_results

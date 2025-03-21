@@ -17,14 +17,15 @@ properties:
     type: string
     default: ""
     description: Path to the MC GFA
+  samples_to_exclude:
+    type: array
+    default: []
   reference:
     type: string
     description: Path to reference FASTA
   sample-info:
     type: string
     description: Path to sample sheet
-
-
 
 required:
   - reference

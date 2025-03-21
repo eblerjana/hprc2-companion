@@ -16,6 +16,7 @@ class VariantStatistics:
 	def to_str(self):
 		return '\t'.join([
 			self.varid,
+			str(self.total),
 			str((self.correct / max(self.correct + self.wrong, 1)) * 100.0),
 			str((self.wrong / max(self.correct + self.wrong, 1)) * 100.0),
 			str((self.not_typed / max(self.correct + self.wrong + self.not_typed, 1)) * 100.0),
@@ -45,6 +46,7 @@ def check_genotyping_accuracy(baseline_vcf, callset_vcf, outname, samples, colum
 	"""
 
 	header_line = '\t'.join(['variant_id',
+		column_prefix + '_considered_samples',
 		column_prefix + '_correct [%]',
 		column_prefix + '_wrong [%]',
 		column_prefix + '_not_typed [%]',
@@ -154,10 +156,10 @@ if __name__ == "__main__":
 	parser.add_argument('baseline', metavar='BASELINE', help='multisample baseline VCF (ground truth genotypes).')
 	parser.add_argument('callset', metavar='CALLSET', help='multisample callset VCF (genotyped variants).')
 	parser.add_argument('outfile', metavar='OUTFILE', help='output file name.')
-	parser.add_argument('samples', metavar='SAMPLES', help='comma separated list of samples to evaluate.')
+	parser.add_argument('samples', metavar='SAMPLES', help='TSV file with list of samples to consider.')
 	parser.add_argument('column_prefix', metavar='PREFIX', help='prefix of the output column names.')
 	args = parser.parse_args()
 
-	samples = [s for s in args.samples.split(',')]
+	samples = [line.strip() for line in open(args.samples, 'r')]
 	check_genotyping_accuracy(args.baseline, args.callset, args.outfile, samples, args.column_prefix)
 

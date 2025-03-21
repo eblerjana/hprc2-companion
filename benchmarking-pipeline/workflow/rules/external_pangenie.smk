@@ -24,7 +24,7 @@ rule external_pangenie_index:
 		vcf = "{results}/external-calls/panel-multi.vcf",
 		fasta = REFERENCE,
 	output:
-		temp(directory("{results}/external-calls/pangenie/index/"))
+		directory("{results}/external-calls/pangenie/index/")
 	log:
 		"{results}/external-calls/pangenie/index.log"
 	resources:
@@ -69,7 +69,7 @@ rule external_pangenie_genotype_subset:
 		"workflow/container/pangenie.sif"
 	shell:
 		"""
-		PanGenie -f {params.index} -i <(gunzip -c {input.reads}) -o {params.out_prefix} -t {threads} -j {threads} -a {wildcards.size} &> {log}
+		PanGenie -f {params.index} -i <(gunzip -c {input.reads}) -o {params.out_prefix} -s {wildcards.sample}  -t {threads} -j {threads} -a {wildcards.size} &> {log}
 		"""
 
 
@@ -103,7 +103,7 @@ rule external_pangenie_genotype_sampling:
 		"workflow/container/pangenie.sif"
 	shell:
 		"""
-		PanGenie -f {params.index} -i <(gunzip -c {input.reads}) -o {params.out_prefix} -t {threads} -j {threads} -x {params.size} -y {params.penalty} -b {params.pop_size}  &> {log}
+		PanGenie -f {params.index} -i <(gunzip -c {input.reads}) -o {params.out_prefix} -s {wildcards.sample} -t {threads} -j {threads} -x {params.size} -y {params.penalty} -b {params.pop_size}  &> {log}
 		"""
 
 
@@ -117,8 +117,8 @@ rule external_convert_genotypes_to_biallelic:
 		vcf = "{results}/external-calls/pangenie-{mode}/{sample}/{sample}_pangenie-{mode}_multi_genotyping.vcf",
 		biallelic = PANEL_BI
 	output:
-		bi = temp("{results}/external-calls/pangenie-{mode}/{sample}/{sample}_pangenie-{mode}_bi_genotyping.vcf.gz"),
-		bi_tbi = temp("{results}/external-calls/pangenie-{mode}/{sample}/{sample}_pangenie-{mode}_bi_genotyping.vcf.gz.tbi"),
+		bi = "{results}/external-calls/pangenie-{mode}/{sample}/{sample}_pangenie-{mode}_bi_genotyping.vcf.gz",
+		bi_tbi = "{results}/external-calls/pangenie-{mode}/{sample}/{sample}_pangenie-{mode}_bi_genotyping.vcf.gz.tbi",
 		multi = "{results}/external-calls/pangenie-{mode}/{sample}/{sample}_pangenie-{mode}_multi_genotyping.vcf.gz"
 	conda:
 		"../envs/genotyping.yml"

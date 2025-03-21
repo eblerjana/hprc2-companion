@@ -14,17 +14,17 @@ rule external_annotate_variants_callset:
 		callset = lambda wildcards: EXTERNAL[wildcards.truthset]["vcf"],
 		panel = PANEL_BI
 	output:
-		"{results}/external-calls/evaluation/{truthset}/{evalsample}/truthset-{truthset}_{evalsample}_{vartype}.vcf.gz"
+		vcf = "{results}/external-calls/evaluation/{truthset}/{evalsample}/truthset-{truthset}_{evalsample}_{vartype}.vcf.gz",
+		tbi = "{results}/external-calls/evaluation/{truthset}/{evalsample}/truthset-{truthset}_{evalsample}_{vartype}.vcf.gz.tbi"
 	resources:
-		mem_total_mb=20000,
-		runtime_hrs=1,
-		runtime_min=59
+		mem_mb=90000,
+		walltime = "02:00:00"
 	conda:
 		"../envs/genotyping.yml"
 	shell:
 		"""
-		bcftools norm -m -any {input.callset} | bcftools view --samples {wildcards.evalsample} | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | python3 workflow/scripts/annotate.py {input.panel} | bgzip -c > {output}
-		tabix -p vcf {output}
+		bcftools norm -m -any {input.callset} | bcftools view --samples {wildcards.evalsample} | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | python3 workflow/scripts/annotate.py {input.panel} | bgzip -c > {output.vcf}
+		tabix -p vcf {output.vcf}
 		"""
 
 
@@ -37,7 +37,7 @@ rule external_rtg_format_callsets:
 	output:
 		directory("{results}/external-calls/evaluation/SDF")
 	resources:
-		mem_total_mb = 20000
+		mem_mb = 20000
 	conda:
 		"../envs/genotyping.yml"
 	shell:
@@ -69,9 +69,8 @@ rule external_determine_false_negatives_vcfeval:
 		tmp = "{results}/external-calls/evaluation/{truthset}/{evalsample}/untypables-{evalsample}/samples/{sample}/vcfeval_temp",
 		outname = "{results}/external-calls/evaluation/{truthset}/{evalsample}/untypables-{evalsample}/samples/{sample}/vcfeval"
 	resources:
-		mem_total_mb=30000,
-		runtime_hrs=0,
-		runtime_min=59
+		mem_mb=30000,
+		walltime = "01:00:00"
 	log:
 		"{results}/external-calls/evaluation/{truthset}/{evalsample}/untypables-{evalsample}/samples/{sample}/vcfeval.log"
 	shell:
@@ -98,14 +97,13 @@ rule external_determine_false_negatives_truvari:
 		sample_vcf = "{results}/external-calls/evaluation/{truthset}/{evalsample}/untypables-{evalsample}/samples/{sample}-truvari.vcf.gz",
 		fn = "{results}/external-calls/evaluation/{truthset}/{evalsample}/untypables-{evalsample}/samples/{sample}/truvari/fn.vcf.gz"
 	conda:
-		"../envs/genotyping.yml"
+		"../envs/truvari.yml"
 	params:
 		tmp = "{results}/external-calls/evaluation/{truthset}/{evalsample}/untypables-{evalsample}/samples/truvari_temp",
 		outname = "{results}/external-calls/evaluation/{truthset}/{evalsample}/untypables-{evalsample}/samples/{sample}/truvari"
 	resources:
-		mem_total_mb=30000,
-		runtime_hrs=0,
-		runtime_min=59
+		mem_mb=30000,
+		walltime = "01:00:00"
 	log:
 		"{results}/external-calls/evaluation/{truthset}/{evalsample}/untypables-{evalsample}/samples/{sample}/truvari.log"
 	shell:
@@ -134,9 +132,8 @@ rule external_determine_unique:
 	params:
 		n_files = len(PANEL_SAMPLES)
 	resources:
-		mem_total_mb=30000,
-		runtime_hrs=0,
-		runtime_min=30
+		mem_mb=30000,
+		walltime = "00:30:00"
 	shell:
 		"""
 		bcftools isec -n={params.n_files} -w1 {input}  > {output.unique_vcf}
@@ -155,6 +152,7 @@ rule external_extract_variant_type_callset:
 	"""
 	input:
 		vcf = lambda wildcards: "{results}/external-calls/evaluation/{truthset}/{evalsample}/truthset-{truthset}_{evalsample}_{vartype}.vcf.gz" if wildcards.set in EXTERNAL else "{results}/external-calls/{set}/{evalsample}/{evalsample}_{set}_bi_genotyping.vcf.gz",
+		tbi = lambda wildcards: "{results}/external-calls/evaluation/{truthset}/{evalsample}/truthset-{truthset}_{evalsample}_{vartype}.vcf.gz.tbi" if wildcards.set in EXTERNAL else "{results}/external-calls/{set}/{evalsample}/{evalsample}_{set}_bi_genotyping.vcf.gz.tbi",
 		untypable = "{results}/external-calls/evaluation/{truthset}/{evalsample}/untypables-{evalsample}/{truthset}-unique_{method}.tsv",
 		ref_index = REFERENCE + ".fai"
 	output:
@@ -165,7 +163,7 @@ rule external_extract_variant_type_callset:
 		set= "|".join([k for k in EXTERNAL.keys()] + GENOTYPERS),
 		vartype="snp-indel|sv"
 	resources:
-		mem_total_mb=30000
+		mem_mb=30000
 	conda:
 		"../envs/genotyping.yml"
 	shell:
@@ -190,12 +188,12 @@ rule external_extract_variant_type_callset_all:
 		set= "|".join([k for k in EXTERNAL.keys()] + GENOTYPERS),
 		vartype="snp-indel|sv"
 	resources:
-		mem_total_mb=30000
+		mem_mb=30000
 	conda:
 		"../envs/genotyping.yml"
 	shell:
 		"""
-		bcftools view --samples {wildcards.evalsample} | python3 workflow/scripts/fix-header.py {input.ref_index} | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | bgzip -c > {output.vcf}
+		bcftools view --samples {wildcards.evalsample} {input.vcf} | python3 workflow/scripts/fix-header.py {input.ref_index} | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | bgzip -c > {output.vcf}
 		tabix -p vcf {output.vcf}
 		"""
 
@@ -207,8 +205,8 @@ rule external_prepare_evaluation_beds:
 	output:
 		"{results}/external-calls/evaluation/{truthset}/bed-files/{truthset}_{region}.bed"
 	resources:
-		mem_total_mb=30000,
-		runtime_hrs=1
+		mem_mb=30000,
+		walltime = "01:00:00"
 	conda:
 		"../envs/genotyping.yml"
 	shell:
@@ -238,9 +236,8 @@ rule external_vcfeval_callsets:
 		tmp = "{results}/external-calls/evaluation/{truthset}/{evalsample}/vcfeval-{evalsample}/vcfeval_{evalsample}_{genotyper}_{vartype}_{filter}_region-{region}_tmp",
 		outname = "{results}/external-calls/evaluation/{truthset}/{evalsample}/vcfeval-{evalsample}/vcfeval_{evalsample}_{genotyper}_{vartype}_{filter}_region-{region}"
 	resources:
-		mem_total_mb=20000,
-		runtime_hrs=0,
-		runtime_min=40
+		mem_mb=20000,
+		walltime = "00:40:00"
 	shell:
 		"""
 		rtg vcfeval -b {input.baseline} -c {input.callset} -t {input.sdf} -o {params.tmp} --evaluation-regions {input.regions} > {output.summary}.tmp
@@ -251,17 +248,17 @@ rule external_vcfeval_callsets:
 
 rule external_truvari_callsets:
 	input:
-		callset = "{results}/external-calls/evaluation/{truthset}/{evalsample}/{genotyper}-{filter}_{evalsample}_{vartype}_vcfeval.vcf.gz",
-		callset_tbi = "{results}/external-calls/evaluation/{truthset}/{evalsample}/{genotyper}-{filter}_{evalsample}_{vartype}_vcfeval.vcf.gz.tbi",
-		baseline = "{results}/external-calls/evaluation/{truthset}/{evalsample}/{truthset}-{filter}_{evalsample}_{vartype}_vcfeval.vcf.gz",
-		baseline_tbi = "{results}/external-calls/evaluation/{truthset}/{evalsample}/{truthset}-{filter}_{evalsample}_{vartype}_vcfeval.vcf.gz.tbi",
+		callset = "{results}/external-calls/evaluation/{truthset}/{evalsample}/{genotyper}-{filter}_{evalsample}_{vartype}_truvari.vcf.gz",
+		callset_tbi = "{results}/external-calls/evaluation/{truthset}/{evalsample}/{genotyper}-{filter}_{evalsample}_{vartype}_truvari.vcf.gz.tbi",
+		baseline = "{results}/external-calls/evaluation/{truthset}/{evalsample}/{truthset}-{filter}_{evalsample}_{vartype}_truvari.vcf.gz",
+		baseline_tbi = "{results}/external-calls/evaluation/{truthset}/{evalsample}/{truthset}-{filter}_{evalsample}_{vartype}_truvari.vcf.gz.tbi",
 		regions = "{results}/external-calls/evaluation/{truthset}/bed-files/{truthset}_{region}.bed",
 		reference = REFERENCE,
 		ref_index = REFERENCE + ".fai"
 	output:
 		summary = "{results}/external-calls/evaluation/{truthset}/{evalsample}/truvari-{evalsample}/truvari_{evalsample}_{genotyper}_{vartype}_{filter}_region-{region}/summary.txt"
 	conda:
-		"../envs/genotyping.yml"
+		"../envs/truvari.yml"
 	wildcard_constraints:
 		vartype = "sv",
 		filter = "all|typable"
@@ -272,12 +269,11 @@ rule external_truvari_callsets:
 		outname = "{results}/external-calls/evaluation/{truthset}/{evalsample}/truvari-{evalsample}/truvari_{evalsample}_{genotyper}_{vartype}_{filter}_region-{region}",
 		summary = "{results}/external-calls/evaluation/{truthset}/{evalsample}/truvari-{evalsample}/truvari_{evalsample}_{genotyper}_{vartype}_{filter}_region-{region}/summary.json"
 	resources:
-		mem_total_mb=20000,
-		runtime_hrs=0,
-		runtime_min=40
+		mem_mb=20000,
+		walltime = "00:40:00"
 	shell:
 		"""
-		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick ac --passonly --includebed {input.regions} -r 2000 --no-ref a -C 5000 --refine &> {log}
+		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick ac --passonly --includebed {input.regions} -r 2000 --no-ref a -C 5000 &> {log}
 		mv {params.tmp}/* {params.outname}/
 		cp {params.summary} {output.summary}
 		rm -r {params.tmp}

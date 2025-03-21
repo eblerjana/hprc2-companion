@@ -1,6 +1,7 @@
 import sys
 import argparse
 from collections import defaultdict
+import gzip
 
 parser = argparse.ArgumentParser(prog='annotate.py', description=__doc__)
 parser.add_argument('vcf', metavar='ANNOTATIONS', help='VCF to take annotations from.')
@@ -15,7 +16,7 @@ unknown_alleles = 0
 alleles_skipped = 0
 
 # read VCF and store IDs of all alleles
-for line in open(args.vcf, 'r'):
+for line in gzip.open(args.vcf, 'rt'):
 	if line.startswith('#'):
 		continue
 	fields = line.split()

@@ -1,4 +1,5 @@
 import os.path
+import gzip
 
 # set panel. If PanGenie-ready panels are given, use these. Otherwise,
 # create them from provided MC graph
@@ -7,13 +8,33 @@ PANEL_BI = config["panel_bi"]
 PANEL_MULTI = config["panel_multi"]
 MC_GFA = config["mc_gfa"]
 MC_VCF = config["mc_vcf"]
+MIN_FRAC = 0.8
+SAMPLES_TO_EXCLUDE = config["samples_to_exclude"]
+PANEL_SAMPLES = []
 
 
 if not PANEL_BI or not PANEL_MULTI:
 	# make sure MC data is provided
 	assert MC_GFA and MC_VCF, "No panels and no MC graph provided."
-	PANEL_BI = None # TODO results of vcf preparation step
-	PANEL_MULTI = None # TODO results of vcf preparation step
+	PANEL_BI = "{results}/mc-vcf/mc_filtered_ids_biallelic.vcf.gz" # results of prepare-mc-vcf pipeline
+	PANEL_MULTI = "{results}/mc-vcf/mc_filtered_ids.vcf.gz" # results of prepare-mc-vcf pipeline
+	# determine panel samples
+	for line in gzip.open(MC_VCF, 'rt'):
+		if line.startswith('##'):
+			continue
+		if line.startswith('#'):
+			fields = line.strip().split()
+			PANEL_SAMPLES = fields[9:]
+			break
+else:
+	for line in gzip.open(PANEL_BI, 'rt'):
+		if line.startswith('##'):
+			continue
+		if line.startswith('#'):
+			fields = line.strip().split()
+			PANEL_SAMPLES = fields[9:]
+			break
+
 
 REFERENCE = config["reference"]
 assert os.path.isfile(REFERENCE), "File " + REFERENCE + " does not exist."

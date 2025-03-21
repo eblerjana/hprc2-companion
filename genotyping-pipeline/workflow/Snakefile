@@ -4,11 +4,13 @@ configfile: "config/config.yaml"
 validate(config, "config.schema.yaml")
 
 include: "rules/parse-inputs.smk"
+include: "rules/prepare-mc-vcf.smk"
 include: "rules/filter-genotypes.smk"
 include: "rules/genotype-cohort.smk"
 include: "rules/merge-vcfs.smk"
 
 rule all:
 	input:
-		expand("{results}/genotyping/pangenie_all-samples_unfiltered.vcf.gz", results = config["outname"]),
-		expand("{results}/genotyping/merge-regions/pangenie_{region}_genotypes_deleted.txt", results = config["outname"], region = MERGING_REGIONS)
+#		expand("{results}/genotyping/pangenie_all-samples_unfiltered.vcf.gz", results = config["outname"]),
+#		expand("{results}/genotyping/merge-regions/pangenie_{region}_genotypes_deleted.txt", results = config["outname"], region = MERGING_REGIONS),
+		expand("{results}/filtering/all_genotyping_statistics.tsv", results = config["outname"])

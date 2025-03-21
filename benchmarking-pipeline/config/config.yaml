@@ -62,3 +62,15 @@ evaluation_regions: {}
 
 # name of the output folder
 outname: "results-hprc2-4944555"
+
+
+###### Parameters and files for external callset evaluation step #####
+#
+## optional. Set to {} if not provided.
+external_callsets:
+        PAV-hgsvc3:
+                vcf: "input-data/variants_T2T-CHM13_sv_insdel_alt_HGSVC2024v1.0.vcf.gz"
+                callable_regions: "input-data/chm13.bed"
+                variants: ["sv"]
+                evaluation_samples:
+                        - NA24385
