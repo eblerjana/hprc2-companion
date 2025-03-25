@@ -20,7 +20,8 @@ def collect_stats(genotype_stats, outname, column_prefix):
 				column_prefix + '_heterozygosity',
 				column_prefix + '_heterozygous_genotypes',
 				column_prefix + '_total_genotypes',
-				column_prefix + '_unique_kmers'
+				column_prefix + '_unique_kmers',
+				column_prefix + '_GQ>=200'
 			])
 		outfile.write('\t'.join(header) + '\n')
 
@@ -53,12 +54,14 @@ def collect_stats(genotype_stats, outname, column_prefix):
 				heterozygosity = int(info_fields["AC_Het"]) / total_genotypes
 				heterozygous_genotypes = info_fields["AC_Het"]
 				unique_kmers = info_fields["UK"]
+				high_qual_gt = info_fields["HGQ"]
 
 				outfile.write('\t' + '\t'.join([
 					str(heterozygosity),
 					heterozygous_genotypes,
 					str(total_genotypes),
-					unique_kmers
+					unique_kmers,
+					high_qual_gt
 				]) + '\n')
 			else:
 				outfile.write('\n')

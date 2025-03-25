@@ -74,3 +74,15 @@ external_callsets:
                 variants: ["sv"]
                 evaluation_samples:
                         - NA24385
+        GIAB-draft-HG002:
+                vcf: "input-data/CHM13v2.0_HG2-T2TQ100-V1.1_stvar.NA24385.vcf.gz"
+                callable_regions: "input-data/CHM13v2.0_HG2-T2TQ100-V1.1_stvar.benchmark.bed"
+                variants: ["sv"]
+                evaluation_samples:
+                        - NA24385
+        MC-wave:
+                vcf: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/data/vcfs/hprc-v2.prerelease.2-mc-chm13-eval-nov22.wave.vcf.gz"
+                callable_regions: "input-data/chm13.bed"
+                variants: ["sv"]
+                evaluation_samples:
+                        - HG01891 

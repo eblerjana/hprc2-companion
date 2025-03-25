@@ -1,0 +1,17 @@
+
+Input:
+
+- AGC archive with (polished) consensus haplotypes + consensus names OR
+- phased multi-sample VCF OR
+- unphased multi-sample VCF + genetic maps + sample sheet
+
+
+- reference genome
+- ground truth assemblies
+
+
+Pipeline:
+
+AGC -> extract haplotype(s) -> QV estimation
+phased vcf -> create consensus haplotype(s) -> QV estimation
+unphased vcf -> phase with shapeit -> create consensus haplotype(s) -> QV estimation

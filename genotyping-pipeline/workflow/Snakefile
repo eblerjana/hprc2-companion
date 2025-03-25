@@ -15,7 +15,7 @@ rule all:
 		expand("{results}/genotyping/merge-regions/pangenie_{region}_genotypes_deleted.txt", results = config["outname"], region = MERGING_REGIONS),
 		expand("{results}/filtering/all_genotyping_statistics.tsv", results = config["outname"]),
 		expand("{results}/filtering/pangenie_plot.log", results = config["outname"]),
-		expand("{results}/filtering/pangenie_all-samples_{filter}.vcf.gz", results = config["outname"], filter="lenient")
+		expand("{results}/filtering/pangenie_all-samples_{filter}.vcf.gz", results = config["outname"], filter="filtered")
 
 rule prepare_mc_vcf:
 	input:
@@ -30,4 +30,4 @@ rule filtering:
 	input:
 		expand("{results}/filtering/all_genotyping_statistics.tsv", results = config["outname"]),
 		expand("{results}/filtering/pangenie_plot.log", results = config["outname"]),
-		expand("{results}/filtering/pangenie_all-samples_{filter}.vcf.gz", results = config["outname"], filter="lenient")
+		expand("{results}/filtering/pangenie_all-samples_{filter}.vcf.gz", results = config["outname"], filter="filtered")

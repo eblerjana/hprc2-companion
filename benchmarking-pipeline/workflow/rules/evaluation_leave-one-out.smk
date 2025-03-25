@@ -242,7 +242,8 @@ rule evaluation_truvari:
 		walltime = "01:00:00"
 	shell:
 		"""
-		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick ac --includebed {input.regions} -r 2000 --no-ref a -C 5000 --passonly &> {log}
+		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick multi -r 1000 -C 1000 -s 50 -S 15 --sizemax 100000 -p 0.0 -P 0.3 -O 0.0 --passonly --no-ref a  &> {log}
+#		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick ac --includebed {input.regions} -r 2000 --no-ref a -C 5000 --passonly &> {log}
 		mv {params.tmp}/* {params.outname}/
 		cp {params.summary} {output}
 		rm -r {params.tmp}

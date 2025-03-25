@@ -38,7 +38,7 @@ rule merge_by_region:
 		"../envs/genotyping.yml"
 	shell:
 		"""
-		bcftools merge -r {wildcards.region} -l {input} --threads {threads} | bcftools +fill-tags -Oz -o {output.vcf} -- -t AN,AC,AF,AF_Hom,AF_Het &> {log}"
+		bcftools merge -r {wildcards.region} -l {input} --threads {threads} | bcftools +fill-tags -Oz -o {output.vcf} -- -t AN,AC,AF,AC_Hom,AC_Het &> {log}"
 		tabix -p vcf {output.vcf}
 		"""
 

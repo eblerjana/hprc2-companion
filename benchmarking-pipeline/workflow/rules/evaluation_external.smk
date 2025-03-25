@@ -110,7 +110,8 @@ rule external_determine_false_negatives_truvari:
 		"""
 		bcftools view --samples {wildcards.sample} {input.panel} | bcftools view --min-ac 1 | python3 workflow/scripts/fix-header.py {input.ref_index} | bgzip -c > {output.sample_vcf}
 		tabix -p vcf {output.sample_vcf}
-		truvari bench -b {input.truthset} -c {output.sample_vcf} -f {input.reference} -o {params.tmp} --pick ac -r 2000 -C 5000 --passonly --no-ref a  &> {log}
+#		truvari bench -b {input.truthset} -c {output.sample_vcf} -f {input.reference} -o {params.tmp} --pick ac -r 2000 -C 5000 --passonly --no-ref a  &> {log}
+		truvari bench -b {input.truthset} -c {output.sample_vcf} -f {input.reference} -o {params.tmp} --pick multi -r 1000 -C 1000 -s 50 -S 15 --sizemax 100000 -p 0.0 -P 0.3 -O 0.0 --passonly --no-ref a  &> {log}
 		mv {params.tmp}/* {params.outname}/
 		rm -r {params.tmp}
 		"""
@@ -271,7 +272,8 @@ rule external_truvari_callsets:
 		walltime = "00:40:00"
 	shell:
 		"""
-		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick ac --passonly --includebed {input.regions} -r 2000 --no-ref a -C 5000 &> {log}
+#		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick ac --passonly --includebed {input.regions} -r 2000 --no-ref a -C 5000 &> {log}
+		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick multi -r 1000 -C 1000 -s 50 -S 15 --sizemax 100000 -p 0.0 -P 0.3 -O 0.0 --passonly --no-ref a  &> {log}
 		mv {params.tmp}/* {params.outname}/
 		cp {params.summary} {output.summary}
 		rm -r {params.tmp}

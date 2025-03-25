@@ -45,10 +45,11 @@ rule filter_extract_unrelated_samples:
 	conda:
 		"../envs/genotyping.yml"
 	resources:
-		mem_mb = 50000
+		mem_mb = 80000,
+		walltime = "12:00:00"
 	shell:
 		"""
-		bcftools view --sample-file {input.samples} --force-samples {input.vcf} -Oz {output}
+		bcftools view --samples-file {input.samples} --force-samples {input.vcf} -Oz -o {output}
 		tabix -p vcf {output}
 		"""
 
@@ -66,12 +67,15 @@ rule filter_extract_chromosome:
 	wildcard_constraints:
 		callset = "panel|pangenie_all-samples_unfiltered|pangenie_unrelated-samples_unfiltered"
 	resources:
-		mem_mb = 50000
+		mem_mb = 50000,
+		walltime = "02:00:00"
 	conda:
 		"../envs/genotyping.yml"
+	params:
+		tags = lambda wildcards: "AN,AC,AF,AC_Hom,AC_Het" if wildcards.callset == "panel" else "AN,AC,AF,AC_Hom,AC_Het,'HGQ:1=count(GQ>=200)'" 
 	shell:
 		"""
-		bcftools view -r {wildcards.chrom} {input} | bcftools +fill-tags -Oz -o {output} -- -t AN,AC,AF,AF_Hom,AF_Het
+		bcftools view -r {wildcards.chrom} {input} | bcftools +fill-tags -Oz -o {output} -- -t {params.tags}
 		"""
 
 
@@ -96,7 +100,7 @@ rule filter_compute_mendelian_consistency:
 		walltime = "08:00:00"
 	shell:
 		"""
-		python3 workflow/scripts/evaluate-mendelian-consistency.py -vcf {input.vcf} -ped {input.trios} -samples {input.samples} -table {output} -column-prefix pangenie &> {log}
+		python3 workflow/scripts/evaluate-mendelian-consistency.py statistics -vcf {input.vcf} -ped {input.trios} -samples {input.samples} -table {output} -column-prefix pangenie &> {log}
 		"""
 
 
@@ -120,7 +124,7 @@ rule filter_compute_genotype_statistics:
 		column_prefix = lambda wildcards: callset_to_prefix[wildcards.callset]
 	shell:
 		"""
-		zcat {input} | python3 workflow/scripts/collect-vcf-stats.py -outname {output} -column_prefix {params.column_prefix} {params.flag}
+		zcat {input} | python3 workflow/scripts/collect-vcf-stats.py -outname {output} -column-prefix {params.column_prefix} {params.flag}
 		"""
 
 rule filter_self_genotyping_statistics:
@@ -139,7 +143,7 @@ rule filter_self_genotyping_statistics:
 		"{results}/filtering/pangenie_all-samples_unfiltered_self-genotyping_{chrom}.log"
 	resources:
 		mem_mb = 60000,
-		walltime = "02:00:00",
+		walltime = "05:00:00",
 	shell:
 		"""
 		python3 workflow/scripts/evaluate-self-genotyping.py {input.panel} {input.genotypes} {output} {input.samples} pangenie_self-genotyping &> {log}
@@ -252,20 +256,18 @@ rule filter_final_callsets:
 		filters = "{results}/filtering/pangenie_filters.tsv",
 		fai = REFERENCE + ".fai"
 	output:
-		tmp = temp("{results}/filtering/tmp-pangenie_all-samples_{filter}.vcf.gz"),
-		vcf = "{results}/filtering/pangenie_all-samples_{filter}.vcf.gz"
+		tmp = temp("{results}/filtering/tmp-pangenie_all-samples_filtered.vcf.gz"),
+		vcf = "{results}/filtering/pangenie_all-samples_filtered.vcf.gz"
 	benchmark:
-		"{results}/filtering/pangenie_all-samples_{filter}.benchmark.txt"
+		"{results}/filtering/pangenie_all-samples_filtered.benchmark.txt"
 	resources:
 		mem_mb = 20000,
 		walltime = "05:00:00"
-	wildcard_constraints:
-		filter = "lenient|strict"
 	conda:
 		"../envs/genotyping.yml"
 	shell:
 		"""
-		zcat {input.vcf} | python3 workflow/scripts/select_ids.py {input.filters} {wildcards.filter} | bgzip -c > {output.tmp} 
+		zcat {input.vcf} | python3 workflow/scripts/select_ids.py {input.filters} lenient | bgzip -c > {output.tmp} 
 		bcftools reheader --fai {input.fai} {output.tmp} > {output.vcf}
 		tabix -p vcf {output.vcf}
 		"""
