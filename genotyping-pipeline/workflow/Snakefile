@@ -8,6 +8,17 @@ include: "rules/prepare-mc-vcf.smk"
 include: "rules/filter-genotypes.smk"
 include: "rules/genotype-cohort.smk"
 include: "rules/merge-vcfs.smk"
+include: "rules/phase-genotypes.smk"
+include: "rules/create-consensus-haplotypes.smk"
+
+
+def input_phasing(wildcards):
+	results = []
+	if MAPS:
+		results.extend(expand("{results}/phasing/pangenie_all-samples_filtered_shapeit.bcf", results = config["outname"]))
+		results.extend(expand("{results}/unpolished-haplotypes/pangenie_all-samples_filtered_unpolished.agc", results = config["outname"]))
+	return results 
+
 
 rule all:
 	input:
@@ -15,7 +26,8 @@ rule all:
 		expand("{results}/genotyping/merge-regions/pangenie_{region}_genotypes_deleted.txt", results = config["outname"], region = MERGING_REGIONS),
 		expand("{results}/filtering/all_genotyping_statistics.tsv", results = config["outname"]),
 		expand("{results}/filtering/pangenie_plot.log", results = config["outname"]),
-		expand("{results}/filtering/pangenie_all-samples_{filter}.vcf.gz", results = config["outname"], filter="filtered")
+		expand("{results}/filtering/pangenie_all-samples_{filter}.vcf.gz", results = config["outname"], filter="filtered"),
+		input_phasing
 
 rule prepare_mc_vcf:
 	input:
@@ -31,3 +43,6 @@ rule filtering:
 		expand("{results}/filtering/all_genotyping_statistics.tsv", results = config["outname"]),
 		expand("{results}/filtering/pangenie_plot.log", results = config["outname"]),
 		expand("{results}/filtering/pangenie_all-samples_{filter}.vcf.gz", results = config["outname"], filter="filtered")
+rule phasing:
+	input:
+		input_phasing

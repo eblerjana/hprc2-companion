@@ -1,0 +1,5 @@
+include: "rules/parse-inputs.smk"
+
+
+rule all:
+	input:

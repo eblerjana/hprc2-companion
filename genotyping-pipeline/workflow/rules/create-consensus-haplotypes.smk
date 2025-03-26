@@ -22,20 +22,20 @@ rule consensus_compute_consensus:
 		walltime = "04:00:00"
 	shell:
 		"""
-		bcftools consensus --sample {wildcards.sample} --haplotype {wildcards.haplotype} -e 'ALT~\"<.*>\"' -f {input.reference} {input.vcf} 2> {log} | bgzip > {output.fasta_gz}
+		bcftools consensus --sample {wildcards.sample} --haplotype {wildcards.haplotype} -e 'ALT~\"<.*>\"' -f {input.reference} {input.vcf} 2> {log} | bgzip > {output}
 		"""
 
 
 rule consensus_compress_haplotypes:
 	input:
-		genomes = expand("{results}/unpolished-haplotypes/{{callset}}/{{callset}}_unpolished_{sample}_hap{haplotype}.fasta.gz", sample = ILLUMINA.keys() , haplotype = ["1", "2"]),
+		genomes = expand("{{results}}/unpolished-haplotypes/{{callset}}/{{callset}}_unpolished_{sample}_hap{haplotype}.fasta.gz", sample = ILLUMINA.keys() , haplotype = ["1", "2"]),
 		reference = REFERENCE
 	output:
-		"{results}/unpolished-haplotypes/{callset}_unpolished_{sample}.agc"
+		"{results}/unpolished-haplotypes/{callset}_unpolished.agc"
 	log:
-		"{results}/unpolished-haplotypes/{callset}_unpolished_{sample}.log"
+		"{results}/unpolished-haplotypes/{callset}_unpolished.log"
 	benchmark:
-		"{results}/unpolished-haplotypes/{callset}_unpolished_{sample}.benchmark.txt"
+		"{results}/unpolished-haplotypes/{callset}_unpolished.benchmark.txt"
 	conda:
 		"../envs/agc.yaml"
 	resources:

@@ -54,7 +54,7 @@ for line in open(SAMPLE_SHEET, 'r'):
 #	ONT[fields[1]] = fields[8]
 #	assert os.path.isfile(fields[8]), "File " + fields[8] + " does not exist."
 
-
+MAPS = config["maps"]
 # parse chromosomes and define regions needed for merging
 CHROMOSOMES = []
 MERGING_REGIONS = []

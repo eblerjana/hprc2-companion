@@ -1,0 +1,18 @@
+
+
+consensus_haplotypes:
+        callset1:
+                agc: ""
+                names: ""
+
+phased_vcfs:
+        callset2:
+                vcf: ""
+                reference: ""
+
+unphased_vcfs:
+        callset3:
+                vcf: ""
+                reference: ""
+                sample_sheet: ""
+                genetic_maps: {}

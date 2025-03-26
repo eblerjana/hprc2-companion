@@ -34,7 +34,7 @@ def plot(df, variant_types, metrics, outname):
 
 				# create plots
 				with PdfPages(outname + '_' + name + '_' + filter + '_' + region + '.pdf') as pdf:
-					ids_autosomes = set([i for i in ids_region if not ("X" in i) and not ("Y" in i)])
+					ids_autosomes = set([i for i in ids_region if not ("X" in i.split('-')[0]) and not ("Y" in i.split('-')[0])])
 				
 					if filter == 'unfiltered':
 						df_sub = df[df.variant_id.isin(ids_region)]
@@ -319,7 +319,7 @@ if __name__ == "__main__":
 				scaler.fit_transform(x)
 
 				# Train model only on labeled points
-				autosomal_ids = [i for i in info[0] if not ("X" in i) and not ("Y" in i)]
+				autosomal_ids = [i for i in info[0] if not ("X" in i.split('-')[0]) and not ("Y" in i.split('-')[0])]
 				df_labeled = df_sub[df.variant_id.isin(autosomal_ids) & (df_sub.target != 0)]
 				x = scaler.transform(df_labeled.loc[:,features].values)
 				y = df_labeled.loc[:,['target']].values

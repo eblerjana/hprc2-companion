@@ -26,6 +26,9 @@ properties:
   sample-info:
     type: string
     description: Path to sample sheet
+  maps:
+    type: object
+    default: {}
 
 required:
   - reference

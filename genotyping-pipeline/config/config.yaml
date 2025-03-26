@@ -15,3 +15,30 @@ reference: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/data/fasta/CHM13v
 sample-sheet: "1kg-reads-updated.tsv" 
 # name of the output folder
 outname: "results-test"
+
+
+# genetic maps to be used for phasing.
+maps: {}
+# chr10: inputs/chr10.t2t.gmap.resorted.gmap.gz
+# chr11: inputs/chr11.t2t.gmap.resorted.gmap.gz
+# chr12: inputs/chr12.t2t.gmap.resorted.gmap.gz
+# chr13: inputs/chr13.t2t.gmap.resorted.gmap.gz
+# chr14: inputs/chr14.t2t.gmap.resorted.gmap.gz
+# chr15: inputs/chr15.t2t.gmap.resorted.gmap.gz
+# chr16: inputs/chr16.t2t.gmap.resorted.gmap.gz
+# chr17: inputs/chr17.t2t.gmap.resorted.gmap.gz
+# chr18: inputs/chr18.t2t.gmap.resorted.gmap.gz
+# chr19: inputs/chr19.t2t.gmap.resorted.gmap.gz
+# chr1: inputs/chr1.t2t.gmap.resorted.gmap.gz
+# chr20: inputs/chr20.t2t.gmap.resorted.gmap.gz
+# chr21: inputs/chr21.t2t.gmap.resorted.gmap.gz
+# chr22: inputs/chr22.t2t.gmap.resorted.gmap.gz
+# chr2: inputs/chr2.t2t.gmap.resorted.gmap.gz
+# chr3: inputs/chr3.t2t.gmap.resorted.gmap.gz
+# chr4: inputs/chr4.t2t.gmap.resorted.gmap.gz
+# chr5: inputs/chr5.t2t.gmap.resorted.gmap.gz
+# chr6: inputs/chr6.t2t.gmap.resorted.gmap.gz
+# chr7: inputs/chr7.t2t.gmap.resorted.gmap.gz
+# chr8: inputs/chr8.t2t.gmap.resorted.gmap.gz
+# chr9: inputs/chr9.t2t.gmap.resorted.gmap.gz
+# chrX: inputs/chrX.t2t.gmap.resorted.gmap.gz
