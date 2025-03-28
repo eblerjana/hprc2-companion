@@ -5,10 +5,10 @@ rule consensus_compute_consensus:
 	Insert all variants into the reference genome to produce haplotypes.
 	"""
 	input:
-		lambda wildcards: PHASED_VCFS[wildcards.callset]["vcf"]
-		reference = PHASED_VCFS[wildcards.callset]["reference"]
+		vcf = lambda wildcards: PHASED_VCFS[wildcards.callset]["vcf"],
+		reference = lambda wildcards: PHASED_VCFS[wildcards.callset]["reference"]
 	output:
-		"{results}/haplotypes/{callset}/{callset}_{sample}_hap{haplotype}.fasta.gz"
+		temp("{results}/haplotypes/{callset}/{callset}_{sample}_hap{haplotype}.fasta.gz")
 	log:
 		"{results}/haplotypes/{callset}/{callset}_{sample}_hap{haplotype}.log"
 	benchmark:
@@ -28,8 +28,8 @@ rule consensus_compute_consensus:
 
 rule consensus_compress_haplotypes:
 	input:
-		genomes = lambda wildcards: expand("{{results}}/haplotypes/{{callset}}/{{callset}}_{sample}_hap{haplotype}.fasta.gz", sample = PHASED_VCFS[wildcards.callset]["samples"] , haplotype = ["1", "2"]),
-		reference = PHASED_VCFS[wildcards.callset]["reference"]
+		genomes = lambda wildcards: expand("{{results}}/haplotypes/{{callset}}/{{callset}}_{sample}_hap{haplotype}.fasta.gz", sample = SAMPLES[wildcards.callset], haplotype = ["1", "2"]),
+		reference = lambda wildcards: PHASED_VCFS[wildcards.callset]["reference"]
 	output:
 		"{results}/haplotypes/{callset}.agc"
 	log:
@@ -46,10 +46,3 @@ rule consensus_compress_haplotypes:
 		"""
 		agc create {input.reference} {input.genomes} -o {output} -t {threads} &> {log}
 		"""
-
-
-rule consensus_name_list:
-	input:
-	output:
-	shell:
-

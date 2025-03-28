@@ -1,20 +1,20 @@
 
 # Optional: PanGenie ready VCFs
-panel_bi: "" #"/gpfs/project/projects/medbioinf/users/ebler/hprc2/preliminary-experiments/prepare-vcf-MC/results-2-mc-chm13-eval-nov22/vcf/mc-chm13-eval-nov22/mc-chm13-eval-nov22_filtered_ids_biallelic.vcf.gz"
-panel_multi: "" #"/gpfs/project/projects/medbioinf/users/ebler/hprc2/preliminary-experiments/prepare-vcf-MC/results-2-mc-chm13-eval-nov22/vcf/mc-chm13-eval-nov22/mc-chm13-eval-nov22_filtered_ids.vcf.gz"
+panel_bi: ""
+panel_multi: ""
 
 # Optional: Minigraph Cactus GFA/VCF
-mc_vcf: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/data/vcfs/hprc-v2.prerelease.2-mc-chm13-eval-nov22.vcf.gz"
-mc_gfa: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/data/vcfs/hprc-v2.prerelease.2-mc-chm13-eval-nov22.gfa.gz"
+mc_vcf: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/hprc-v2.0-mc-chm13.vcf.gz"
+mc_gfa: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/hprc-v2.0-mc-chm13.gfa.gz"
 samples_to_exclude:
         - GRCh38
 
 # reference genome
-reference: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/data/fasta/CHM13v11Y.fa"
+reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/chm13v2.0_maskedY_rCRS.fa"
 # sample sheet
-sample-sheet: "1kg-reads-updated.tsv" 
+sample-sheet: "1kg-hprc2-sample-sheet.tsv" 
 # name of the output folder
-outname: "results-test"
+outname: "results-hprc2"
 
 
 # genetic maps to be used for phasing.

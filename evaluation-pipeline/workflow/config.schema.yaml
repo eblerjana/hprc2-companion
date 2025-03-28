@@ -10,3 +10,12 @@ properties:
   unphased_vcfs:
     type: object
     default: {}
+  outname:
+    type: string
+    default: "results"
+  assemblies:
+    type: string
+
+required:
+   - assemblies
+   

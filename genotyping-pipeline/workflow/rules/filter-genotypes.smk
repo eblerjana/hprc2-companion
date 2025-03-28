@@ -240,7 +240,7 @@ rule filter_plot_statistics:
 	conda:
 		'../envs/plotting.yml'
 	resources:
-		mem_mb = 50000,
+		mem_mb = 100000,
 		walltime = "05:00:00"
 	shell:
 		"python3 workflow/scripts/regression.py -t {input} -o {params.outprefix} -n {params.threshold} --plot-only &> {output}"
@@ -262,7 +262,7 @@ rule filter_final_callsets:
 		"{results}/filtering/pangenie_all-samples_filtered.benchmark.txt"
 	resources:
 		mem_mb = 20000,
-		walltime = "05:00:00"
+		walltime = "12:00:00"
 	conda:
 		"../envs/genotyping.yml"
 	shell:

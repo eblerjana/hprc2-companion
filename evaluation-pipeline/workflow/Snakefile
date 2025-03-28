@@ -1,5 +1,39 @@
+from snakemake.utils import validate
+
+configfile: "config/config.yaml"
+validate(config, "config.schema.yaml")
+
+
+include: "rules/validate-inputs.smk"
 include: "rules/parse-inputs.smk"
+include: "rules/create-consensus-haplotypes.smk"
+include: "rules/extract-consensus-fasta.smk"
+include: "rules/phase-genotypes.smk"
+include: "rules/run-pav.smk"
+include: "rules/evaluate.smk"
+
+
+def consensus_files(wildcards):
+	result = []
+	for callset in SAMPLES:
+		for sample in SAMPLES[callset]:
+			result.extend(expand("{results}/evaluation/{callset}/{sample}_{haplotype}/{sample}_{haplotype}_consensus.fa.gz", results = OUTNAME, callset = callset, sample = sample, haplotype = ["hap1", "hap2"]))
+	return result
+
+
+def sample_specific_results(wildcards):
+	result = []
+	for callset in SAMPLES:
+		for sample in SAMPLES[callset]:
+			result.extend(expand("{results}/evaluation/pav_{callset}_{sample}_{haplotype}/run.complete", results = OUTNAME, callset = callset, sample = sample, haplotype = ["hap1", "hap2"])),
+			result.extend(expand("{results}/evaluation/qvs/plots/{callset}_{sample}_{haplotype}_{which}.pdf", results = OUTNAME, callset = callset, sample = sample, haplotype = ["hap1", "hap2"], which = ["all", "err"])),
+			result.extend(expand("{results}/evaluation/qvs/plots/{callset}_{sample}_{haplotype}_scores.pdf", results = OUTNAME, callset = callset, sample = sample, haplotype = ["hap1", "hap2"]))
+	return result
+	
 
 
 rule all:
 	input:
+		consensus_files,
+		sample_specific_results,
+		expand("{results}/evaluation/qvs/{callset}-stats.tsv", results = OUTNAME, callset = SAMPLES.keys())

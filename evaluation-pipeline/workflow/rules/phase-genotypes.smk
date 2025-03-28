@@ -86,7 +86,7 @@ rule shapeit_concat_vcfs:
 	Combine the phased per-chromosome VCFs into a single one.
 	"""
 	input:
-		expand("{{results}}/phasing/{{callset}}_shapeit_{chrom}.bcf", chrom = [c for c in UNPHASED_VCFS[wildcards.callset]["genetic_maps"].keys()])
+		lambda wildcards: expand("{{results}}/phasing/{{callset}}_shapeit_{chrom}.bcf", chrom = [c for c in UNPHASED_VCFS[wildcards.callset]["genetic_maps"].keys()])
 	output:
 		"{results}/phasing/{callset}_shapeit.bcf"
 	conda:

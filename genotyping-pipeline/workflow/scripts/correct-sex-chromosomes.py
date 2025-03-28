@@ -40,7 +40,7 @@ for line in gzip.open(args.vcf, 'rt'):
 
 
 # read the VCF again and correct genotypes on chrX and chrY 
-sample_to_sex = {s.strip().split()[0] : s.strip().split()[1] for s in open(args.sample_info, 'r')}
+sample_to_sex = {s.strip().split()[1] : s.strip().split()[4] for s in open(args.sample_info, 'r')}
 
 sys.stderr.write('chrX\n')
 for k,v in alleles_per_haplotype_chrX.items():
