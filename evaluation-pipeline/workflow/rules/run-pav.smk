@@ -34,7 +34,7 @@ rule prepare_pav_contig:
 		with open(output.json, 'w') as outfile:
 			outfile.write("{\n")
 			outfile.write("\t\"reference\": \"ref.fa.gz\",\n")
-			outfile.write("\t\"no_link_qry\": \"True\"\n")
+		#	outfile.write("\t\"no_link_qry\": \"True\"\n")
 			outfile.write("}\n")
 
 

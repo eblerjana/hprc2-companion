@@ -9,7 +9,7 @@ rule shapeit_extract_males:
 	output:
 		"{results}/phasing/{callset}_haploid-samples.txt"
 	shell:
-		"awk '$5==1' {input} > {output}"
+		"awk '$5==1' {input} | cut -f 2 > {output}"
 
 
 

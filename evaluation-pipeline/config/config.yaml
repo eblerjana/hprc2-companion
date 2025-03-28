@@ -1,23 +1,34 @@
 
 
-consensus_haplotypes:
-        callset1:
-                agc: "test.vcf.gz"
-                names: "test.tsv"
-
-phased_vcfs:
-        callset2:
-                vcf: "test.vcf.gz"
-                reference: "test.vcf.gz"
-
 unphased_vcfs:
         callset3:
-                reference: "test.vcf.gz"
-                sample_sheet: "test.vcf.gz"
+                reference: "/gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/reference/chm13v2.0.fa"
+                sample_sheet: "1kg-reads-updated.tsv"
                 genetic_maps:
-                      chr1: "test.vcf.gz"
-                vcf: "test.vcf.gz"
+                         chr10: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr10.t2t.gmap.resorted.gmap.gz
+                         chr11: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr11.t2t.gmap.resorted.gmap.gz
+                         chr12: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr12.t2t.gmap.resorted.gmap.gz
+                         chr13: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr13.t2t.gmap.resorted.gmap.gz
+                         chr14: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr14.t2t.gmap.resorted.gmap.gz
+                         chr15: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr15.t2t.gmap.resorted.gmap.gz
+                         chr16: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr16.t2t.gmap.resorted.gmap.gz
+                         chr17: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr17.t2t.gmap.resorted.gmap.gz
+                         chr18: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr18.t2t.gmap.resorted.gmap.gz
+                         chr19: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr19.t2t.gmap.resorted.gmap.gz
+                         chr1: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr1.t2t.gmap.resorted.gmap.gz
+                         chr20: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr20.t2t.gmap.resorted.gmap.gz
+                         chr21: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr21.t2t.gmap.resorted.gmap.gz
+                         chr22: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr22.t2t.gmap.resorted.gmap.gz
+                         chr2: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr2.t2t.gmap.resorted.gmap.gz
+                         chr3: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr3.t2t.gmap.resorted.gmap.gz
+                         chr4: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr4.t2t.gmap.resorted.gmap.gz
+                         chr5: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr5.t2t.gmap.resorted.gmap.gz
+                         chr6: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr6.t2t.gmap.resorted.gmap.gz
+                         chr7: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr7.t2t.gmap.resorted.gmap.gz
+                         chr8: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr8.t2t.gmap.resorted.gmap.gz
+                         chr9: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chr9.t2t.gmap.resorted.gmap.gz
+                         chrX: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chrX.t2t.gmap.resorted.gmap.gz
+                vcf: "/gpfs/project/projects/medbioinf/users/ebler/hgsvc3/experiments/genotyping-1kg/results/benchmarking-pipeline/population-typing/MC-hgsvc3-hprc-chm13/pangenie-108/full/merged-vcfs/filtered/all-samples_bi_all_lenient.vcf.gz"
 
-
-outname: "results"
+outname: "results-test"
 assemblies: "assemblies.tsv"
