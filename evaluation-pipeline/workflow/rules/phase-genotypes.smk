@@ -71,8 +71,8 @@ rule shapeit_phase_common:
 		"../envs/shapeit.yaml"
 	threads: 32
         resources:
-		mem_total_mb = 200000, # 100000
-		runtime_hrs = 30
+		mem_mb = 200000, # 100000
+		walltime = "30:00:00"
 	params:
 		haploids = lambda wildcards: "--haploids " + "{results}/phasing/{callset}_haploid-samples.txt".format(results = wildcards.results, callset = wildcards.callset)  if ("X" in wildcards.chrom) or ("Y" in wildcards.chrom) else ""
 	shell:

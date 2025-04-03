@@ -123,6 +123,6 @@ rule mc_norm_biallelic:
 		walltime = "06:00:00"
 	shell:
 		"""
-		bcftools norm -f {input.reference} {input.biallelic} -Oz -o {output}
+		bcftools norm -f {input.reference} {input.biallelic} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}'| bgzip > {output}
 		tabix -p vcf {output}
 		"""

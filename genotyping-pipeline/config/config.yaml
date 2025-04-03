@@ -14,7 +14,7 @@ reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/comp
 # sample sheet
 sample-sheet: "1kg-hprc2-sample-sheet.tsv" 
 # name of the output folder
-outname: "results-hprc2"
+outname: "results-hprc2-full"
 
 
 # genetic maps to be used for phasing.

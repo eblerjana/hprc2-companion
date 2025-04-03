@@ -1,9 +1,9 @@
 
 # PanGenie inputs
-panel_bi: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/preliminary-experiments/prepare-vcf-MC/results-2-mc-chm13-eval-nov22/vcf/mc-chm13-eval-nov22/mc-chm13-eval-nov22_filtered_ids_biallelic.vcf.gz"
-panel_multi: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/preliminary-experiments/prepare-vcf-MC/results-2-mc-chm13-eval-nov22/vcf/mc-chm13-eval-nov22/mc-chm13-eval-nov22_filtered_ids.vcf.gz"
-reference: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/data/fasta/CHM13v11Y.fa"
-sample-info: "1kg-reads-updated.tsv" 
+panel_bi: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2/mc-vcf/mc_filtered_ids_biallelic.vcf.gz"
+panel_multi: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2/mc-vcf/mc_filtered_ids.vcf.gz"
+reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/chm13v2.0_maskedY_rCRS.fa"
+sample-info: "1kg-hprc2-sample-sheet.tsv"
 
 avg_illumina_cov: 30
 
@@ -61,7 +61,7 @@ subsetting_sizes:
 evaluation_regions: {}
 
 # name of the output folder
-outname: "results-hprc2-4944555"
+outname: "results-hprc2"
 
 
 ###### Parameters and files for external callset evaluation step #####
@@ -69,19 +69,19 @@ outname: "results-hprc2-4944555"
 ## optional. Set to {} if not provided.
 external_callsets:
         PAV-hgsvc3:
-                vcf: "input-data/variants_T2T-CHM13_sv_insdel_alt_HGSVC2024v1.0.vcf.gz"
+                vcf: "input-data/variants_T2T-CHM13_sv_insdel_alt_HGSVC2024v1.0.HG002.vcf.gz"
                 callable_regions: "input-data/chm13.bed"
                 variants: ["sv"]
                 evaluation_samples:
-                        - NA24385
+                        - HG002
         GIAB-draft-HG002:
-                vcf: "input-data/CHM13v2.0_HG2-T2TQ100-V1.1_stvar.NA24385.vcf.gz"
+                vcf: "input-data/CHM13v2.0_HG2-T2TQ100-V1.1_stvar.vcf.gz"
                 callable_regions: "input-data/CHM13v2.0_HG2-T2TQ100-V1.1_stvar.benchmark.bed"
                 variants: ["sv"]
                 evaluation_samples:
-                        - NA24385
+                        - HG002
         MC-wave:
-                vcf: "/gpfs/project/projects/medbioinf/users/ebler/hprc2/data/vcfs/hprc-v2.prerelease.2-mc-chm13-eval-nov22.wave.vcf.gz"
+                vcf: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/hprc-v2.0-mc-chm13.wave.vcf.gz"
                 callable_regions: "input-data/chm13.bed"
                 variants: ["sv"]
                 evaluation_samples:
