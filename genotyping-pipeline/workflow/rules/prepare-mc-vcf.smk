@@ -81,7 +81,7 @@ rule mc_annotate_vcf:
 	output:
 		multi = "{results}/mc-vcf/mc_filtered_ids.vcf.gz",
 		multi_tmp = temp("{results}/mc-vcf/mc_filtered_ids-tmp.vcf"),
-		biallelic = "{results}/mc-vcf/mc_filtered_ids_biallelic_no-norm.vcf.gz",
+		biallelic = "{results}/mc-vcf/mc_filtered_ids_biallelic.vcf.gz",
 		bi_tmp = temp("{results}/mc-vcf/mc_filtered_ids-tmp_biallelic.vcf")
 	log:
 		"{results}/mc-vcf/mc_decomposition.log"
@@ -108,10 +108,10 @@ rule mc_norm_biallelic:
 	Normalize decomposed VCF.
 	"""
 	input:
-		biallelic = "{results}/mc-vcf/mc_filtered_ids_biallelic_no-norm.vcf.gz",
+		biallelic = "{results}/mc-vcf/mc_filtered_ids_biallelic.vcf.gz",
 		reference = REFERENCE,
 	output:
-		"{results}/mc-vcf/mc_filtered_ids_biallelic.vcf.gz"
+		"{results}/mc-vcf/mc_filtered_ids_biallelic_norm.vcf.gz"
 	log:
 		"{results}/mc-vcf/mc_normalization.log"
 	benchmark:

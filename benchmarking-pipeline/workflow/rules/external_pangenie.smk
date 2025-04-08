@@ -56,7 +56,7 @@ rule external_pangenie_genotype_subset:
 	log:
 		"{results}/external-calls/pangenie-subset-{size}/{sample}/{sample}_pangenie-subset-{size}_multi_genotyping.log"
 	resources:
-		mem_mb = 100000,
+		mem_mb = 120000,
 		walltime = "10:00:00"
 	params:
 		index = "{results}/external-calls/pangenie/index/index",
@@ -85,7 +85,7 @@ rule external_pangenie_genotype_sampling:
 	log:
 		"{results}/external-calls/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_genotyping.log"
 	resources:
-		mem_mb = 60000,
+		mem_mb = 70000,
 		walltime = "3:00:00"
 	wildcard_constraints:
 		size = "[0-9,-.,x]+"

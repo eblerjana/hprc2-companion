@@ -101,7 +101,7 @@ rule shapeit_concat_vcfs:
 		"{results}/phasing/{callset}_shapeit.log"
 	shell:
 		"""
-		bcftools concat -o {output} -O z --threads {threads} {input} &> {log}
-		tabix -p vcf {output}
+		bcftools concat -o {output} -Ob  --threads {threads} {input} &> {log}
+		bcftools index {output}
 		"""
 

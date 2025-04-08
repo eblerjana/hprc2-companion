@@ -17,8 +17,8 @@ rule leave_one_out_pangenie_index:
 	log:
 		"{results}/leave-one-out/pangenie/index-{sample}.log"
 	resources:
-		mem_mb = 110000,
-		walltime = "4:00:00"
+		mem_mb = 160000,
+		walltime = "6:00:00"
 	threads: 24
 	params:
 		out_prefix = "{results}/leave-one-out/pangenie/index-{sample}/index"
@@ -45,7 +45,7 @@ rule leave_one_out_pangenie_genotype_subset:
 	log:
 		"{results}/leave-one-out/pangenie-subset-{size}/{sample}/{sample}_pangenie-subset-{size}_multi_genotyping.log"
 	resources:
-		mem_mb = 100000,
+		mem_mb = 120000,
 		walltime = "10:00:00"
 	params:
 		index = "{results}/leave-one-out/pangenie/index-{sample}/index",
@@ -76,7 +76,7 @@ rule leave_one_out_pangenie_genotype_sampling:
 	log:
 		"{results}/leave-one-out/pangenie-sampled-{size}/{sample}/{sample}_pangenie-sampled-{size}_multi_genotyping.log"
 	resources:
-		mem_mb = 60000,
+		mem_mb = 70000,
 		walltime = "3:00:00"
 	wildcard_constraints:
 		size = "[0-9,-.,x]+"

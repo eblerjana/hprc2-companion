@@ -1,7 +1,7 @@
 
 # PanGenie inputs
-panel_bi: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2/mc-vcf/mc_filtered_ids_biallelic.vcf.gz"
-panel_multi: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2/mc-vcf/mc_filtered_ids.vcf.gz"
+panel_bi: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/mc-vcf/mc_filtered_ids_biallelic.vcf.gz"
+panel_multi: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/mc-vcf/mc_filtered_ids.vcf.gz"
 reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/chm13v2.0_maskedY_rCRS.fa"
 sample-info: "1kg-hprc2-sample-sheet.tsv"
 
@@ -61,7 +61,7 @@ subsetting_sizes:
 evaluation_regions: {}
 
 # name of the output folder
-outname: "results-hprc2"
+outname: "results-hprc2-full"
 
 
 ###### Parameters and files for external callset evaluation step #####

@@ -28,7 +28,9 @@ for line in gzip.open(args.vcf, 'rt'):
 	ids = info_field['ID'].split(',')
 	assert len(ids) == len(alleles)
 	for allele, id in zip(alleles, ids):
-		assert not allele in pos_to_alleles[(chrom, pos, fields[3])]
+		if allele in pos_to_alleles[(chrom, pos, fields[3])]:
+			print(chrom, pos, fields[3])
+		assert (not allele in pos_to_alleles[(chrom, pos, fields[3])])
 		pos_to_alleles[(chrom, pos, fields[3])][allele] = id
 		alleles_read += 1
 sys.stderr.write('Read ' + str(alleles_read) + ' alleles/ids from ' + args.vcf + '.\n')
