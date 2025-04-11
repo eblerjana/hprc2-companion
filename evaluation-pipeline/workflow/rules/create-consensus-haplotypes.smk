@@ -41,7 +41,7 @@ rule consensus_compress_haplotypes:
 	resources:
 		mem_mb = 30000,
 		walltime = "20:00:00"
-	threads: 32
+	threads: 1 # 32
 	shell:
 		"""
 		agc create {input.reference} {input.genomes} -o {output} -t {threads} &> {log}
