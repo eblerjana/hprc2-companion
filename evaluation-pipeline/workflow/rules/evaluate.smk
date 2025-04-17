@@ -1,7 +1,7 @@
 
 rule evaluate_calls:
 	input:
-		vcf = "{results}/evaluation/pav_{callset}_{sample}_{haplotype}/{sample}_{haplotype}.vcf.gz",
+		vcf = "{results}/evaluation/pav_{callset}_{sample}_{haplotype}/{callset}_{sample}_{haplotype}.vcf.gz",
 		hap1 = "{results}/evaluation/{callset}/{sample}_hap1/{sample}_hap1_consensus.fa.gz",
 		hap2 = "{results}/evaluation/{callset}/{sample}_hap2/{sample}_hap2_consensus.fa.gz"
 	output:

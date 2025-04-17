@@ -36,12 +36,12 @@ rule genotyping_pangenie_index:
 		vcf = "{results}/genotyping/panel-multi.vcf",
 		fasta = REFERENCE,
 	output:
-		temp(directory("{results}/genotyping/pangenie/index/"))
+		directory("{results}/genotyping/pangenie/index/")
 	log:
 		"{results}/genotyping/pangenie/index.log"
 	resources:
-		mem_mb = 110000,
-		walltime = "4:00:00"
+		mem_mb = 200000,
+		walltime = "7:00:00"
 	threads: 24
 	params:
 		out_prefix = "{results}/genotyping/pangenie/index/index"

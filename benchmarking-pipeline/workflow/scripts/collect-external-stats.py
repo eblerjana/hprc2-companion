@@ -63,12 +63,13 @@ def print_data(data, truthset, region, filters, samples, vartypes, genotypers, o
 		outfile.write('\t'.join(['truthset', 'region', 'filter', 'genotyper', 'vartype', 'sample', 'precision', 'recall', 'fscore', 'gt_concordance']) + '\n')
 		for filter in filters:
 			for vartype in vartypes:
-				for genotyper in genotypers:
-					precision = data[(truthset, region, filter, sample, vartype, genotyper)][0] 
-					recall = data[(truthset, region, filter, sample, vartype, genotyper)][1]
-					fscore = data[(truthset, region, filter, sample, vartype, genotyper)][2]
-					concordance = data[(truthset, region, filter, sample, vartype, genotyper)][3]
-					outfile.write('\t'.join([truthset, region, filter, genotyper, vartype, sample, str(precision), str(recall), str(fscore), str(concordance)]) + '\n')
+				for sample in samples:
+					for genotyper in genotypers:
+						precision = data[(truthset, region, filter, sample, vartype, genotyper)][0] 
+						recall = data[(truthset, region, filter, sample, vartype, genotyper)][1]
+						fscore = data[(truthset, region, filter, sample, vartype, genotyper)][2]
+						concordance = data[(truthset, region, filter, sample, vartype, genotyper)][3]
+						outfile.write('\t'.join([truthset, region, filter, genotyper, vartype, sample, str(precision), str(recall), str(fscore), str(concordance)]) + '\n')
 
 
 	

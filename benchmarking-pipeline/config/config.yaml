@@ -87,4 +87,5 @@ external_callsets:
                 callable_regions: "input-data/chm13.bed"
                 variants: ["sv"]
                 evaluation_samples:
+                        - HG002
                         - HG01891 

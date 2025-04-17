@@ -12,9 +12,9 @@ samples_to_exclude:
 # reference genome
 reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/chm13v2.0_maskedY_rCRS.fa"
 # sample sheet
-sample-sheet: "1kg-hprc2-sample-sheet.tsv" 
+sample-sheet: "pilot-hprc2-sample-sheet.tsv" 
 # name of the output folder
-outname: "results-hprc2-full"
+outname: "results-hprc2-pilot"
 
 
 # genetic maps to be used for phasing.

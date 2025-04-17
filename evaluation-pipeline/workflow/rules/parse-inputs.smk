@@ -91,6 +91,6 @@ for callset in CONSENSUS_NAMES:
 
 print(CONSENSUS_NAMES)
 print(CONSENSUS_HAPLOTYPES)
-print(PHASED_VCFS)
-print(UNPHASED_VCFS)
-print(SAMPLES)
+#print(PHASED_VCFS)
+#print(UNPHASED_VCFS)
+#print(SAMPLES)

@@ -34,6 +34,8 @@ rule consensus_compress_haplotypes:
 		"{results}/haplotypes/{callset}.agc"
 	log:
 		"{results}/haplotypes/{callset}.log"
+	wildcard_constraints:
+		callset = "|".join([c for c in UNPHASED_VCFS.keys()] + [c for c in PHASED_VCFS.keys()])
 	benchmark:
 		"{results}/haplotypes/{callset}.benchmark.txt"
 	conda:

@@ -30,5 +30,11 @@ unphased_vcfs:
                          chrX: /gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/genetic-maps/chrX.t2t.gmap.resorted.gmap.gz
                 vcf: "/gpfs/project/projects/medbioinf/users/ebler/hgsvc3/experiments/genotyping-1kg/results/benchmarking-pipeline/population-typing/MC-hgsvc3-hprc-chm13/pangenie-108/full/merged-vcfs/filtered/all-samples_bi_all_lenient.vcf.gz"
 
+consensus_haplotypes:
+        callset1:
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/hgsvc3/experiments/phasing-1kg/results-with-rare/consensus-haplotypes/haplotypes/PanGenie-SHAPEIT/all/PanGenie-SHAPEIT_all_consensus-haplotypes.agc"
+                names: "test.tsv"
+
+
 outname: "results-test"
 assemblies: "assemblies.tsv"

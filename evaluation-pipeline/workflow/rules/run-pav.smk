@@ -49,7 +49,7 @@ rule run_pav:
 		fai = "{results}/evaluation/pav_{callset}_{sample}_{haplotype}/ref.fa.gz.fai"
 	output:
 		complete = "{results}/evaluation/pav_{callset}_{sample}_{haplotype}/run.complete",
-		vcf = "{results}/evaluation/pav_{callset}_{sample}_{haplotype}/{sample}_{haplotype}.vcf.gz"
+		vcf = "{results}/evaluation/pav_{callset}_{sample}_{haplotype}/{callset}_{sample}_{haplotype}.vcf.gz"
 	threads:
 		24
 	params:

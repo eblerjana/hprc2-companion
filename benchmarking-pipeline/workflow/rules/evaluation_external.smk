@@ -62,7 +62,8 @@ rule external_annotate_variants_callset:
 	input:
 		callset = lambda wildcards: EXTERNAL[wildcards.truthset]["vcf"],
 		panel = "{results}/external-calls/normalized-panel/panel_normalized.vcf.gz",
-		ref_index = REFERENCE + '.fai'
+		ref_index = REFERENCE + '.fai',
+		reference = REFERENCE
 	output:
 		vcf = "{results}/external-calls/evaluation/{truthset}/{evalsample}/truthset-{truthset}_{evalsample}_{vartype}.vcf.gz",
 		tbi = "{results}/external-calls/evaluation/{truthset}/{evalsample}/truthset-{truthset}_{evalsample}_{vartype}.vcf.gz.tbi"
@@ -73,7 +74,7 @@ rule external_annotate_variants_callset:
 		"../envs/genotyping.yml"
 	shell:
 		"""
-		bcftools norm -m -any {input.callset} | python3 workflow/scripts/fix-header.py {input.ref_index} | bcftools view --samples {wildcards.evalsample} | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | python3 workflow/scripts/annotate.py {input.panel} | bgzip -c > {output.vcf}
+		bcftools view --samples {wildcards.evalsample} {input.callset} | bcftools norm -m -any -f {input.reference} | python3 workflow/scripts/fix-header.py {input.ref_index} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}' | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | python3 workflow/scripts/annotate.py {input.panel} | bgzip -c > {output.vcf}
 		tabix -p vcf {output.vcf}
 		"""
 
@@ -319,7 +320,7 @@ rule external_truvari_callsets:
 	shell:
 		"""
 #		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick ac --passonly --includebed {input.regions} -r 2000 --no-ref a -C 5000 &> {log}
-		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick multi -r 1000 -C 1000 -s 50 -S 15 --sizemax 100000 -p 0.0 -P 0.3 -O 0.0 --passonly --no-ref a  &> {log}
+		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick multi -r 1000 -C 1000 -s 50 -S 15 --sizemax 100000 -p 0.0 -P 0.3 -O 0.0 --passonly --no-ref a --includebed {input.regions}  &> {log}
 		mv {params.tmp}/* {params.outname}/
 		cp {params.summary} {output.summary}
 		rm -r {params.tmp}
