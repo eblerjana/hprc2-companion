@@ -3206,4 +3206,7 @@ HG02486	HG02486	0	0	1	ACB	AFR	/gpfs/project/projects/medbioinf/data/hprc_illumin
 HG02559	HG02559	0	0	2	ACB	AFR	/gpfs/project/projects/medbioinf/data/hprc_illumina/HG02559/HG02559-111121_S3_L001.fastq.gz
 NA21309	NA21309	0	0	2	UNKNOWN	AFR	/gpfs/project/projects/medbioinf/data/hprc_plus/illumina/NA21309/AATGACGC-AATGACGC_S5_L001.fastq.gz
 HG002	HG002	0	0	1	UNKNOWN	UNKNOWN	/gpfs/project/projects/medbioinf/users/ebler/hprc/hprc-experiments/HG002-reads/NA24385.fasta.gz
+HG02109	HG02109	0	0	2	ACB	AFR	nan
+HG03471	HG03471	0	0	1	MSL	AFR	nan
+HG06807	HG06807	0	0	2	UNKNOWN	UNKNOWN	nan
 HG005	HG005	0	0	1	UNKNOWN	UNKNOWN	/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/reads/HG005.novaseq.pcr-free.30x.fastq.gz

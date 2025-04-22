@@ -21,6 +21,8 @@ rule filter_collect_samples:
 					continue
 				fields = line.strip().split()
 				sample = fields[1]
+				if fields[7] == "nan":
+					continue
 				all_samples.write(sample + '\n')
 				if (fields[2] == '0') and (fields[3] == '0'):
 					# unrelated sample

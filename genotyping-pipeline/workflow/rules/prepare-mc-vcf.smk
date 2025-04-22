@@ -43,7 +43,7 @@ rule mc_filter_vcf:
 		"{results}/mc-vcf/mc_filtered.benchmark.txt"
 	resources:
 		mem_mb=20000,
-		walltime="00:59:00"
+		walltime="01:59:00"
 	params:
 		exclude = ','.join(SAMPLES_TO_EXCLUDE),
 		min_frac = MIN_FRAC

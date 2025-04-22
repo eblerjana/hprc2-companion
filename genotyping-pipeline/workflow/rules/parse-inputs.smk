@@ -49,6 +49,8 @@ for line in open(SAMPLE_SHEET, 'r'):
 	if line.startswith("#"):
 		continue
 	fields = line.strip().split()
+	if fields[7] == "nan":
+		continue
 	ILLUMINA[fields[1]] = fields[7]
 	assert os.path.isfile(fields[7]), "File " + fields[7] + " does not exist."
 #	ONT[fields[1]] = fields[8]
