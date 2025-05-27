@@ -74,14 +74,14 @@ rule genotyping_pangenie_genotype_sampling:
 		index = "{results}/genotyping/pangenie/index/index",
 		out_prefix = "{results}/genotyping/pangenie/{sample}_pangenie_multi",
 	benchmark:
-		"{results}/genotyping/pangenie/{sample}/{sample}_pangenie.benchmark.txt"
+		"{results}/genotyping/pangenie/{sample}_pangenie.benchmark.txt"
 	threads:
 		24
 	singularity:
 		"workflow/container/pangenie.sif"
 	shell:
 		"""
-		PanGenie -f {params.index} -i <(gunzip -c {input.reads}) -o {params.out_prefix} -t {threads} -j {threads} &> {log}
+		PanGenie -f {params.index} -i <(gunzip -c {input.reads}) -o {params.out_prefix} -t {threads} -j {threads} -s {wildcards.sample}  &> {log}
 		"""
 
 
@@ -94,8 +94,7 @@ rule genotyping_convert_genotypes_to_biallelic:
 		biallelic = PANEL_BI
 	output:
 		bi = "{results}/genotyping/pangenie/{sample}_pangenie_bi_genotyping.vcf.gz",
-		bi_tbi = "{results}/genotyping/pangenie/{sample}_pangenie_bi_genotyping.vcf.gz.tbi",
-		multi = "{results}/genotyping/pangenie/{sample}_pangenie_multi_genotyping.vcf.gz"
+		bi_tbi = "{results}/genotyping/pangenie/{sample}_pangenie_bi_genotyping.vcf.gz.tbi"
 	conda:
 		"../envs/genotyping.yml"
 	resources:
@@ -103,7 +102,6 @@ rule genotyping_convert_genotypes_to_biallelic:
 	priority: 1
 	shell:
 		"""
-		bgzip -c {input.vcf} > {output.multi}
-		zcat {output.multi} | python3 workflow/scripts/convert-to-biallelic.py {input.biallelic} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' | bgzip > {output.bi}
+		cat {input.vcf} | python3 workflow/scripts/convert-to-biallelic.py {input.biallelic} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' | bgzip > {output.bi}
 		tabix -p vcf {output.bi}
 		"""

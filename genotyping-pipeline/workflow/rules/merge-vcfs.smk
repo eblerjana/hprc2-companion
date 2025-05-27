@@ -27,8 +27,8 @@ rule merge_by_region:
 	log:
 		"{results}/genotyping/merged-region-wise/pangenie_{region}_genotypes.log"
 	resources:
-		mem_mb = lambda wildcards, attempt: 50000 * attempt,
-		walltime = "03:00:00"
+		mem_mb = lambda wildcards, attempt: 500000 * attempt,
+		walltime = "15:00:00"
 	wildcard_constraints:
 		region = "chr[0-9A-Z]+:[0-9]+-[0-9]+"
 	threads: 12
@@ -38,7 +38,7 @@ rule merge_by_region:
 		"../envs/genotyping.yml"
 	shell:
 		"""
-		bcftools merge -r {wildcards.region} -l {input} --threads {threads} | bcftools +fill-tags -Oz -o {output.vcf} -- -t AN,AC,AF,AC_Hom,AC_Het &> {log}"
+		bcftools merge -r {wildcards.region} --regions-overlap 0 -l {input} --threads {threads} | bcftools +fill-tags -Oz -o {output.vcf} -- -t AN,AC,AF,AC_Hom,AC_Het &> {log}
 		tabix -p vcf {output.vcf}
 		"""
 
@@ -80,17 +80,18 @@ rule merge_concat_regions:
 		24
 	shell:
 		"""
-		bcftools concat -o {output} -O z -f {input.filelist} -t {threads} &> {log}
+		bcftools concat -o {output} -O z -f {input.filelist} --threads {threads} &> {log}
 		tabix -p vcf {output}
 		"""
 
 
 rule merge_clean_up:
 	input:
+		merged = "{results}/genotyping/pangenie_all-samples_unfiltered.vcf.gz",
 		vcf = "{results}/genotyping/merged-region-wise/pangenie_{region}_genotypes.vcf.gz",
 		tbi = "{results}/genotyping/merged-region-wise/pangenie_{region}_genotypes.vcf.gz.tbi"
 	output:
-		touch("{results}/genotyping/merge-regions/pangenie_{region}_genotypes_deleted.txt")
+		touch("{results}/genotyping/merged-region-wise/pangenie_{region}_genotypes_deleted.txt")
 	shell:
 		"""
 		rm {input.vcf}

@@ -1,18 +1,5 @@
+No illumina data found for these samples:
 
-INPUTS:
-
-PANEL_MULTI, PANEL_BI OR: MC_GFA, MC_VCF
-REFERENCE
-SAMPLE_SHEET (trios + paths to Illumina and ONT reads)
-if no ONT reads are provided, skip polishing
-
-
-
-
-optimize and generalize filtering pipeline
-
-- make it work also for cases with no trios and / or no self genotyping
-- write simplified self genotyping script (var_to_truth->[0,1,2,1,None], var_to_pred->[None,1,2,1], compute per variant stats by comparing these lists)
-- make more efficient mendelian consistency script
-- compute AF/AN/AC stats my bcftools +fill-tags script, for all samples + for unrelated samples only. Do this while merging already
-- possibly do calculations separately on each chromosome
+HG02109 HG02109 0       0       2       ACB     AFR     empty.fa.gz
+HG03471 HG03471 0       0       1       MSL     AFR     empty.fa.gz
+HG06807 HG06807 0       0       2       UNKNOWN UNKNOWN empty.fa.gz

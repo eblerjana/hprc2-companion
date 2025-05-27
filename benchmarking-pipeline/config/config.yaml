@@ -8,6 +8,7 @@ sample-info: "1kg-hprc2-sample-sheet.tsv"
 avg_illumina_cov: 30
 
 leave_one_out_samples:
+        - HG002
         - HG01891
 #        - HG02055
 #        - HG02257
@@ -58,10 +59,11 @@ sampling_sizes:
 subsetting_sizes:
         - 108
 
-evaluation_regions: {}
+evaluation_regions:
+        all: "input-data/chm13.bed"
 
 # name of the output folder
-outname: "results-hprc2-full"
+outname: "results-hprc2"
 
 
 ###### Parameters and files for external callset evaluation step #####

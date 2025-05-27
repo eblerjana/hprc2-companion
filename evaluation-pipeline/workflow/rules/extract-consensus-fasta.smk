@@ -8,7 +8,7 @@ rule extract_from_agc:
 	params:
 		name = lambda wildcards: CONSENSUS_NAMES[wildcards.callset][wildcards.sample][wildcards.haplotype]
 	resources:
-		mem_mb = 20000
+		mem_mb = 40000
 	shell:
 		"""
 		agc getset {input} {params.name} | bgzip > {output}

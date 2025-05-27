@@ -69,7 +69,7 @@ rule external_annotate_variants_callset:
 		tbi = "{results}/external-calls/evaluation/{truthset}/{evalsample}/truthset-{truthset}_{evalsample}_{vartype}.vcf.gz.tbi"
 	resources:
 		mem_mb=90000,
-		walltime = "02:00:00"
+		walltime = "05:00:00"
 	conda:
 		"../envs/genotyping.yml"
 	shell:

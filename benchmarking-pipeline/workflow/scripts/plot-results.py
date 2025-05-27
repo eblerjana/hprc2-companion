@@ -11,20 +11,21 @@ def plot_concordances_all(files, outname, sources):
 		'indels': 'indels (1-49bp)',
 		'large-insertion': 'SV insertions (>=50bp)',
 		'large-deletion': 'SV deletions (>=50bp)',
-		'large-complex': 'SV complex (>=50bp)'
+		'large-complex': 'SV complex (>=50bp)',
+		'sv' : 'all SVs (>=50bp)'
 		}
 
 	colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#808080', '#f7ce37', '#bc202c', '#251188']
 	type_to_file = {}
 	n_rows = 4
-	n_cols = 5
+	n_cols = 6
 	for source in sources:
 		for f in files:
 			if not ('_' + source + '_') in f:
 				continue
 			vartype = f.split('_')[-1][:-4]
 			type_to_file[(source, vartype)] = f
-	variants = ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex']
+	variants = ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex', 'sv']
 	plot_index = 0
 	
 	fig, axs = plt.subplots(n_rows, n_cols, figsize=(20,20))
@@ -95,13 +96,14 @@ def plot_untyped_all(files, outname, sources):
 		'indels': 'indels (1-49bp)',
 		'large-insertion': 'SV insertions (>=50bp)',
 		'large-deletion': 'SV deletions (>=50bp)',
-		'large-complex': 'SV complex (>=50bp)'
+		'large-complex': 'SV complex (>=50bp)',
+		'sv' : 'all SVs (>=50bp)'
 		}
 
 	colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#808080', '#f7ce37', '#bc202c', '#251188']
 	type_to_file = {}
 	n_rows = 1
-	n_cols = 5
+	n_cols = 6
 #	plt.figure(figsize=(65,5))
 	plt.figure(figsize=(20,5))
 	for source in sources:
@@ -110,7 +112,7 @@ def plot_untyped_all(files, outname, sources):
 				continue
 			vartype = f.split('_')[-1][:-4]
 			type_to_file[(source, vartype)] = f
-	variants = ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex']
+	variants = ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex', 'sv']
 	plot_index = 1
 	for var in variants:
 		plt.subplot(n_rows, n_cols, plot_index)
@@ -162,7 +164,8 @@ def plot_fscores_vcfeval(files, outname, sources, variants):
 		'indels': 'indels (1-49bp)',
 		'large-insertion': 'SV insertions (>=50bp)',
 		'large-deletion': 'SV deletions (>=50bp)',
-		'large-complex': 'SV complex (>=50bp)'
+		'large-complex': 'SV complex (>=50bp)',
+		'sv' : 'all SVs (>=50bp)'
 		}
 
 	colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#808080', '#f7ce37', '#bc202c', '#251188']
@@ -226,7 +229,8 @@ def plot_fscores_truvari(files, outname, sources, variants):
 		'indels': 'indels (1-49bp)',
 		'large-insertion': 'SV insertions (>=50bp)',
 		'large-deletion': 'SV deletions (>=50bp)',
-		'large-complex': 'SV complex (>=50bp)'
+		'large-complex': 'SV complex (>=50bp)',
+		'sv' : 'all SVs (>=50bp)'
 		}
 
 	colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#808080', '#f7ce37', '#bc202c', '#251188']
@@ -295,11 +299,12 @@ def plot_concordance_vs_untyped(files, outname, sources):
 		'indels': 'indels (1-49bp)',
 		'large-insertion': 'SV insertions (>=50bp)',
 		'large-deletion': 'SV deletions (>=50bp)',
-		'large-complex': 'SV complex (>=50bp)'
+		'large-complex': 'SV complex (>=50bp)',
+		'sv' : 'all SVs (>=50bp)'
 		}
 	colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#808080', '#f7ce37', '#bc202c', '#251188']
 	type_to_file = {}
-	n_rows = 5 # one row per variant type
+	n_rows = 6 # one row per variant type
 	plt.figure(figsize=(80,30))
 	for source in sources:
 		for f in files:
@@ -307,7 +312,7 @@ def plot_concordance_vs_untyped(files, outname, sources):
 				continue
 			vartype = f.split('_')[-1][:-4]
 			type_to_file[(source, vartype)] = f
-	variants = ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex']
+	variants = ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex', 'sv']
 	data = {}
 	all_samples = []
 	is_first = True
@@ -364,8 +369,8 @@ if args.metric == 'concordance':
 elif args.metric == 'untyped':
 	plot_untyped_all(args.files, args.outname, args.sources)
 elif args.metric == 'vcfeval-typable':
-	plot_fscores_vcfeval(args.files, args.outname, args.sources, ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex'])
+	plot_fscores_vcfeval(args.files, args.outname, args.sources, ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex', 'sv'])
 elif args.metric == "truvari-typable":
-	plot_fscores_truvari(args.files, args.outname, args.sources, ['large-deletion', 'large-insertion', 'large-complex'])
+	plot_fscores_truvari(args.files, args.outname, args.sources, ['large-deletion', 'large-insertion', 'large-complex', 'sv'])
 else:
 	plot_concordance_vs_untyped(args.files, args.outname, args.sources)

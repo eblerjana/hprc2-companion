@@ -17,14 +17,14 @@ for line in open(config["sample-info"], 'r'):
 
 SAMPLES = [s for s in ILLUMINA.keys()]
 OUTNAME = config["outname"]
-ALLOWED_VARIANTS = ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex']
+ALLOWED_VARIANTS = ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex', 'sv']
 LEAVE_ONE_OUT_SAMPLES = config["leave_one_out_samples"]
 EVALUATION_REGIONS = config["evaluation_regions"]
 AVG_ILLUMINA_COV = config["avg_illumina_cov"]
 
 SAMPLING_SIZES = config["sampling_sizes"]
 SUBSAMPLING_SIZES = config["subsetting_sizes"]
-GENOTYPERS = [] # ["kage"]
+GENOTYPERS = [] #["kage"]
 
 for s in SAMPLING_SIZES:
 	GENOTYPERS.append("pangenie-sampled-" + str(s))

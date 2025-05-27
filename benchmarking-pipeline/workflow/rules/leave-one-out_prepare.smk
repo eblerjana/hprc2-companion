@@ -35,7 +35,7 @@ rule leave_one_out_prepare_panel_multi:
 	input:
 		PANEL_MULTI
 	output:
-		vcf = temp("{results}/leave-one-out/input-panel/panel-{sample}_multi.vcf")
+		vcf = "{results}/leave-one-out/input-panel/panel-{sample}_multi.vcf"
 	conda:
 		"../envs/genotyping.yml"
 	priority: 1
@@ -56,7 +56,7 @@ rule leave_one_out_prepare_panel_bi:
 	input:
 		PANEL_BI
 	output:
-		vcf = temp("{results}/leave-one-out/input-panel/panel-{sample}_bi.vcf")
+		vcf = "{results}/leave-one-out/input-panel/panel-{sample}_bi.vcf"
 	conda:
 		"../envs/genotyping.yml"
 	priority: 1

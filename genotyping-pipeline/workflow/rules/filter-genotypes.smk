@@ -145,7 +145,7 @@ rule filter_self_genotyping_statistics:
 		"{results}/filtering/pangenie_all-samples_unfiltered_self-genotyping_{chrom}.log"
 	resources:
 		mem_mb = 60000,
-		walltime = "05:00:00",
+		walltime = "10:00:00",
 	shell:
 		"""
 		python3 workflow/scripts/evaluate-self-genotyping.py {input.panel} {input.genotypes} {output} {input.samples} pangenie_self-genotyping &> {log}
@@ -242,7 +242,7 @@ rule filter_plot_statistics:
 	conda:
 		'../envs/plotting.yml'
 	resources:
-		mem_mb = 100000,
+		mem_mb = 200000,
 		walltime = "05:00:00"
 	shell:
 		"python3 workflow/scripts/regression.py -t {input} -o {params.outprefix} -n {params.threshold} --plot-only &> {output}"
