@@ -90,4 +90,18 @@ external_callsets:
                 variants: ["sv"]
                 evaluation_samples:
                         - HG002
-                        - HG01891 
+                        - HG01891
+
+
+##### Parameters and files for evaluating population genotypes #####
+#
+# optional. Set to {} if not provided.
+population_genotypes:
+        hgsvc3-1kg:
+                vcf: "/gpfs/project/projects/medbioinf/users/ebler/hgsvc3/experiments/genotyping-1kg/results/benchmarking-pipeline/population-typing/MC-hgsvc3-hprc-chm13/pangenie-108/full/merged-vcfs/filtered/all-samples_bi_all_lenient.vcf.gz"
+                collapse: True
+                reference: "input-data/chm13v2.0.fa"
+        hprc2-1kg:
+                vcf: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/filtering/pangenie_all-samples_filtered.vcf.gz"
+                collapse: True
+                reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/chm13v2.0_maskedY_rCRS.fa"

@@ -24,8 +24,6 @@ rule shapeit_extract_chromosome:
 		"{results}/phasing/vcf/{callset}_{chrom}.vcf.gz"
 	conda:
 		"../envs/shapeit.yaml"
-	log:
-		"{results}/phasing/vcf/{callset}_{chrom}.log"
 	benchmark:
 		"{results}/phasing/vcf/{callset}_{chrom}.benchmark.txt"
 	resources:
@@ -34,7 +32,7 @@ rule shapeit_extract_chromosome:
 	threads: 10
 	shell:
 		"""
-		bcftools view -r {wildcards.chrom} {input} --threads {threads} | bcftools +setGT  -- -t q -n ./. -i 'FMT/GQ<10' 2> {log} | bgzip > {output}
+		bcftools view -r {wildcards.chrom} {input} --threads {threads} | bgzip > {output}
 		tabix -p vcf {output}
 		"""
 
@@ -71,7 +69,7 @@ rule shapeit_phase_common:
 		"../envs/shapeit.yaml"
 	threads: 32
         resources:
-		mem_mb = 200000, # 100000
+		mem_mb = 500000, # 100000
 		walltime = "30:00:00"
 	params:
 		haploids = lambda wildcards: "--haploids " + "{results}/phasing/haploid-samples.txt".format(results = wildcards.results)  if ("X" in wildcards.chrom) or ("Y" in wildcards.chrom) else ""
@@ -101,7 +99,7 @@ rule shapeit_concat_vcfs:
 		"{results}/phasing/{callset}_shapeit.log"
 	shell:
 		"""
-		bcftools concat -o {output} -O z --threads {threads} {input} &> {log}
-		tabix -p vcf {output}
+		bcftools concat -o {output} --threads {threads} {input} &> {log}
+		bcftools index {output}
 		"""
 

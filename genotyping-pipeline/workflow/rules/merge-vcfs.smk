@@ -27,7 +27,7 @@ rule merge_by_region:
 	log:
 		"{results}/genotyping/merged-region-wise/pangenie_{region}_genotypes.log"
 	resources:
-		mem_mb = lambda wildcards, attempt: 500000 * attempt,
+		mem_mb = lambda wildcards, attempt: 100000 * attempt,
 		walltime = "15:00:00"
 	wildcard_constraints:
 		region = "chr[0-9A-Z]+:[0-9]+-[0-9]+"

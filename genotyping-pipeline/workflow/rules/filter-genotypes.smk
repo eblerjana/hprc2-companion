@@ -215,7 +215,7 @@ rule filter_perform_regression:
 		regression = "{results}/filtering/pangenie_regression.tsv"
 	params:
 		outprefix = "{results}/filtering/pangenie",
-		threshold= 10 if len(ILLUMINA.keys()) < 1000 else 50
+		threshold= 5 if len(ILLUMINA.keys()) < 1000 else 20
 	log:
 		"{results}/filtering/pangenie_regression.log"
 	benchmark:
@@ -238,7 +238,7 @@ rule filter_plot_statistics:
 		"{results}/filtering/pangenie_plot.benchmark.txt"
 	params:
 		outprefix="{results}/filtering/pangenie",
-		threshold= 10 if len(ILLUMINA.keys()) < 1000 else 50
+		threshold= 5 if len(ILLUMINA.keys()) < 1000 else 20
 	conda:
 		'../envs/plotting.yml'
 	resources:

@@ -9,6 +9,7 @@ PANEL_MULTI = config["panel_multi"]
 REFERENCE = config["reference"]
 
 ILLUMINA = {}
+POPULATIONS = config["sample-info"]
 for line in open(config["sample-info"], 'r'):
 	if line.startswith("#"):
 		continue
@@ -51,6 +52,7 @@ for line in gzip.open(PANEL_BI, 'rt'):
 		PANEL_SAMPLES = [s for s in fields[9:] if s != "CHM13" and s != "GRCh38"]
 		break
 
+POPULATION_GENOTYPES = config["population_genotypes"]
 
 
 ################ Define target files ################
@@ -64,6 +66,7 @@ include: "rules/evaluation_panel.smk"
 include: "rules/evaluation_external.smk"
 include: "rules/external_pangenie.smk"
 include: "rules/external_kage.smk"
+include: "rules/compute-sv-counts-collapse.smk"
 
 leave_one_out_results = []
 if LEAVE_ONE_OUT_SAMPLES:
@@ -76,11 +79,19 @@ if LEAVE_ONE_OUT_SAMPLES:
 
 external_callsets_results = expand("{results}/external-calls/evaluation/plots/{truthset}/external_{truthset}_{region}.pdf", results = OUTNAME, truthset = EXTERNAL.keys(), region = ["all"] + [k for k in EVALUATION_REGIONS.keys()] )
 
+population_results = []
+
+if POPULATION_GENOTYPES:
+	population_results.extend(expand("{results}/sv-count-comparison_all.pdf", results = OUTNAME + "/population-genotypes"))
+	population_results.extend(expand("{results}/length-distribution.pdf", results = OUTNAME + "/population-genotypes"))
+	population_results.extend(expand("{results}/sv-count-comparison_het.pdf", results = OUTNAME + "/population-genotypes"))
+
 
 rule all:
 	input:
 		leave_one_out_results,
-		external_callsets_results
+		external_callsets_results,
+		population_results
 
 rule leave_one_out:
 	input:
@@ -89,3 +100,7 @@ rule leave_one_out:
 rule external_callsets:
 	input:
 		external_callsets_results
+
+rule population:
+	input:
+		population_results

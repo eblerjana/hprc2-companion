@@ -230,7 +230,7 @@ rule evaluation_truvari:
 	priority: 1
 	wildcard_constraints:
 		sample = "|".join(SAMPLES),
-		vartype = "|".join([v for v in ALLOWED_VARIANTS if "large" in v])
+		vartype = "|".join([v for v in ALLOWED_VARIANTS if "large" in v] + ['sv'])
 	params:
 		tmp = "{results}/leave-one-out/{method}/{sample}/truvari-typable/{regions}_{vartype}_tmp",
 		outname = "{results}/leave-one-out/{method}/{sample}/truvari-typable/{regions}_{vartype}",
@@ -333,7 +333,7 @@ rule plot_across_samplings:
 	Compare concordances across different sampling sizes for a fixed region.
 	"""
 	input:
-		lambda wildcards: expand("{{results}}/leave-one-out/plots/{{metric}}/{{metric}}_{method}_{{regions}}_{vartype}.tsv", method = GENOTYPERS, vartype = [v for v in ALLOWED_VARIANTS if "large" in v] if wildcards.metric == "truvari-typable" else ALLOWED_VARIANTS)
+		lambda wildcards: expand("{{results}}/leave-one-out/plots/{{metric}}/{{metric}}_{method}_{{regions}}_{vartype}.tsv", method = GENOTYPERS, vartype = [v for v in ALLOWED_VARIANTS if "large" in v] + ['sv'] if wildcards.metric == "truvari-typable" else ALLOWED_VARIANTS)
 	output:
 		"{results}/leave-one-out/plots/{metric}_{regions}.pdf"
 	wildcard_constraints:

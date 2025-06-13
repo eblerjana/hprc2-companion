@@ -74,7 +74,7 @@ rule external_annotate_variants_callset:
 		"../envs/genotyping.yml"
 	shell:
 		"""
-		bcftools view --samples {wildcards.evalsample} {input.callset} | bcftools norm -m -any -f {input.reference} | python3 workflow/scripts/fix-header.py {input.ref_index} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}' | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | python3 workflow/scripts/annotate.py {input.panel} | bgzip -c > {output.vcf}
+		bcftools view --samples {wildcards.evalsample} {input.callset} | bcftools norm -m -any -f {input.reference} --check-ref x  | python3 workflow/scripts/fix-header.py {input.ref_index} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}' | python3 workflow/scripts/extract-varianttype.py {wildcards.vartype} | python3 workflow/scripts/annotate.py {input.panel} | bgzip -c > {output.vcf}
 		tabix -p vcf {output.vcf}
 		"""
 
