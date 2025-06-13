@@ -1,0 +1,5 @@
+name: sniffles
+dependencies:
+  - samtools
+  - bcftools
+  - sniffles=2.6.1

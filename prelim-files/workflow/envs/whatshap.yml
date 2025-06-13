@@ -1,0 +1,5 @@
+name: whatshap
+dependencies:
+  - whatshap
+  - bcftools
+  - samtools
