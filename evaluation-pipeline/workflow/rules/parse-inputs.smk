@@ -6,6 +6,7 @@ UNPHASED_VCFS = config["unphased_vcfs"]
 OUTNAME = config["outname"]
 ASSEMBLIES = {}
 CONSENSUS_NAMES = {}
+READS = {}
 
 # parse consensus names
 for callset in CONSENSUS_HAPLOTYPES:
@@ -63,7 +64,6 @@ for callset in PHASED_VCFS:
 for line in open(config['assemblies'], 'r'):
 	fields = line.strip().split()
 	if line.startswith('#sample'):
-		columns = fields[3:]
 		continue
 	sample = fields[0]
 	assem1 = fields[1]
@@ -79,6 +79,9 @@ for line in open(config['assemblies'], 'r'):
 	ASSEMBLIES[sample] = {}
 	ASSEMBLIES[sample]["hap1"] = assem1
 	ASSEMBLIES[sample]["hap2"] = assem2
+
+	if len(fields) > 3:
+		READS[sample] = fields[3]	
 
 
 # for each callset, find overlap between assemblies and callset samples

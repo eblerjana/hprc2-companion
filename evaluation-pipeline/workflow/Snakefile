@@ -11,7 +11,7 @@ include: "rules/extract-consensus-fasta.smk"
 include: "rules/phase-genotypes.smk"
 include: "rules/run-pav.smk"
 include: "rules/evaluate.smk"
-
+include: "rules/evaluate-mercury.smk"
 
 def consensus_files(wildcards):
 	result = []
@@ -24,10 +24,18 @@ def consensus_files(wildcards):
 def sample_specific_results(wildcards):
 	result = []
 	for callset in SAMPLES:
+		reads_present = False
 		for sample in SAMPLES[callset]:
 			result.extend(expand("{results}/evaluation/pav_{callset}_{sample}_{haplotype}/run.complete", results = OUTNAME, callset = callset, sample = sample, haplotype = ["hap1", "hap2"])),
 			result.extend(expand("{results}/evaluation/qvs/plots/{callset}_{sample}_{haplotype}_{which}.pdf", results = OUTNAME, callset = callset, sample = sample, haplotype = ["hap1", "hap2"], which = ["all", "err"])),
 			result.extend(expand("{results}/evaluation/qvs/plots/{callset}_{sample}_{haplotype}_scores.pdf", results = OUTNAME, callset = callset, sample = sample, haplotype = ["hap1", "hap2"]))
+			if sample in READS:
+				reads_present = True
+				result.extend(expand("{results}/evaluation/qvs-kmers/{callset}_{sample}_{haplotype}.completeness.stats", results = OUTNAME, callset = callset, sample = sample, haplotype = ["hap1", "hap2"]))
+				result.extend(expand("{results}/evaluation/qvs-kmers/{callset}_{sample}_{haplotype}.qv", results = OUTNAME, callset = callset, sample = sample, haplotype = ["hap1", "hap2"]))
+		if reads_present:
+			result.extend(expand("{results}/evaluation/qvs-kmers/{callset}-qvs-stats.tsv", results = OUTNAME, callset = callset))
+			result.extend(expand("{results}/evaluation/qvs-kmers/{callset}-completeness-stats.tsv", results = OUTNAME, callset = callset))
 	return result
 	
 
