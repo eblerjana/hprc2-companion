@@ -12,6 +12,8 @@ rule polish_fasta_to_fastq:
 		"{results}/polishing/fastqs/{sample}.benchmark.txt"
 	resources:
 		walltime = "10:00:00"
+	conda:
+		"../envs/whatshap.yml"
 	shell:
 		"""
 		zcat {input} | awk 'BEGIN {{RS = \">\" ; FS = \"\\n\"}} NR > 1 {{print \"@\"$1\"\\n\"$2\"\\n+\"$1\"\\n\"gensub(/./, \":\", \"g\", $2)}}' | bgzip > {output}
@@ -371,7 +373,7 @@ rule polish_call_svs:
 	shell:
 		" sniffles -i {input.bam} -v {output.vcf} --reference {input.reference} --sample-id {wildcards.sample}-{wildcards.haplotype}  &> {log} "
 		" && "
-		" bcftools view  -f 'PASS' --min-ac 2 {output.vcf} | grep -v \"BND\" | bgzip > {output.filtered} "
+		" bcftools view  -f 'PASS' --min-ac 2 {output.vcf} | bcftools filter -i \'FMT/DR<1 & FMT/DV>5\' | grep -v \"BND\" | bgzip > {output.filtered} "
 		" && " 
 		" tabix -p vcf {output.filtered} "
 

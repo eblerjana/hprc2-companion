@@ -5,36 +5,36 @@ consensus_haplotypes:
                 agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/PanGenie-SHAPEIT_all_consensus-haplotypes.agc"
                 names: "pg-unpolished.tsv"
         HPRC2-unpolished:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/unpolished-haplotypes/pangenie_all-samples_filtered_unpolished.agc"
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/commit-a91f506/unpolished-haplotypes/pangenie_all-samples_filtered_unpolished.agc"
                 names: "pg-hprc.tsv"
         HPRC2-polished-all-25:
                 agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/all/polished/HPRC2-PG_25_polished.agc"
                 names: "pg-polished-25.tsv"
-        HPRC2-polished-all-100:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/all/polished/HPRC2-PG_100_polished.agc"
-                names: "pg-polished-100.tsv"
-        HPRC2-polished-all-250:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/all/polished/HPRC2-PG_250_polished.agc"
-                names: "pg-polished-250.tsv"
+#        HPRC2-polished-all-100:
+#                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/all/polished/HPRC2-PG_100_polished.agc"
+#                names: "pg-polished-100.tsv"
+#        HPRC2-polished-all-250:
+#                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/all/polished/HPRC2-PG_250_polished.agc"
+#                names: "pg-polished-250.tsv"
         HPRC2-polished-onlySNPs-25:
                 agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/only-snps/polished/HPRC2-PG_25_polished.agc"
                 names: "pg-polished-25.tsv"
-        HPRC2-polished-onlySNPs-100:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/only-snps/polished/HPRC2-PG_100_polished.agc"
-                names: "pg-polished-100.tsv"
-        HPRC2-polished-onlySNPs-250:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/only-snps/polished/HPRC2-PG_250_polished.agc"
-                names: "pg-polished-250.tsv"
+#        HPRC2-polished-onlySNPs-100:
+#                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/only-snps/polished/HPRC2-PG_100_polished.agc"
+#                names: "pg-polished-100.tsv"
+#        HPRC2-polished-onlySNPs-250:
+#                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/only-snps/polished/HPRC2-PG_250_polished.agc"
+#                names: "pg-polished-250.tsv"
         HPRC2-polished-noSVs-25:
                 agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/no-svs/polished/HPRC2-PG_25_polished.agc"
                 names: "pg-polished-25.tsv"
-        HPRC2-polished-noSVs-100:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/no-svs/polished/HPRC2-PG_100_polished.agc"
-                names: "pg-polished-100.tsv"
-        HPRC2-polished-noSVs-250:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/no-svs/polished/HPRC2-PG_250_polished.agc"
-                names: "pg-polished-250.tsv"
+#        HPRC2-polished-noSVs-100:
+#                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/no-svs/polished/HPRC2-PG_100_polished.agc"
+#                names: "pg-polished-100.tsv"
+#        HPRC2-polished-noSVs-250:
+#                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-experiments/polishing/HPRC2-PG/no-svs/polished/HPRC2-PG_250_polished.agc"
+#                names: "pg-polished-250.tsv"
 
 
-outname: "results-hprc2-params"
+outname: "results-hprc2-params-merqury-only-precise"
 assemblies: "assemblies.tsv"

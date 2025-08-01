@@ -12,6 +12,8 @@ rule polish_fasta_to_fastq:
 		"{results}/polishing/fastqs/{sample}.benchmark.txt"
 	resources:
 		walltime = "10:00:00"
+	conda:
+		"../envs/whatshap.yml"
 	shell:
 		"""
 		zcat {input} | awk 'BEGIN {{RS = \">\" ; FS = \"\\n\"}} NR > 1 {{print \"@\"$1\"\\n\"$2\"\\n+\"$1\"\\n\"gensub(/./, \":\", \"g\", $2)}}' | bgzip > {output}
@@ -257,7 +259,7 @@ rule polish_phase_variants:
 
 rule polish_synchronize_variants:
 	"""
-	Synchronize phased blocks and filter VCF for haplotagging.
+	Synchronize phased blocks.
 	"""
 	input:
 		"{results}/polishing/{callset}/all/whatshap/whatshap_{sample}_{haplotype}_{chrom}.vcf.gz"
@@ -278,12 +280,30 @@ rule polish_synchronize_variants:
 		"""
 
 
+rule polish_flip_phased_genotypes:
+	"""
+	For haplotagging only, create a VCF for which all het alleles
+	are phased as 0 on haplotype 1.
+	"""
+	input:
+		"{results}/polishing/{callset}/all/haplotag/haplotag_{sample}_{haplotype}_{chrom}.vcf.gz"	
+	output:
+		"{results}/polishing/{callset}/all/haplotag/flipped_{sample}_{haplotype}_{chrom}.vcf.gz"
+	conda:
+		"../envs/whatshap.yml"
+	shell:
+		"""
+		zcat {input} | python3 workflow/scripts/flip-phasing.py | bgzip > {output}
+		tabix -p vcf {output}
+		"""
+
+
 rule polish_extract_haplotype_reads:
 	"""
 	Tag reads by haplotype and select haplotype of interest.
 	"""
 	input:
-		vcf = "{results}/polishing/{callset}/all/haplotag/haplotag_{sample}_{haplotype}_{chrom}.vcf.gz",
+		vcf = "{results}/polishing/{callset}/all/haplotag/flipped_{sample}_{haplotype}_{chrom}.vcf.gz",
 		bam = "{results}/polishing/{callset}/ont/ont_{sample}_{haplotype}_{chrom}.bam",
 		reference = "{results}/polishing/{callset}/consensus/{sample}_{haplotype}.fa"
 	output:
@@ -296,6 +316,8 @@ rule polish_extract_haplotype_reads:
 		"../envs/whatshap.yml"
 	wildcard_constraints:
 		haplotype = "hap1|hap2"
+	resources:
+		mem_mb = 50000
 	log:
 		haplotag = "{results}/polishing/{callset}/all/haplotag/haplotag_{sample}_{haplotype}_{chrom}_haplotag.log",
 		split = "{results}/polishing/{callset}/all/haplotag/haplotag_{sample}_{haplotype}_{chrom}_split.log"
@@ -311,6 +333,22 @@ rule polish_extract_haplotype_reads:
 		" samtools index {output.split} "
 
 
+rule detect_switch_blocks:
+	"""
+	Detect possibly switched haplotype blocks inside
+	of synchronized, phased blocks
+	"""
+	input:
+		vcf = "{results}/polishing/{callset}/all/haplotag/haplotag_{sample}_{haplotype}_{chrom}.vcf.gz",
+		fai = "{results}/polishing/{callset}/consensus/{sample}_{haplotype}.fa.fai"
+	output:
+		"{results}/polishing/{callset}/all/haplotag/switched_{sample}_{haplotype}_{chrom}.bed"
+	shell:
+		"""
+		zcat {input.vcf} | python3 workflow/scripts/detect-switched-blocks.py {input.fai} > {output}
+		"""
+
+
 rule polish_call_svs:
 	"""
 	Call SVs using Sniffles2.
@@ -318,7 +356,8 @@ rule polish_call_svs:
 	"""
 	input:
 		bam = "{results}/polishing/{callset}/all/haplotag/split_{sample}_{haplotype}_{chrom}.bam",
-		reference = "{results}/polishing/{callset}/consensus/{sample}_{haplotype}.fa"
+		reference = "{results}/polishing/{callset}/consensus/{sample}_{haplotype}.fa",
+#		bed = "{results}/polishing/{callset}/all/haplotag/switched_{sample}_{haplotype}_{chrom}.bed"
 	output:
 		vcf = "{results}/polishing/{callset}/all/sniffles/sniffles_{sample}_{haplotype}_{chrom}.vcf.gz",
 		filtered = "{results}/polishing/{callset}/all/sniffles/sniffles_{sample}_{haplotype}_{chrom}_filtered.vcf.gz"
@@ -336,7 +375,8 @@ rule polish_call_svs:
 	shell:
 		" sniffles -i {input.bam} -v {output.vcf} --reference {input.reference} --sample-id {wildcards.sample}-{wildcards.haplotype}  &> {log} "
 		" && "
-		" bcftools view  -f 'PASS' --min-ac 2 {output.vcf} | grep -v \"BND\" | bgzip > {output.filtered} "
+		" bcftools view -f 'PASS' --min-ac 2 {output.vcf} | bcftools filter -i \'FMT/DR<1 & FMT/DV>5\' | grep -v \"BND\" | grep -v \"IMPRECISE\" | bgzip > {output.filtered} "
+#		" bcftools view -f 'PASS' --min-ac 2 {output.vcf} | bcftools filter -i \'FMT/DR<1 & FMT/DV>5\' | grep -v \"BND\" | bedtools subtract -header -a - -b {input.bed} |  bgzip > {output.filtered} "
 		" && " 
 		" tabix -p vcf {output.filtered} "
 

@@ -97,6 +97,10 @@ external_callsets:
 #
 # optional. Set to {} if not provided.
 population_genotypes:
+        illumina-hg38:
+                vcf: "/gpfs/project/projects/medbioinf/users/ebler/minigraph-cactus-paper/genotyping-experiments-hg38/input-vcfs/1KGP_3202.gatksv_svtools_novelins.freeze_V3.wAF.vcf.gz"
+                collapse: False
+                reference: "/gpfs/project/projects/medbioinf/users/ebler/minigraph-cactus-paper/genotyping-experiments-hg38/results/data/fasta/hg38.fa" 
         hgsvc3-1kg:
                 vcf: "/gpfs/project/projects/medbioinf/users/ebler/hgsvc3/experiments/genotyping-1kg/results/benchmarking-pipeline/population-typing/MC-hgsvc3-hprc-chm13/pangenie-108/full/merged-vcfs/filtered/all-samples_bi_all_lenient.vcf.gz"
                 collapse: True

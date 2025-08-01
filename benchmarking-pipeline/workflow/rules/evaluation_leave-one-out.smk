@@ -31,6 +31,8 @@ rule evaluation_compress_vcf:
 		vcf = "{results}/leave-one-out/{filename}.vcf.gz",
 		tbi = "{results}/leave-one-out/{filename}.vcf.gz.tbi"
 	priority: 1
+	conda:
+		"../envs/genotyping.yml"
 	shell:
 		"""
 		bgzip -c {input} > {output.vcf}
@@ -141,6 +143,8 @@ rule evaluation_remove_untypable:
 	resources:
 		mem_mb = 20000,
 		walltime = "1:00:00"
+	conda:
+		"../envs/genotyping.yml"
 	priority: 1
 	shell:
 		"""

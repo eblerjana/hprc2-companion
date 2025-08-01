@@ -94,7 +94,9 @@ rule genotyping_convert_genotypes_to_biallelic:
 		biallelic = PANEL_BI
 	output:
 		bi = "{results}/genotyping/pangenie/{sample}_pangenie_bi_genotyping.vcf.gz",
-		bi_tbi = "{results}/genotyping/pangenie/{sample}_pangenie_bi_genotyping.vcf.gz.tbi"
+		bi_tbi = "{results}/genotyping/pangenie/{sample}_pangenie_bi_genotyping.vcf.gz.tbi",
+		temp = temp("{results}/genotyping/pangenie/{sample}_pangenie_bi_genotyping_tmp.vcf.gz"),
+		temp_tbi = temp("{results}/genotyping/pangenie/{sample}_pangenie_bi_genotyping_tmp.vcf.gz.tbi")
 	conda:
 		"../envs/genotyping.yml"
 	resources:
@@ -102,6 +104,8 @@ rule genotyping_convert_genotypes_to_biallelic:
 	priority: 1
 	shell:
 		"""
-		cat {input.vcf} | python3 workflow/scripts/convert-to-biallelic.py {input.biallelic} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' | bgzip > {output.bi}
+		cat {input.vcf} | python3 workflow/scripts/convert-to-biallelic.py {input.biallelic} | bgzip > {output.temp}
+		tabix -p vcf {output.temp}
+		bcftools sort {output.temp} -Oz -o {output.bi}
 		tabix -p vcf {output.bi}
 		"""

@@ -1,0 +1,23 @@
+
+
+consensus_haplotypes:
+        callset1:
+                agc: "test.vcf.gz"
+                names: "test.tsv"
+
+phased_vcfs:
+        callset2:
+                vcf: "test.vcf.gz"
+                reference: "test.vcf.gz"
+
+unphased_vcfs:
+        callset3:
+                reference: "test.vcf.gz"
+                sample_sheet: "test.vcf.gz"
+                genetic_maps:
+                      chr1: "test.vcf.gz"
+                vcf: "test.vcf.gz"
+
+
+outname: "results"
+assemblies: "assemblies.tsv"
