@@ -1,9 +1,9 @@
 # name of the output folder
-results: "results-hprc2-experiments"
+results: "results-hprc2"
 
 # archive with compressed haplotypes
 agc:
-   HPRC2-PG: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/unpolished-haplotypes-old/pangenie_all-samples_filtered_unpolished.agc"
+   HPRC2-PG: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/unpolished-haplotypes/pangenie_all-samples_filtered_unpolished.agc"
 
 sample_sheet: "sample-sheet.tsv"
 cram_ref: "/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/data/1KG_ONT_VIENNA_hg38.fa"

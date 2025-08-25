@@ -92,8 +92,8 @@ for callset in CONSENSUS_NAMES:
 		if sample in ASSEMBLIES.keys():
 			SAMPLES[callset].append(sample)
 
-print(CONSENSUS_NAMES)
-print(CONSENSUS_HAPLOTYPES)
+#print(CONSENSUS_NAMES)
+#print(CONSENSUS_HAPLOTYPES)
 #print(PHASED_VCFS)
 #print(UNPHASED_VCFS)
-#print(SAMPLES)
+print(SAMPLES)

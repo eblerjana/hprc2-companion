@@ -107,9 +107,11 @@ rule polish_align_ont:
 	threads: 24
 	params:
 		readgroup = lambda wildcards:  (f'"@RG\\tID:{wildcards.sample}-{wildcards.haplotype}'f'\\tSM:{wildcards.sample}-{wildcards.haplotype}"'),
-		sam_threads = 8
+		sam_threads = 8,
+		tech = lambda wildcards: "map-hifi" if READ_TECH[wildcards.sample] == "HIFI" else "map-ont",
+		format = lambda wildcards: "samtools fastq --reference " + CRAM_REF if ONT[wildcards.sample].endswith("am") else "zcat"
 	shell:
-		"samtools fastq --reference {input.cram_ref} {input.reads} | minimap2 -ax map-ont -Y --MD --eqx -t {threads} -R {params.readgroup} --secondary=no {input.haplotype} - 2> {log.mm2} "
+		"{params.format} {input.reads} | minimap2 -ax {params.tech} -Y --MD --eqx -t {threads} -R {params.readgroup} --secondary=no {input.haplotype} - 2> {log.mm2} "
 		" | "
 		" samtools view -bS --threads {params.sam_threads} "
 		" | "
