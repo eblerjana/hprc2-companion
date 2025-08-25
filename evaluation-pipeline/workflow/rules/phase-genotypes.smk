@@ -34,7 +34,7 @@ rule shapeit_extract_chromosome:
 	threads: 10
 	shell:
 		"""
-		bcftools view -r {wildcards.chrom} {input} --threads {threads} | bcftools +setGT  -- -t q -n ./. -i 'FMT/GQ<10' 2> {log} | bgzip > {output}
+		bcftools view -r {wildcards.chrom} {input} --threads {threads} | bcftools +setGT  -- -t q -n ./. -i 'FMT/GQ<10' | bcftools +fill-tags -Oz -o {output} -- -t AN,AC,AF 2> {log}
 		tabix -p vcf {output}
 		"""
 
@@ -74,10 +74,11 @@ rule shapeit_phase_common:
 		mem_mb = 200000, # 100000
 		walltime = "30:00:00"
 	params:
-		haploids = lambda wildcards: "--haploids " + "{results}/phasing/{callset}_haploid-samples.txt".format(results = wildcards.results, callset = wildcards.callset)  if ("X" in wildcards.chrom) or ("Y" in wildcards.chrom) else ""
+		haploids = lambda wildcards: "--haploids " + "{results}/phasing/{callset}_haploid-samples.txt".format(results = wildcards.results, callset = wildcards.callset)  if ("X" in wildcards.chrom) or ("Y" in wildcards.chrom) else "",
+		panel = lambda wildcards: "--reference " +  UNPHASED_VCFS[wildcards.callset]["panel"] if "panel" in UNPHASED_VCFS[wildcards.callset] else ""
 	shell:
 		"""
-		SHAPEIT5_phase_common --input {input.vcf} --pedigree {input.fam} --region {wildcards.chrom} {params.haploids} --map {input.map} --output {output} --thread {threads} &> {log}
+		SHAPEIT5_phase_common --input {input.vcf} --pedigree {input.fam} {params.panel} --region {wildcards.chrom} {params.haploids} --map {input.map} --output {output} --thread {threads} &> {log}
 		"""
 
 
