@@ -92,6 +92,8 @@ for callset in CONSENSUS_NAMES:
 		if sample in ASSEMBLIES.keys():
 			SAMPLES[callset].append(sample)
 
+SEX_CHROMOSOMES = config["sex_chromosomes"] if "sex_chromosomes" in config else []
+
 #print(CONSENSUS_NAMES)
 #print(CONSENSUS_HAPLOTYPES)
 #print(PHASED_VCFS)
