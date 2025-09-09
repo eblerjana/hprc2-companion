@@ -70,7 +70,7 @@ rule shapeit_prepare_ref_panel:
 	threads: 10
 	shell:
 		"""
-		bcftools view -g ^miss {input} -Oz -o {output}
+		bcftools view -g ^miss {input} | bcftools +fill-tags  -Oz -o {output} -- -t AN,AC,AF 
 		tabix -p vcf {output}
 		"""	
 

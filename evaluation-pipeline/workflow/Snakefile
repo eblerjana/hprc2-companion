@@ -12,6 +12,7 @@ include: "rules/phase-genotypes.smk"
 include: "rules/run-pav.smk"
 include: "rules/evaluate.smk"
 include: "rules/evaluate-mercury.smk"
+include: "rules/analyze-variant-overlaps.smk"
 
 def consensus_files(wildcards):
 	result = []
@@ -40,8 +41,20 @@ def sample_specific_results(wildcards):
 	
 
 
+def output_overlaps(wildcards):
+	output_files = []
+	for set in OVERLAPS.keys():
+		for sample in OVERLAPS[set]["samples"]:
+			output_files.append("{results}/variant-overlaps/{set}/pav_{set}_{sample}/run.complete".format(results = OUTNAME, set=set, sample=sample))
+			output_files.append("{results}/variant-overlaps/{set}/evaluation/{set}_{sample}_pass.pdf".format(results = OUTNAME, set=set, sample=sample))
+			output_files.append("{results}/variant-overlaps/{set}/evaluation/{set}_{sample}_callable.pdf".format(results = OUTNAME, set=set, sample=sample))
+	return output_files
+
+
+
 rule all:
 	input:
 		consensus_files,
 		sample_specific_results,
-		expand("{results}/evaluation/qvs/{callset}-stats.tsv", results = OUTNAME, callset = SAMPLES.keys())
+		expand("{results}/evaluation/qvs/{callset}-stats.tsv", results = OUTNAME, callset = SAMPLES.keys()),
+		output_overlaps

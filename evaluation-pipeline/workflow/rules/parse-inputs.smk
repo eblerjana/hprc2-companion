@@ -8,6 +8,8 @@ ASSEMBLIES = {}
 CONSENSUS_NAMES = {}
 READS = {}
 
+OVERLAPS = config["overlaps"] if "overlaps" in config else {}
+
 # parse consensus names
 for callset in CONSENSUS_HAPLOTYPES:
 	CONSENSUS_NAMES[callset] = {}
@@ -93,6 +95,16 @@ for callset in CONSENSUS_NAMES:
 			SAMPLES[callset].append(sample)
 
 SEX_CHROMOSOMES = config["sex_chromosomes"] if "sex_chromosomes" in config else []
+
+# check overlap input if provided
+for combination in OVERLAPS:
+	for callset in OVERLAPS[combination]["callsets"]:
+		if callset not in CONSENSUS_NAMES:
+			raise RuntimeError('Callset ' + callset + ' does not exist.')
+		for sample in OVERLAPS[combination]["samples"]:
+			if sample not in SAMPLES[callset]:
+				raise RuntimeError('Sample ' + sample + ' not in callset ' + callset)
+
 
 #print(CONSENSUS_NAMES)
 #print(CONSENSUS_HAPLOTYPES)
