@@ -5,9 +5,9 @@ rule shapeit_extract_males:
 	Collect names of all male samples.
 	"""
 	input:
-		lambda wildcards: UNPHASED_VCFS[wildcards.callset]["sample_sheet"]
+		SAMPLE_SHEET
 	output:
-		"{results}/phasing/{callset}_haploid-samples.txt"
+		"{results}/phasing/haploid-samples.txt"
 	shell:
 		"awk '$5==1' {input} | cut -f 2 > {output}"
 
@@ -19,13 +19,13 @@ rule shapeit_extract_chromosome:
 	to missing.
 	"""
 	input:
-		lambda wildcards: UNPHASED_VCFS[wildcards.callset]["vcf"]
+		"{results}/genotyping/{callset}.vcf.gz"
 	output:
 		"{results}/phasing/vcf/{callset}_{chrom}.vcf.gz"
-	conda:
-		"../envs/shapeit.yaml"
 	log:
 		"{results}/phasing/vcf/{callset}_{chrom}.log"
+	conda:
+		"../envs/shapeit.yaml"
 	benchmark:
 		"{results}/phasing/vcf/{callset}_{chrom}.benchmark.txt"
 	resources:
@@ -34,7 +34,7 @@ rule shapeit_extract_chromosome:
 	threads: 10
 	shell:
 		"""
-		bcftools view -r {wildcards.chrom} {input} --threads {threads} | bcftools +setGT  -- -t q -n ./. -i 'FMT/GQ<10' | bcftools +fill-tags -Oz -o {output} -- -t AN,AC,AF 2> {log}
+		bcftools view -r {wildcards.chrom} {input} --threads {threads} | bcftools +fill-tags -Oz -o {output} -- -t AN,AC,AF 2> {log}
 		tabix -p vcf {output}
 		"""
 
@@ -43,13 +43,36 @@ rule shapeit_prepare_trios:
 	Prepare a file with trio information.
 	"""
 	input:
-		lambda wildcards: UNPHASED_VCFS[wildcards.callset]["sample_sheet"]
+		SAMPLE_SHEET
 	output:
-		"{results}/phasing/{callset}_trios.ped"
+		"{results}/phasing/trios.ped"
 	shell:
 		"""
 		awk '($3!=\"0\") && ($4!=\"0\")' {input} | cut -f2,3,4 > {output}
 		"""
+
+rule shapeit_prepare_ref_panel:
+	"""
+	Prepare reference panel by removing all variants with missing
+	genotypes (SHAPEIT cannot handle these).
+	"""
+	input:
+		PANEL_BI
+	output:
+		"{results}/phasing/panel.vcf.gz"
+	conda:
+		"../envs/shapeit.yaml"
+	benchmark:
+		"{results}/phasing/panel.benchmark"
+	resources:
+		mem_mb = 70000,
+		walltime = "10:00:00"
+	threads: 10
+	shell:
+		"""
+		bcftools view -g ^miss {input} -Oz -o {output}
+		tabix -p vcf {output}
+		"""	
 
 
 rule shapeit_phase_common:
@@ -58,9 +81,10 @@ rule shapeit_phase_common:
 	"""
 	input:
 		vcf = "{results}/phasing/vcf/{callset}_{chrom}.vcf.gz",
-		fam = "{results}/phasing/{callset}_trios.ped",
-		map = lambda wildcards: UNPHASED_VCFS[wildcards.callset]["genetic_maps"][wildcards.chrom],
-		haploids = "{results}/phasing/{callset}_haploid-samples.txt"
+		fam = "{results}/phasing/trios.ped",
+		map = lambda wildcards: MAPS[wildcards.chrom],
+		haploids = "{results}/phasing/haploid-samples.txt",
+		panel = "{results}/phasing/panel.vcf.gz"
 	output:
 		"{results}/phasing/{callset}_shapeit_{chrom}.bcf"
 	log:
@@ -71,14 +95,13 @@ rule shapeit_phase_common:
 		"../envs/shapeit.yaml"
 	threads: 32
         resources:
-		mem_mb = 700000, # 100000
-		walltime = "72:00:00"
+		mem_mb = 500000, # 100000
+		walltime = "40:00:00"
 	params:
-		haploids = lambda wildcards: "--haploids " + "{results}/phasing/{callset}_haploid-samples.txt".format(results = wildcards.results, callset = wildcards.callset)  if ("X" in wildcards.chrom) or ("Y" in wildcards.chrom) else "",
-		panel = lambda wildcards: "--reference " +  UNPHASED_VCFS[wildcards.callset]["panel"] if "panel" in UNPHASED_VCFS[wildcards.callset] else ""
+		haploids = lambda wildcards: "--haploids " + "{results}/phasing/haploid-samples.txt".format(results = wildcards.results)  if ("X" in wildcards.chrom) or ("Y" in wildcards.chrom) else ""
 	shell:
 		"""
-		SHAPEIT5_phase_common --input {input.vcf} --pedigree {input.fam} {params.panel} --region {wildcards.chrom} {params.haploids} --map {input.map} --output {output} --thread {threads} &> {log}
+		SHAPEIT5_phase_common --input {input.vcf} --reference {input.panel} --pedigree {input.fam} --region {wildcards.chrom} {params.haploids} --map {input.map} --output {output} --thread {threads} &> {log}
 		"""
 
 
@@ -87,7 +110,7 @@ rule shapeit_concat_vcfs:
 	Combine the phased per-chromosome VCFs into a single one.
 	"""
 	input:
-		lambda wildcards: expand("{{results}}/phasing/{{callset}}_shapeit_{chrom}.bcf", chrom = [c for c in UNPHASED_VCFS[wildcards.callset]["genetic_maps"].keys()])
+		expand("{{results}}/phasing/{{callset}}_shapeit_{chrom}.bcf", chrom = [c for c in MAPS.keys()])
 	output:
 		"{results}/phasing/{callset}_shapeit.bcf"
 	conda:
@@ -102,7 +125,7 @@ rule shapeit_concat_vcfs:
 		"{results}/phasing/{callset}_shapeit.log"
 	shell:
 		"""
-		bcftools concat -o {output} -Ob  --threads {threads} {input} &> {log}
+		bcftools concat -o {output} --threads {threads} {input} &> {log}
 		bcftools index {output}
 		"""
 

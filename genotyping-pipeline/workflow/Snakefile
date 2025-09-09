@@ -8,15 +8,15 @@ include: "rules/prepare-mc-vcf.smk"
 include: "rules/filter-genotypes.smk"
 include: "rules/genotype-cohort.smk"
 include: "rules/merge-vcfs.smk"
-include: "rules/phase-genotypes.smk"
+include: "rules/phase-genotypes-ref.smk"
 include: "rules/create-consensus-haplotypes.smk"
 
 
 def input_phasing(wildcards):
 	results = []
 	if MAPS:
-		results.extend(expand("{results}/phasing/pangenie_all-samples_filtered_shapeit.bcf", results = config["outname"]))
-		results.extend(expand("{results}/unpolished-haplotypes/pangenie_all-samples_filtered_unpolished.agc", results = config["outname"]))
+		results.extend(expand("{results}/phasing/pangenie_all-samples_unfiltered_shapeit.bcf", results = config["outname"]))
+		results.extend(expand("{results}/unpolished-haplotypes/pangenie_all-samples_unfiltered_unpolished.agc", results = config["outname"]))
 	return results 
 
 
