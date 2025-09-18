@@ -39,7 +39,7 @@ rule consensus_compress_haplotypes:
 	conda:
 		"../envs/agc.yaml"
 	resources:
-		mem_mb = 30000,
+		mem_mb = 80000,
 		walltime = "20:00:00"
 	threads: 32
 	shell:
