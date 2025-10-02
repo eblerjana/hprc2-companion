@@ -11,19 +11,28 @@ parser = argparse.ArgumentParser(prog='plot_upset.py', description=__doc__)
 parser.add_argument('-c', '--config', required=True, help='Config file: assemblies.tsv used for PAV.')
 parser.add_argument('-o', '--outname', required=True, help='output name prefix.')
 parser.add_argument('-t', '--threshold', required=True, type=float, help='Threshold to consider for plotting SVs.')
-parser.add_argument('-v', '--variants', required=True, type=string, help='File with TP variant ids.')
+parser.add_argument('-v', '--variants', required=True, help='File with TP variant ids.')
+parser.add_argument('-n', '--closest', required=True, help='bedtools closest output')
 args = parser.parse_args()
 
 
 callsetname_to_index = defaultdict(lambda: [])
 match_ids = set([])
+id_to_closest = defaultdict(lambda: "nan")
 
 # parse IDs of TP variant matches
-for line in gzip.open(args.v, 'rt'):
+for line in gzip.open(args.variants, 'rt'):
 	if line.startswith('#'):
 		continue
 	fields = line.strip().split()
 	match_ids.add(fields[2])
+
+# parse bedtools closest output
+for line in open(args.closest, 'r'):
+	if line.startswith('#'):
+		continue
+	fields = line.strip().split()
+	id_to_closest[fields[2]] = fields[-1]
 
 # parse PAV assembly.tsv file to determine order of callsets
 for line in open(args.config, 'r'):
@@ -39,7 +48,7 @@ callsetnames = sorted(callsetname_to_index.keys())
 with open(args.outname + '.tsv', 'w') as outtsv:
 
 	# print header
-	header_line = ["ID", "variant_type", "variant_length", "overlaps_bubble", "overlaps_SV"] + ['in_' + c for c in callsetnames] + ['GT_' + c for c in callsetnames]
+	header_line = ["#chromosome", "start", "end", "ID", "variant_type", "variant_length", "overlaps_bubble", "overlaps_SV", "dist_closest_SV[bp]"] + ['in_' + c for c in callsetnames] + ['GT_' + c for c in callsetnames]
 	outtsv.write("\t".join(header_line) + "\n")
 
 	# print variant lines
@@ -60,10 +69,13 @@ with open(args.outname + '.tsv', 'w') as outtsv:
 		gt_index = fields[8].split(':').index("GT")
 		alleles = fields[9].split(':')[gt_index].split('|')
 		overlaps_regions = float(fields[10]) > 0.0
+		chromosome = fields[0]
+		start = fields[1]
+		end = str(int(start) + len(fields[3]))
 
 		# print line
 		overlaps_sv = varid in match_ids 
-		line_to_print = [varid, vartype, str(variant_length), str(overlaps_regions), str(overlaps_sv)]
+		line_to_print = [chromosome, start, end, varid, vartype, str(variant_length), str(overlaps_regions), str(overlaps_sv), id_to_closest[varid]]
 
 		for callset in callsetnames:
 			assert len(callsetname_to_index[callset]) == 2
@@ -126,17 +138,26 @@ with PdfPages(args.outname + ".pdf") as outpdf:
 		outpdf.savefig()
 		plt.close()
 
+	plt.figure()
+	fig, ax = plt.subplots()
 
-	# print some statistics
-	
-	for callset in callsetnames:
+	colors = ["red", "blue", "orange", "green"]
+
+	# print some statistics	
+	for i, callset in enumerate(callsetnames):
 		if "assembly" in callset:
 			continue
+
+
+		# plot distances of variants not overlapping any SVs to closest graph SV
+		df_sub = df[ ~(df["overlaps_SV"]) & (df["in_" + callset]) & (df["variant_length"] >= args.threshold) ]
+		df_sub.hist(ax = ax, column=["dist_closest_SV[bp]"], label=callset, bins=200, color=colors[i], alpha=0.3, range = (0,100000))
+
 		print("-------------------------------------")
 		print("SV statistics for " + callset + ":")
 
-		rare_count = len(df[ ~(df["overlaps_bubble"]) & (df["in_assembly"]) & (df["in_" + callset]) & (df["variant_length"] >= args.threshold) ])
-		total = len(df[ ~(df["overlaps_bubble"]) & (df["in_assembly"]) & (df["variant_length"] >= args.threshold) ])
+		rare_count = len(df[ ~(df["overlaps_SV"]) & (df["in_assembly"]) & (df["in_" + callset]) & (df["variant_length"] >= args.threshold) ])
+		total = len(df[ ~(df["overlaps_SV"]) & (df["in_assembly"]) & (df["variant_length"] >= args.threshold) ])
 		print("rare ground truth SVs covered: " + str(rare_count))
 		print("rare ground truth SVs: " + str(total))
 		print("")
@@ -167,3 +188,12 @@ with PdfPages(args.outname + ".pdf") as outpdf:
 		print("total variants in callset: " + str(total))
 		print("")
 		print("-------------------------------------")
+
+	plt.suptitle('Distance to closest graph SV')
+	ax.set_yscale('log')
+	ax.legend()
+	fig.tight_layout()
+	outpdf.savefig()
+	plt.close()
+
+

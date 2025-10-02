@@ -104,14 +104,17 @@ rule overlaps_filter_vcf:
 	Only keep variants with filter PASS.
 	"""
 	input:
-		 "{results}/variant-overlaps/{set}/pav_{set}_{sample}/{set}.vcf.gz"
+		vcf = "{results}/variant-overlaps/{set}/pav_{set}_{sample}/{set}.vcf.gz",
+		reference = lambda wildcards: OVERLAPS[wildcards.set]["reference"]
 	output:
 		 "{results}/variant-overlaps/{set}/pav_{set}_{sample}/{set}_pass.vcf.gz"
 	conda:
 		"../envs/overlaps.yml"
+	resources:
+		mem_mb = 50000
 	shell:
 		"""
-		bcftools view -f PASS {input} -Oz -o {output}
+		bcftools view -f PASS {input.vcf} | bcftools norm -m -any -f {input.reference} | bcftools sort -Oz -o {output}
 		tabix -p vcf {output} 
 		"""
 
@@ -121,15 +124,16 @@ rule overlaps_filter_callable_vcf:
 	Only keep variants inside of callable regions provided.
 	"""
 	input:
-		vcf = "{results}/variant-overlaps/{set}/pav_{set}_{sample}/{set}.vcf.gz",
-		bed = lambda wildcards: OVERLAPS[wildcards.set]["callable_regions"]
+		vcf = "{results}/variant-overlaps/{set}/pav_{set}_{sample}/{set}_pass.vcf.gz",
+		bed = lambda wildcards: OVERLAPS[wildcards.set]["callable_regions"],
+		reference = lambda wildcards: OVERLAPS[wildcards.set]["reference"]
 	output:
 		 "{results}/variant-overlaps/{set}/pav_{set}_{sample}/{set}_callable.vcf.gz"
 	conda:
 		"../envs/overlaps.yml"
 	shell:
 		"""
-		bedtools subtract -a {input.vcf} -b {input.bed} -header | bcftools view -f PASS -Oz -o {output}
+		bedtools subtract -a {input.vcf} -b {input.bed} -header | bgzip > {output}
 		tabix -p vcf {output} 
 		"""
 
@@ -158,7 +162,8 @@ rule overlaps_plot_overlaps:
 		vcf = "{results}/variant-overlaps/{set}/pav_{set}_{sample}/{set}_{filter}.vcf.gz",
 		bed =  "{results}/variant-overlaps/{set}/bubbles.bed",
 		pav_config = "{results}/variant-overlaps/{set}/pav_{set}_{sample}/assemblies.tsv",
-		variants = "{results}/variant-overlaps/{set}/evaluation/truvari/truvari_{set}_{sample}_{filter}/tp-comp.vcf.gz"
+		variants = "{results}/variant-overlaps/{set}/evaluation/truvari/truvari_{set}_{sample}_{filter}/tp-comp.vcf.gz",
+		closest = "{results}/variant-overlaps/{set}/evaluation/truvari/{set}_{sample}_{filter}_closest.tsv"
 	output:
 		tsv = "{results}/variant-overlaps/{set}/evaluation/{set}_{sample}_{filter}.tsv",
 		pdf = "{results}/variant-overlaps/{set}/evaluation/{set}_{sample}_{filter}.pdf"
@@ -172,13 +177,18 @@ rule overlaps_plot_overlaps:
 		outname = "{results}/variant-overlaps/{set}/evaluation/{set}_{sample}_{filter}"
 	shell:
 		"""
-		bedtools annotate -i {input.vcf} -files {input.bed} | python3 workflow/scripts/count-variants.py --config {input.pav_config} --outname {params.outname} -t {BUBBLE_SIZE_THRESHOLD} -v {input.variants} &> {log}
+		bedtools annotate -i {input.vcf} -files {input.bed} | python3 workflow/scripts/count-variants.py --config {input.pav_config} --outname {params.outname} -t {BUBBLE_SIZE_THRESHOLD} -v {input.variants} -n {input.closest} &> {log}
 		"""
 
 
 ######### determine variant overlaps ########
 
 rule overlaps_truvari_prepare_bubbles:
+	"""
+	Normalize graph variants, set their genotypes to 1/1 (to make truvari
+	consider all of them), extract SVs and fix format to work with
+	truvari.
+	"""
 	input:
 		vcf = lambda wildcards: OVERLAPS[wildcards.set]["variants"],
 		reference = lambda wildcards: OVERLAPS[wildcards.set]["reference"],
@@ -188,17 +198,20 @@ rule overlaps_truvari_prepare_bubbles:
 	conda:
 		"../envs/truvari.yml"
 	resources:
-		mem_mb = 10000
-	log:
-		"{results}/variant-overlaps/{set}/evaluation/truvari/{set}_graph.log"
+		mem_mb = 50000,
+		walltime = "05:00:00"
 	shell:
 		"""
-		bcftools norm -m -any -f {input.reference} {input.vcf} | python3 workflow/scripts/fix-header.py {input.ref_index} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}' | python3 workflow/scripts/extract-varianttype.py sv | bgzip > {output}
+		bcftools norm -m -any -f {input.reference} {input.vcf} | python3 workflow/scripts/set-hom-gt.py | python3 workflow/scripts/fix-header.py {input.ref_index} | python3 workflow/scripts/extract-varianttype.py sv | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}' | bgzip > {output}
 		tabix -p vcf {output}
 		"""
 
 	
 rule overlaps_truvari_prepare_calls:
+	"""
+	Normalize calls, set their genotypes to 1/1, remove INV calls, extract SVs
+	and fix format to work with truvari.
+	"""
 	input:
 		vcf = "{results}/variant-overlaps/{set}/pav_{set}_{sample}/{set}_{filter}.vcf.gz",
 		reference = lambda wildcards: OVERLAPS[wildcards.set]["reference"],
@@ -209,11 +222,9 @@ rule overlaps_truvari_prepare_calls:
 		"../envs/truvari.yml"
 	resources:
 		mem_mb = 10000
-	log:
-		 "{results}/variant-overlaps/{set}/evaluation/truvari/{set}_{sample}_{filter}_calls.log"
 	shell:
 		"""
-		bcftools norm -m -any -f {input.reference} {input.vcf} | python3 workflow/scripts/fix-header.py {input.ref_index} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}' | python3 workflow/scripts/extract-varianttype.py sv | bgzip > {output}
+		zcat {input.vcf} | python3 workflow/scripts/set-hom-gt.py | python3 workflow/scripts/fix-header.py {input.ref_index} | grep -v "\<INV\>" | python3 workflow/scripts/extract-varianttype.py sv | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}' | bgzip > {output}
 		tabix -p vcf {output}
 		"""
 
@@ -240,4 +251,22 @@ rule overlaps_truvari:
 		truvari bench -b {input.baseline} -c {input.callset} -f {input.reference} -o {params.tmp} --pick multi -r 1000 -C 1000 -s 50 -S 15 --sizemax 100000 -p 0.0 -P 0.3 -O 0.0 --passonly --no-ref a &> {log}
 		mv {params.tmp}/* {params.outname}/
 		rm -r {params.tmp}
+		"""
+
+rule overlaps_closest:
+	"""
+	For all SV calls, compute distance to the closest graph SV.
+	"""
+	input:
+		calls = "{results}/variant-overlaps/{set}/evaluation/truvari/{set}_{sample}_{filter}_calls.vcf.gz",
+		graph = "{results}/variant-overlaps/{set}/evaluation/truvari/{set}_graph.vcf.gz"
+	output:
+		"{results}/variant-overlaps/{set}/evaluation/truvari/{set}_{sample}_{filter}_closest.tsv"
+	conda:
+		 "../envs/overlaps.yml"
+	resources:
+		mem_mb=20000
+	shell:
+		"""
+		bedtools closest -a {input.calls} -b {input.graph} -d -t first > {output}
 		"""
