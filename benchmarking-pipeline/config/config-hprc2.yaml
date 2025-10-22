@@ -6,6 +6,7 @@ reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/comp
 sample-info: "1kg-hprc2-sample-sheet.tsv"
 
 avg_illumina_cov: 30
+kage_chromosomes: "input-data/kage-chromosomes.bed"
 
 leave_one_out_samples:
         - HG002

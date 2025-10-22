@@ -5,6 +5,7 @@ reference: "input-data/chm13v2.0.fa"
 sample-info: "1kg-reads-updated.tsv" 
 
 avg_illumina_cov: 30
+kage_chromosomes: "input-data/kage-chromosomes.bed"
 
 leave_one_out_samples:
         - NA24385

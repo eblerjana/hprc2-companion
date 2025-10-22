@@ -377,7 +377,7 @@ rule plot_resources:
 	Plot resources (single core CPU time / max RSS)	for different sampling sizes.
 	"""
 	input:
-		expand("{{results}}/leave-one-out/{method}/{sample}/{sample}_{method}.benchmark.txt", method = GENOTYPERS, sample = LEAVE_ONE_OUT_SAMPLES)	
+		expand("{{results}}/leave-one-out/{method}/{sample}/{sample}_{method}.benchmark.txt", method = [g for g in GENOTYPERS if g != "kage"], sample = LEAVE_ONE_OUT_SAMPLES)	
 	output:
 		"{results}/leave-one-out/plots/resources.pdf"
 	conda:

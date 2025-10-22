@@ -22,10 +22,11 @@ ALLOWED_VARIANTS = ['snp', 'indels', 'large-deletion', 'large-insertion', 'large
 LEAVE_ONE_OUT_SAMPLES = config["leave_one_out_samples"]
 EVALUATION_REGIONS = config["evaluation_regions"]
 AVG_ILLUMINA_COV = config["avg_illumina_cov"]
+KAGE_CHROMOSOMES = [line.strip() for line in open(config["kage_chromosomes"], 'r')]
 
 SAMPLING_SIZES = config["sampling_sizes"]
 SUBSAMPLING_SIZES = config["subsetting_sizes"]
-GENOTYPERS = [] #["kage"]
+GENOTYPERS = ["kage"]
 
 for s in SAMPLING_SIZES:
 	GENOTYPERS.append("pangenie-sampled-" + str(s))
