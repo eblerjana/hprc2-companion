@@ -11,8 +11,10 @@ samples_to_exclude:
 
 # reference genome
 reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/chm13v2.0_maskedY_rCRS.fa"
+# reference used for CRAM long reads
+cram_ref: "/gpfs/project/projects/medbioinf/data/1000G-ont/1KG_ONT_VIENNA_t2t.fa.gz"
 # sample sheet
-sample-sheet: "1kg-hprc2-sample-sheet.tsv" 
+sample-sheet: "1kg-hprc2-sample-sheet-withONT.tsv" 
 # name of the output folder
 outname: "results-hprc2-full"
 

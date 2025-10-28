@@ -10,6 +10,7 @@ include: "rules/genotype-cohort.smk"
 include: "rules/merge-vcfs.smk"
 include: "rules/phase-genotypes-ref.smk"
 include: "rules/create-consensus-haplotypes.smk"
+include: "rules/polish-haplotypes.smk"
 
 
 def input_phasing(wildcards):
@@ -27,7 +28,9 @@ rule all:
 		expand("{results}/filtering/all_genotyping_statistics.tsv", results = config["outname"]),
 		expand("{results}/filtering/pangenie_plot.log", results = config["outname"]),
 		expand("{results}/filtering/pangenie_all-samples_{filter}.vcf.gz", results = config["outname"], filter="filtered"),
-		input_phasing
+		input_phasing,
+		expand("{results}/polishing/pangenie_all-samples_unfiltered/all/polished/pangenie_all-samples_unfiltered_25_polished.agc", results = config["outname"])
+
 
 rule prepare_mc_vcf:
 	input:
@@ -47,3 +50,8 @@ rule filtering:
 rule phasing:
 	input:
 		input_phasing
+
+
+rule polishing:
+	input:
+		expand("{results}/polishing/pangenie_all-samples_unfiltered/all/polished/pangenie_all-samples_unfiltered_25_polished.agc", results = config["outname"])

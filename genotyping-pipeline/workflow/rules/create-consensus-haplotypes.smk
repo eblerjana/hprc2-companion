@@ -8,7 +8,7 @@ rule consensus_compute_consensus:
 		vcf = "{results}/phasing/{callset}_shapeit.bcf",
 		reference = REFERENCE
 	output:
-		"{results}/unpolished-haplotypes/{callset}/{callset}_unpolished_{sample}_hap{haplotype}.fasta.gz"
+		temp("{results}/unpolished-haplotypes/{callset}/{callset}_unpolished_{sample}_hap{haplotype}.fasta.gz")
 	log:
 		"{results}/unpolished-haplotypes/{callset}/{callset}_unpolished_{sample}_hap{haplotype}.log"
 	benchmark:

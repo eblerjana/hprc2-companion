@@ -43,6 +43,10 @@ assert os.path.isfile(REFERENCE + ".fai"), "File " + REFERENCE + ".fai (index) d
 SAMPLE_SHEET = config["sample-sheet"]
 ILLUMINA = {}
 ONT = {}
+READ_TECH = {}
+CRAM_REF = config["cram_ref"]
+WINDOW_WIDTHS = [25]
+
 assert os.path.isfile(SAMPLE_SHEET), "File " + SAMPLE_SHEET + " does not exist."
 
 for line in open(SAMPLE_SHEET, 'r'):
@@ -52,9 +56,26 @@ for line in open(SAMPLE_SHEET, 'r'):
 	if fields[7] == "nan":
 		continue
 	ILLUMINA[fields[1]] = fields[7]
+
 	assert os.path.isfile(fields[7]), "File " + fields[7] + " does not exist."
-#	ONT[fields[1]] = fields[8]
-#	assert os.path.isfile(fields[8]), "File " + fields[8] + " does not exist."
+	if fields[8] != "nan":
+		ONT[fields[1]] = fields[8]
+		assert fields[9] in ["ONT", "HIFI"], "Read technology must either be ONT or HIFI."
+		READ_TECH[fields[1]] = fields[9]
+
+AGC = {
+	"pangenie_all-samples_unfiltered": "{results}/unpolished-haplotypes/pangenie_all-samples_unfiltered_unpolished.agc"
+}
+
+CONSENSUS = {}
+CONSENSUS["pangenie_all-samples_unfiltered"] = {}
+
+for sample in ONT:
+	for haplotype in ["hap1", "hap2"]:
+		CONSENSUS["pangenie_all-samples_unfiltered"][(sample, haplotype)] = "pangenie_all-samples_unfiltered_unpolished_" + sample + "_" + haplotype
+SAMPLES = [s for s in ONT.keys()]
+SAMPLES = ["HG00096"]
+
 
 MAPS = config["maps"]
 # parse chromosomes and define regions needed for merging

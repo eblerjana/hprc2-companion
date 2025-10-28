@@ -85,7 +85,7 @@ rule kage_genotype:
 		"{results}/leave-one-out/kage/{sample}/{sample}_kage_bi_genotyping_{chrom}.log"
 	resources:
 		mem_mb = 50000,
-		walltime = "02:00:00"
+		walltime = "05:00:00"
 	wildcard_constraints:
 		chrom = "|".join(KAGE_CHROMOSOMES)
 	benchmark:
@@ -109,6 +109,8 @@ rule kage_postprocess:
 	output:
 		vcf = temp("{results}/leave-one-out/kage/{sample}/{sample}_kage_bi_genotyping_{chrom}.vcf.gz"),
 		tbi = temp("{results}/leave-one-out/kage/{sample}/{sample}_kage_bi_genotyping_{chrom}.vcf.gz.tbi")
+	resources:
+		mem_mb = 50000
 	shell:
 		"""
 		cat {input.kage} | python3 workflow/scripts/add-ids.py {input.vcf} | bgzip > {output}
