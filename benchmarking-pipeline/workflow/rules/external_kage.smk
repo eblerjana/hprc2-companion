@@ -104,7 +104,7 @@ rule external_kage_genotype:
 		"{results}/external-calls/kage/{sample}/{sample}_kage_bi_genotyping_{chrom}.log"
 	resources:
 		mem_mb = 50000,
-		walltime = "05:00:00"
+		walltime = "10:00:00"
 	benchmark:
 		 "{results}/external-calls/kage/{sample}/{sample}_kage_{chrom}.benchmark.txt"
 	singularity:
@@ -130,10 +130,13 @@ rule external_kage_postprocess:
 		vcf = temp("{results}/external-calls/kage/{sample}/{sample}_kage_bi_genotyping_{chrom}.vcf.gz"),
 		tbi = temp("{results}/external-calls/kage/{sample}/{sample}_kage_bi_genotyping_{chrom}.vcf.gz.tbi")
 	resources:
-		mem_mb = 50000
+		mem_mb = 50000,
+		walltime = "05:00:00"
+	conda:
+		"../envs/genotyping.yml"
 	shell:
 		"""
-		cat {input.kage} | python3 workflow/scripts/add-ids.py {input.vcf} | bgzip > {output.vcf}
+		cat {input.kage} | python3 workflow/scripts/add-ids.py {input.vcf} {wildcards.sample} | bgzip > {output.vcf}
 		tabix -p vcf {output.vcf}
 		"""
 

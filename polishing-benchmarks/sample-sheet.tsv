@@ -1,0 +1,6 @@
+#FamilyID	SampleID	FatherID	MotherID	Sex	Population	Superpopulation	SampleIllumina	SampleLong
+HG00096-vienna	HG00096-vienna	0	0	1	GBR	EUR	/gpfs/project/projects/medbioinf/data/illumina_nygc/output/interleaved/PRJEB31736.2504/HG00096_ERR3240114.fasta.gz	/gpfs/project/projects/medbioinf/data/1000G-ont/t2t/HG00096.t2t.cram	ONT
+HG00096-hifi	HG00096-hifi	0	0	1	GBR	EUR	/gpfs/project/projects/medbioinf/data/illumina_nygc/output/interleaved/PRJEB31736.2504/HG00096_ERR3240114.fasta.gz	raw-reads/HG00096-hifi.fastq.gz	HIFI
+HG03548-vienna	HG03548-vienna	0	0	2	MSL	AFR	/gpfs/project/projects/medbioinf/data/illumina_nygc/output/interleaved/PRJEB31736.2504/HG03548_ERR3242571.fasta.gz	/gpfs/project/projects/medbioinf/data/1000G-ont/t2t/HG03548.t2t.cram	ONT
+HG03548-miller	HG03548-miller	0	0	2	MSL	AFR	/gpfs/project/projects/medbioinf/data/illumina_nygc/output/interleaved/PRJEB31736.2504/HG03548_ERR3242571.fasta.gz	raw-reads/HG03548-ONT-hg38-R9-LSK110-guppy-sup-5mC.unaligned.bam	ONT
+HG02282-miller	HG02282-miller	0	0	2	ACB	AFR	/gpfs/project/projects/medbioinf/data/illumina_nygc/output/interleaved/PRJEB31736.2504/HG02282_ERR3242231.fasta.gz	raw-reads/HG02282-ONT-hg38-R9-LSK110-guppy-sup-5mC.unaligned.bam	ONT

@@ -111,9 +111,11 @@ rule kage_postprocess:
 		tbi = temp("{results}/leave-one-out/kage/{sample}/{sample}_kage_bi_genotyping_{chrom}.vcf.gz.tbi")
 	resources:
 		mem_mb = 50000
+	conda:
+		"../envs/genotyping.yml"
 	shell:
 		"""
-		cat {input.kage} | python3 workflow/scripts/add-ids.py {input.vcf} | bgzip > {output}
+		cat {input.kage} | python3 workflow/scripts/add-ids.py {input.vcf} {wildcards.sample} | bgzip > {output}
 		tabix -p vcf {output}
 		"""
 

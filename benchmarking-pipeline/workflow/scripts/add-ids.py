@@ -2,6 +2,7 @@ import sys
 import gzip
 
 input_vcf = sys.argv[1]
+input_sample = sys.argv[2]
 
 var_to_id = {}
 
@@ -20,8 +21,13 @@ for line in gzip.open(input_vcf, 'rt'):
 
 
 for line in sys.stdin:
-	if line.startswith('#'):
+	if line.startswith('##'):
 		print(line.strip())
+		continue
+	if line.startswith('#'):
+		fields = line.strip().split()
+		fields[-1] = input_sample
+		print("\t".join(fields))
 		continue
 	fields = line.strip().split()
 	info_fields = {s.split('=')[0] : s.split('=')[1] for s in fields[7].split(';') if '=' in s}

@@ -62,6 +62,7 @@ subsetting_sizes:
 
 evaluation_regions:
         all: "input-data/chm13.bed"
+        kage: "input-data/kage-chromosomes.bed"
 
 # name of the output folder
 outname: "results-hprc2"

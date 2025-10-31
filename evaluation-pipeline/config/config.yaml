@@ -19,6 +19,12 @@ consensus_haplotypes:
         HPRC2-polished-onlySNPs-25:
                 agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2/polishing/HPRC2-PG/only-snps/polished/HPRC2-PG_25_polished.agc"
                 names: "readsets-25.tsv"
+        HPRC2-repolished-all-25:
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-repolish/polishing/HPRC2-PG/all/polished/HPRC2-PG_25_polished.agc"
+                names: "readsets-25.tsv"
+        HPRC2-strobealign-all-25:
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/polishing/pangenie_all-samples_unfiltered/all/polished/pangenie_all-samples_unfiltered_25_polished.agc"
+                names: "strobe-25.tsv"
 
 outname: "results-hprc2-readsets"
 assemblies: "assemblies-readset.tsv"
