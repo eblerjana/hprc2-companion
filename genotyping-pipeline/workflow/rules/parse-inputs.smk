@@ -74,7 +74,6 @@ for sample in ONT:
 	for haplotype in ["hap1", "hap2"]:
 		CONSENSUS["pangenie_all-samples_unfiltered"][(sample, haplotype)] = "pangenie_all-samples_unfiltered_unpolished_" + sample + "_" + haplotype
 SAMPLES = [s for s in ONT.keys()]
-SAMPLES = ["HG00096"]
 
 
 MAPS = config["maps"]

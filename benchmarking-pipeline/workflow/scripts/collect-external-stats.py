@@ -74,9 +74,11 @@ def print_data(data, truthset, region, filters, samples, vartypes, genotypers, o
 
 	
 def plot_data(data, truthset, region, filters, samples, vartypes, genotypers, outname):
+	plt.style.use('tableau-colorblind10')
+	plt.rcParams["font.family"] = "Nimbus Sans"
 	var_to_name = {
 		'snp-indel': 'SNPs + indels (1-49bp)',
-		'sv': 'SVs (>= 50bp)'
+		'sv': 'SVs (≥ 50bp)'
 	}
 
 	colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#808080', '#f7ce37', '#bc202c', '#251188']
@@ -87,16 +89,17 @@ def plot_data(data, truthset, region, filters, samples, vartypes, genotypers, ou
 	plot_index = 1
 	for filter in filters:
 		for var in vartypes:
+			width = 0.16
 			plt.subplot(n_rows, n_cols, plot_index)
 			plot_index += 1
 			for i,genotyper in enumerate(genotypers):
 				fscores = []
 				for sample in samples:
 					fscores.append(data[(truthset, region, filter, sample, var, genotyper)][2])
-				x_values = [i*6 for i in range(len(samples))]
-				plt.plot(x_values, fscores, label=genotyper, color=colors[i], marker='o')
+				x_values = np.arange(len(samples))
+				plt.bar(x_values + width*i, fscores, width=width, label=genotyper, color=colors[i])
 			plt.title(var_to_name[var])
-			plt.xticks(x_values, samples, rotation = 'vertical')
+			plt.xticks(x_values + width*len(genotypers)/2 - width/2, samples)
 			ylabel = ""
 			if filter == "all":
 				ylabel = "F-score"
@@ -108,16 +111,17 @@ def plot_data(data, truthset, region, filters, samples, vartypes, genotypers, ou
 		# plot genotype concordances
 		if filter == "all":
 			for var in vartypes:
+				width = 0.16
 				plt.subplot(n_rows, n_cols, plot_index)
 				plot_index += 1
 				for i,genotyper in enumerate(genotypers):
 					concordances = []
 					for sample in samples:
 						concordances.append(data[(truthset, region, filter, sample, var, genotyper)][3])
-					x_values = [i*6 for i in range(len(samples))]
-					plt.plot(x_values, concordances, label=genotyper, color=colors[i], marker='o')
+					x_values = np.arange(len(samples))
+					plt.bar(x_values + width*i, concordances, width=width, label=genotyper, color=colors[i])
 				plt.title(var_to_name[var])
-				plt.xticks(x_values, samples, rotation = 'vertical')
+				plt.xticks(x_values + width*len(genotypers)/2 - width/2, samples)
 				ylabel = "gt_concordance"
 				plt.ylabel(ylabel)
 				plt.grid(color='grey', linestyle='-', linewidth=0.25, alpha=0.3)
@@ -154,7 +158,7 @@ if __name__ == '__main__':
 
 	for file in sys.stdin:
 		truthset = file.strip().split('/')[-5]
-		region = file.strip().split('/')[-2].split('_')[-1].split('-')[-1]
+		region = file.strip().split('/')[-2].split('_')[-1].split('region-')[-1]
 		filter = file.strip().split('/')[-2].split('_')[-2]
 		genotyper = file.strip().split('/')[-2].split('_')[-4]
 		vartype = file.strip().split('/')[-2].split('_')[-3]

@@ -61,7 +61,7 @@ rule polish_align_illumina:
 		haplotype = "hap1|hap2"
 	resources:
 		mem_mb = 90000,
-		walltime = "06:00:00" 
+		walltime = "03:00:00" 
 	conda:
 		"../envs/strobealign.yml"
 #		"../envs/bwa.yml"
@@ -149,11 +149,12 @@ rule polish_extract_region_bam:
 	output:
 		temp("{results}/polishing/{callset}/{tech}/{tech}_{sample}_{haplotype}_{chrom}.bam")
 	resources:
-		mem_mb = 50000,
-		walltime = "02:00:00"
+		mem_mb = 10000,
+		walltime = "00:30:00"
 	wildcard_constraints:
 		tech = "illumina|ont",
 		haplotype = "hap1|hap2"
+	priority: 1
 	conda:
 		"../envs/minimap.yml"
 	log:
@@ -188,9 +189,10 @@ rule polish_call_small_variants:
 	benchmark:
 		"{results}/polishing/{callset}/deepvariant/deepvariant_{sample}_{haplotype}_{chrom}.benchmark.txt"
 	threads: 24
+	priority: 2
 	resources:
-		mem_mb = 50000,
-		walltime = "07:00:00"
+		mem_mb = 30000,
+		walltime = "01:30:00"
 	shell:
 		"""
 		 /opt/deepvariant/bin/run_deepvariant \
@@ -219,6 +221,7 @@ rule polish_filter_calls:
 		"{results}/polishing/{callset}/deepvariant/deepvariant_{sample}_{haplotype}_{chrom}_filtered.log"
 	conda:
 		"../envs/whatshap.yml"
+	priority: 3
 	shell:
 		"""
 		bcftools view -f 'PASS' {input} | bcftools norm -m- -Oz -o {output}
@@ -245,6 +248,7 @@ rule polish_phase_variants:
 	resources:
 		mem_mb = 50000,
 		walltime = "04:00:00"
+	priority: 4
 	threads: 1
 	log:
 		"{results}/polishing/{callset}/all/whatshap/whatshap_{sample}_{haplotype}_{chrom}.log"
@@ -270,6 +274,7 @@ rule polish_synchronize_variants:
 		"../envs/whatshap.yml"
 	wildcard_constraints:
 		haplotype = "hap1|hap2"
+	priority: 5
 	benchmark:
 		"{results}/polishing/{callset}/all/haplotag/haplotag_{sample}_{haplotype}_{chrom}.benchmark.txt"
 	log:
@@ -292,6 +297,7 @@ rule polish_flip_phased_genotypes:
 		"{results}/polishing/{callset}/all/haplotag/flipped_{sample}_{haplotype}_{chrom}.vcf.gz"
 	conda:
 		"../envs/whatshap.yml"
+	priority: 6
 	shell:
 		"""
 		zcat {input} | python3 workflow/scripts/flip-phasing.py | bgzip > {output}
@@ -319,6 +325,7 @@ rule polish_extract_haplotype_reads:
 		haplotype = "hap1|hap2"
 	resources:
 		mem_mb = 50000
+	priority: 7
 	log:
 		haplotag = "{results}/polishing/{callset}/all/haplotag/haplotag_{sample}_{haplotype}_{chrom}_haplotag.log",
 		split = "{results}/polishing/{callset}/all/haplotag/haplotag_{sample}_{haplotype}_{chrom}_split.log"
@@ -344,6 +351,7 @@ rule detect_switch_blocks:
 		fai = "{results}/polishing/{callset}/consensus/{sample}_{haplotype}.fa.fai"
 	output:
 		"{results}/polishing/{callset}/all/haplotag/switched_{sample}_{haplotype}_{chrom}.bed"
+	priority: 8
 	shell:
 		"""
 		zcat {input.vcf} | python3 workflow/scripts/detect-switched-blocks.py {input.fai} > {output}
@@ -369,6 +377,7 @@ rule polish_call_svs:
 		walltime = "02:00:00"
 	conda:
 		"../envs/sniffles.yml"
+	priority: 9
 	benchmark:
 		"{results}/polishing/{callset}/all/sniffles/sniffles_{sample}_{haplotype}_{chrom}.benchmark.txt"
 	log:
@@ -397,6 +406,7 @@ rule polish_detect_errors:
 		haplotype = "hap1|hap2"
 	conda:
 		"../envs/whatshap.yml"
+	priority: 10
 	log:
 		"{results}/polishing/{callset}/all/errors/errors_{sample}_{haplotype}_{chrom}_{windowsize}.log"
 	benchmark:
@@ -441,6 +451,7 @@ rule polish_concat_phased_variants:
 	resources:
 		mem_mb = 50000,
 		walltime = "02:00:00"
+	priority: 11
 	threads: 15
 	log:
 		"{results}/polishing/{callset}/all/errors/errors_whatshap_{sample}_{haplotype}_{windowsize}.log"
@@ -465,6 +476,7 @@ rule polish_correct_errors:
 		"{results}/polishing/{callset}/all/polished/{sample}_{haplotype}_{windowsize}.log"
 	benchmark:
 		"{results}/polishing/{callset}/all/polished/{sample}_{haplotype}_{windowsize}.benchmark.txt"
+	priority: 12
 	conda:
 		"../envs/whatshap.yml"
 	shell:

@@ -61,3 +61,14 @@ rule plot_score_hist:
 		"""
 		cat {input} | python3 workflow/scripts/plot-score-hist.py {output} {params.name} &> {log}
 		"""
+
+#rule plot_scores_along_chromosome:
+#	input:
+#		"{results}/evaluation/qvs/{callset}_{sample}_{haplotype}_intervals.tsv"
+#	output:
+#		"{results}/evaluation/qvs/plots/{callset}_{sample}_{haplotype}_dist.pdf"
+#	conda:
+#		"../envs/plotting.yaml"
+#	shell:
+#		"""
+#		"""

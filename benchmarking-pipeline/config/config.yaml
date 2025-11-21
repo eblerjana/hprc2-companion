@@ -63,6 +63,9 @@ subsetting_sizes:
 evaluation_regions:
         all: "input-data/chm13.bed"
         kage: "input-data/kage-chromosomes.bed"
+        easy-kage: "input-data/CHM13_notinalldifficultregions_kage.bed"
+        segdup-kage: "input-data/CHM13_alllowmapandsegdupregions_kage.bed"
+        repeat-kage: "input-data/CHM13_AllTandemRepeatsandHomopolymers_slop5_kage.bed"
 
 # name of the output folder
 outname: "results-hprc2"
@@ -77,21 +80,21 @@ external_callsets:
                 callable_regions: "input-data/chm13.bed"
                 variants: ["sv"]
                 evaluation_samples:
-                        - HG002
+#                        - HG002
                         - HG00096
                         - HG00171
-        GIAB-draft-HG002:
-                vcf: "input-data/CHM13v2.0_HG2-T2TQ100-V1.1_stvar.vcf.gz"
-                callable_regions: "input-data/CHM13v2.0_HG2-T2TQ100-V1.1_stvar.benchmark.bed"
-                variants: ["sv"]
-                evaluation_samples:
-                        - HG002
+#        GIAB-draft-HG002:
+#                vcf: "input-data/CHM13v2.0_HG2-T2TQ100-V1.1_stvar.vcf.gz"
+#                callable_regions: "input-data/CHM13v2.0_HG2-T2TQ100-V1.1_stvar.benchmark.bed"
+#                variants: ["sv"]
+#                evaluation_samples:
+#                        - HG002
         MC-wave:
                 vcf: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/hprc-v2.0-mc-chm13.wave.vcf.gz"
                 callable_regions: "input-data/chm13.bed"
                 variants: ["sv"]
                 evaluation_samples:
-                        - HG002
+#                        - HG002
                         - HG01891
 
 

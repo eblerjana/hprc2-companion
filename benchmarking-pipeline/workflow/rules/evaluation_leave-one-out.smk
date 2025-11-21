@@ -349,7 +349,7 @@ rule plot_across_samplings:
 		sources = lambda wildcards: ' '.join([ m + '_' + wildcards.regions for m in GENOTYPERS])
 	shell:
 		"""
-		python3 workflow/scripts/plot-results.py -files {input} -outname {output} -metric {wildcards.metric} -sources {params.sources}
+		python3 workflow/scripts/plot-results-bar.py -files {input} -outname {output} -metric {wildcards.metric} -sources {params.sources}
 		"""
 
 
@@ -368,7 +368,7 @@ rule plot_concordance_vs_untyped:
 		sources = lambda wildcards: ' '.join([ m + '_' + wildcards.regions for m in GENOTYPERS])
 	shell:
 		"""
-		python3 workflow/scripts/plot-results.py -files {input} -outname {output} -metric concordance-vs-untyped -sources {params.sources}
+		python3 workflow/scripts/plot-results-bar.py -files {input} -outname {output} -metric concordance-vs-untyped -sources {params.sources}
 		"""
 
 

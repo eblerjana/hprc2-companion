@@ -48,7 +48,8 @@ rule external_kage_extract_chromosome_from_vcf:
 	input:
 		"{results}/external-calls/panel-bi.vcf.gz"
 	output:
-		temp("{results}/external-calls/panel-bi_{chrom}.vcf")
+		vcf = temp("{results}/external-calls/panel-bi_{chrom}.vcf"),
+		gz = "{results}/external-calls/panel-bi_{chrom}.vcf.gz"
 	benchmark:
 		"{results}/external-calls/panel-bi_{chrom}.benchmark"
 	resources:
@@ -59,7 +60,9 @@ rule external_kage_extract_chromosome_from_vcf:
 		"../envs/genotyping.yml"
 	shell:
 		"""
-		bcftools view -r {wildcards.chrom} {input} > {output}
+		bcftools view -r {wildcards.chrom} {input} > {output.vcf}
+		bgzip -c {output.vcf} > {output.gz}
+		tabix -p vcf {output.gz}
 		"""
 
 
@@ -96,6 +99,7 @@ rule external_kage_genotype:
 	Run Kage genotyping.
 	"""
 	input:
+		panel = "{results}/external-calls/panel-bi_{chrom}.vcf.gz",
 		reads = lambda wildcards: ILLUMINA[wildcards.sample],
 		index = "{results}/external-calls/kage/index/index_{chrom}.npz"
 	output:
@@ -103,8 +107,8 @@ rule external_kage_genotype:
 	log:
 		"{results}/external-calls/kage/{sample}/{sample}_kage_bi_genotyping_{chrom}.log"
 	resources:
-		mem_mb = 50000,
-		walltime = "10:00:00"
+		mem_mb = 200000,
+		walltime = "05:00:00"
 	benchmark:
 		 "{results}/external-calls/kage/{sample}/{sample}_kage_{chrom}.benchmark.txt"
 	singularity:
@@ -114,7 +118,7 @@ rule external_kage_genotype:
 	threads: 24
 	shell:
 		"""
-		kage genotype -i {input.index} -r {input.reads} -t {threads} --average-coverage {AVG_ILLUMINA_COV} -k 31 -o {output} &> {log}
+		kage genotype -i {input.index} -r {input.reads} -t {threads} --average-coverage {AVG_ILLUMINA_COV} -k 31  -o {output} &> {log}
 		"""
 
 

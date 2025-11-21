@@ -30,7 +30,8 @@ rule kage_extract_chromosome_from_vcf:
 	input:
 		"{results}/leave-one-out/input-panel/panel-{sample}_bi.vcf.gz"
 	output:
-		temp("{results}/leave-one-out/kage/panel-{sample}_{chrom}.vcf")
+		vcf = temp("{results}/leave-one-out/kage/panel-{sample}_{chrom}.vcf"),
+		gz = temp("{results}/leave-one-out/kage/panel-{sample}_{chrom}.vcf.gz")
 	benchmark:
 		"{results}/leave-one-out/kage/panel-{sample}_{chrom}.benchmark"
 	resources:
@@ -41,7 +42,9 @@ rule kage_extract_chromosome_from_vcf:
 		"../envs/genotyping.yml"
 	shell:
 		"""
-		bcftools view -r {wildcards.chrom} {input} > {output}
+		bcftools view -r {wildcards.chrom} {input} > {output.vcf}
+		bgzip -c {output.vcf} > {output.gz}
+		tabix -p vcf {output.gz}
 		"""
 
 
@@ -77,6 +80,7 @@ rule kage_genotype:
 	Run Kage genotyping.
 	"""
 	input:
+		panel = "{results}/leave-one-out/kage/panel-{sample}_{chrom}.vcf.gz",
 		reads = lambda wildcards: ILLUMINA[wildcards.sample],
 		index = "{results}/leave-one-out/kage/index-{sample}/index-{sample}_{chrom}.npz"
 	output:
@@ -84,7 +88,7 @@ rule kage_genotype:
 	log:
 		"{results}/leave-one-out/kage/{sample}/{sample}_kage_bi_genotyping_{chrom}.log"
 	resources:
-		mem_mb = 50000,
+		mem_mb = 150000,
 		walltime = "05:00:00"
 	wildcard_constraints:
 		chrom = "|".join(KAGE_CHROMOSOMES)
@@ -95,7 +99,7 @@ rule kage_genotype:
 	threads: 24
 	shell:
 		"""
-		kage genotype -i {input.index} -r {input.reads} -t {threads} --average-coverage {AVG_ILLUMINA_COV} -k 31 -o {output} &> {log}
+		kage genotype -i {input.index} -r {input.reads} -t {threads} --average-coverage {AVG_ILLUMINA_COV} -k 31  -o {output} &> {log}
 		"""
 
 rule kage_postprocess:
