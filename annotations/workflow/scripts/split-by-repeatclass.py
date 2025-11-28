@@ -35,7 +35,7 @@ for line in sys.stdin:
 	if line.startswith('#'):
 		continue
 	fields = line.strip().split()
-	repeatclass = name_to_class(fields[4])
+	repeatclass = name_to_class(fields[3])
 	files[repeatclass].write('\t'.join([fields[0], fields[1], fields[2]]) + '\n')
 
 for repeatclass in files.keys():

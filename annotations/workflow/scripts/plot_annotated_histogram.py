@@ -6,7 +6,7 @@ import numpy as np
 
 repeatnames = []
 
-max_qv = 100
+max_qv = 70
 windowsize = 1000000
 outname = sys.argv[1]
 
@@ -33,7 +33,6 @@ for line in sys.stdin:
 		total_repeat_bp += bp_covered
 
 	# compute bps in window not covered
-	print(line)
 	if total_repeat_bp > 1000000:
 		assert total_repeat_bp < 1100000
 		total_repeat_bp = 1000000
@@ -52,7 +51,7 @@ for l in repeatclass_to_overlaps.values():
 	computed_counts = [sum(x) for x in zip(computed_counts, l)]
 	
 for qv in range(0, max_qv):
-	print(qv_to_count[qv], computed_counts[qv])
+#	print(qv_to_count[qv], computed_counts[qv])
 	assert qv_to_count[qv] == round(computed_counts[qv])
 
 
@@ -65,12 +64,11 @@ plt.rcParams["font.family"] = "Nimbus Sans"
 with PdfPages(outname) as pdf:
 	fig, ax = plt.subplots()
 	bottom = np.zeros(max_qv)
+	title = outname.split('/')[-1].split('_histogram.pdf')[0]
 	for repeat, counts in repeatclass_to_overlaps.items():
-		print(len(x_values))
-		print(len(counts))
-		print(len(bottom))
 		p = ax.bar(x_values, counts, label=repeat, bottom=bottom)
 		bottom += counts
+	ax.set_title(title)
 	ax.legend(loc="upper right")
 	ax.set_ylabel("Count")
 	ax.set_xlabel("variant-based QV")

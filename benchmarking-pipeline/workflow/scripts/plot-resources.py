@@ -2,8 +2,9 @@ import sys
 from matplotlib.backends.backend_pdf import PdfPages
 import gzip
 import matplotlib.pyplot as plt
+import matplotlib
 import argparse
-
+import numpy as np
 
 def extract_resources(filename):
 	cpu_time = 0.0
@@ -23,6 +24,7 @@ def extract_resources(filename):
 
 
 def plot_resources(files, outname):
+	plt.rcParams["font.family"] = "Nimbus Sans"
 	colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#808080', '#f7ce37', '#bc202c', '#251188' ]
 	runtimes = {}
 	wallclock_times = {}
@@ -43,10 +45,11 @@ def plot_resources(files, outname):
 
 	samples = sorted(list(samples))
 	sizes = sorted(list(sizes))
-	x_values = [i for i in range(len(samples))]
+	x_values = np.arange(len(samples))
 
 	with PdfPages(outname +  '.pdf') as pdf:
 		# plot runtimes
+		width = 0.16
 		fig, ax = plt.subplots()
 		for size in sizes:
 			line_runtimes = [runtimes[(sample, size)] for sample in samples]
@@ -54,6 +57,7 @@ def plot_resources(files, outname):
 		ax.set_xticks(x_values)
 		ax.set_xticklabels(samples, rotation='vertical')
 		ax.set_ylabel('Single core CPU seconds')
+		ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 		ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 		plt.tight_layout()
 		pdf.savefig()
@@ -67,6 +71,7 @@ def plot_resources(files, outname):
 		ax.set_xticks(x_values)
 		ax.set_xticklabels(samples, rotation='vertical')
 		ax.set_ylabel('Wallclock seconds')
+		ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 		ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 		plt.tight_layout()
 		pdf.savefig()
@@ -80,6 +85,7 @@ def plot_resources(files, outname):
 		ax.set_xticks(x_values)
 		ax.set_xticklabels(samples, rotation='vertical')
 		ax.set_ylabel('Max RSS [GB]')
+		ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 		ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 		plt.tight_layout()
 		pdf.savefig()

@@ -27,6 +27,6 @@ echo "Run BISER ..."
 biser -o ${outname}_biser_segdups.bedpe -t ${threads} ${outname}_softmasked.fa --gc-heap 8G &> ${outname}_biser.log
 
 echo "Convert to BED ..."
-cat ${outname}_biser_segdups.bedpe | python3 workflow/scripts/biser-to-bed.py | bedtools sort | bedtools merge > ${outname}_biser_segdups.bed
+cat ${outname}_biser_segdups.bedpe | python3 workflow/scripts/biser-to-bed.py | bedtools sort | bedtools merge | python3 workflow/scripts/add-col.py > ${outname}_biser_segdups.bed
 
 echo "Done."

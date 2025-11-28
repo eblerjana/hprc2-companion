@@ -4,29 +4,23 @@ consensus_haplotypes:
         PG-unpolished:
                 agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/PanGenie-SHAPEIT_all_consensus-haplotypes.agc"
                 names: "pg-unpolished.tsv"
-        HPRC2-unpolished-lenient:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/unpolished-haplotypes-lenient/pangenie_all-samples_filtered_unpolished.agc"
-                names: "readsets-hprc.tsv"
         HPRC2-unpolished-unfiltered:
                 agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/unpolished-haplotypes/pangenie_all-samples_unfiltered_unpolished.agc"
                 names: "readsets-unfiltered.tsv"
         HPRC2-polished-all-25:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2/polishing/HPRC2-PG/all/polished/HPRC2-PG_25_polished.agc"
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/polishing-benchmarks/results-hprc2/polishing/HPRC2-PG/all/polished/HPRC2-PG_25_polished.agc"
                 names: "readsets-25.tsv"
         HPRC2-polished-noSVs-25:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2/polishing/HPRC2-PG/no-svs/polished/HPRC2-PG_25_polished.agc"
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/polishing-benchmarks/results-hprc2/polishing/HPRC2-PG/no-svs/polished/HPRC2-PG_25_polished.agc"
                 names: "readsets-25.tsv"
         HPRC2-polished-onlySNPs-25:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2/polishing/HPRC2-PG/only-snps/polished/HPRC2-PG_25_polished.agc"
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/polishing-benchmarks/results-hprc2/polishing/HPRC2-PG/only-snps/polished/HPRC2-PG_25_polished.agc"
                 names: "readsets-25.tsv"
         HPRC2-repolished-all-25:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/results-hprc2-repolish/polishing/HPRC2-PG/all/polished/HPRC2-PG_25_polished.agc"
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/polishing-benchmarks/results-hprc2-repolish/polishing/HPRC2-PG/all/polished/HPRC2-PG_25_polished.agc" 
                 names: "readsets-25.tsv"
-        HPRC2-strobealign-all-25:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/polishing/pangenie_all-samples_unfiltered/all/polished/pangenie_all-samples_unfiltered_25_polished.agc"
-                names: "strobe-25.tsv"
 
-outname: "results-hprc2-readsets"
+outname: "results-hprc2-varianttypes"
 assemblies: "assemblies-readset.tsv"
 
 sex_chromosomes:

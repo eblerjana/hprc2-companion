@@ -29,7 +29,7 @@ rule histogram_run_biser:
 		assembly = "{results}/{sample}/assembly/{sample}.fa",
 		bed = lambda wildcards: BED[wildcards.sample],
 	output:
-		"{results}/{sample}/biser/{sample}_segdups.bed"
+		"{results}/{sample}/biser/{sample}_biser_segdups.bed"
 	singularity:
 		"workflow/container/biser.sif"
 	log:
@@ -55,7 +55,7 @@ rule histogram_substract_repeats_from_segdups:
 	"""
 	input:
 		repeatmasker_bed = lambda wildcards: BED[wildcards.sample],
-		biser_bed =  "{results}/{sample}/biser/{sample}_segdups.bed"
+		biser_bed =  "{results}/{sample}/biser/{sample}_biser_segdups.bed"
 	output:
 		repeats = "{results}/{sample}/plots/{sample}_repeats.bed",
 		combined = "{results}/{sample}/plots/{sample}_repeats-segdups.bed"
@@ -85,6 +85,6 @@ rule histogram_plot_annotations:
 		"{results}/{sample}/plots/{sample}_histogram.log"
 	shell:
 		"""
-		mkdir {wildcards.results}/{wildcards.sample}/plots/
+		mkdir -p {wildcards.results}/{wildcards.sample}/plots/
 		./workflow/scripts/plot_qv_hist.sh {input.bed} {input.qvs} {params.outname} &> {log}
 		"""
