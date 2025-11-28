@@ -81,7 +81,7 @@ with PdfPages(outname) as pdf:
 
 	# normalize the counts by the windowsize
 	for repeatclass in repeatclass_to_overlaps:
-		repeatclass_to_overlaps[repeatclass] = [r / max(bp_sums[i],1) for i,r in enumerate(repeatclass_to_overlaps[repeatclass])]
+		repeatclass_to_overlaps[repeatclass] = [100.0 * (r / max(bp_sums[i],1)) for i,r in enumerate(repeatclass_to_overlaps[repeatclass])]
 
 	# plot same histogram, but normalize the bars by size
 	fig, ax = plt.subplots()
@@ -92,7 +92,7 @@ with PdfPages(outname) as pdf:
 		bottom += counts
 	ax.set_title(title)
 	ax.legend(loc="upper right")
-	ax.set_ylabel("Count")
+	ax.set_ylabel("Overlap [%]")
 	ax.set_xlabel("variant-based QV")
 	pdf.savefig()
 	plt.close()
