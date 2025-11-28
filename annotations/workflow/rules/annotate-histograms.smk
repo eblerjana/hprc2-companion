@@ -57,14 +57,16 @@ rule histogram_substract_repeats_from_segdups:
 		repeatmasker_bed = lambda wildcards: BED[wildcards.sample],
 		biser_bed =  "{results}/{sample}/biser/{sample}_biser_segdups.bed"
 	output:
+		segdups = "{results}/{sample}/plots/{sample}_segdups.bed",
 		repeats = "{results}/{sample}/plots/{sample}_repeats.bed",
 		combined = "{results}/{sample}/plots/{sample}_repeats-segdups.bed"
 	conda:
 		"../envs/histogram.yml"
 	shell:
 		"""
-		bedtools subtract -a {input.repeatmasker_bed} -b {input.biser_bed} | cut -f1,2,3,7 > {output.repeats}
-		cat {output.repeats} {input.biser_bed} | bedtools sort > {output.combined}
+		bedtools subtract -a {input.biser_bed} -b {input.repeatmasker_bed} > {output.segdups}
+		cut -f1,2,3,7 {input.repeatmasker_bed} > {output.repeats}
+		cat {output.repeats} {output.segdups} | bedtools sort > {output.combined}
 		"""
 
 

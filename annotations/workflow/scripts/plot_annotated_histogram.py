@@ -75,3 +75,27 @@ with PdfPages(outname) as pdf:
 	pdf.savefig()
 	plt.close()
 
+	bp_sums = [0] * max_qv
+	for l in repeatclass_to_overlaps.values():
+		bp_sums = [sum(x) for x in zip(bp_sums, l)]
+
+	# normalize the counts by the windowsize
+	for repeatclass in repeatclass_to_overlaps:
+		repeatclass_to_overlaps[repeatclass] = [r / max(bp_sums[i],1) for i,r in enumerate(repeatclass_to_overlaps[repeatclass])]
+
+	# plot same histogram, but normalize the bars by size
+	fig, ax = plt.subplots()
+	bottom = np.zeros(max_qv)
+	title = outname.split('/')[-1].split('_histogram.pdf')[0]
+	for repeat, counts in repeatclass_to_overlaps.items():
+		p = ax.bar(x_values, counts, label=repeat, bottom=bottom)
+		bottom += counts
+	ax.set_title(title)
+	ax.legend(loc="upper right")
+	ax.set_ylabel("Count")
+	ax.set_xlabel("variant-based QV")
+	pdf.savefig()
+	plt.close()
+
+
+
