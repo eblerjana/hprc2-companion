@@ -10,10 +10,11 @@ rule evaluate_calls:
 		bed_err = "{results}/evaluation/qvs/{callset}_{sample}_{haplotype}_err.bed",
 		intervals = "{results}/evaluation/qvs/{callset}_{sample}_{haplotype}_intervals.tsv"
 	params:
-		ref = "consensus"
+		ref = "consensus",
+		chromosomes = "--skip-chroms " + ",".join(SEX_CHROMOSOMES) if SEX_CHROMOSOMES else ""
 	shell:
 		"""
-		zcat {input.vcf} | python3 workflow/scripts/evaluate-assemblies-intervals.py --name {wildcards.callset}_{wildcards.sample}_{wildcards.haplotype} --hap1 {input.hap1} --hap2 {input.hap2} --errors {output.bed_err} --all {output.bed_all} --reference {params.ref} --intervals {output.intervals} > {output.tsv}
+		zcat {input.vcf} | python3 workflow/scripts/evaluate-assemblies-intervals.py --name {wildcards.callset}_{wildcards.sample}_{wildcards.haplotype} --hap1 {input.hap1} --hap2 {input.hap2} --errors {output.bed_err} --all {output.bed_all} --reference {params.ref} --intervals {output.intervals} {params.chromosomes} > {output.tsv}
 		"""
 
 

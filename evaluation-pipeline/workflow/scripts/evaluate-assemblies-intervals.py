@@ -134,6 +134,7 @@ if __name__ == '__main__':
 	parser.add_argument('--all', required = True, metavar='ALL', help="Write all variants into this BED file.")
 	parser.add_argument('--reference', required = True, choices = ['assembly', 'consensus'], help="Which sequence was used as a reference.")
 	parser.add_argument('--intervals', required = True, metavar='INTERVAL', help="Write interval based scores into this file.")
+	parser.add_argument('--skip-chroms', required = False, metavar='CHROMS', help="Comma-separated list of chromosomes to skip.")
 	args = parser.parse_args()
 
 	chrom_to_length = {}
@@ -144,6 +145,7 @@ if __name__ == '__main__':
 	total_stats = Statistics(0, 0, len_h1+len_h2)
 	interval_stats = defaultdict(list)
 
+	skip_chromosomes = [c for c in args.skip_chroms.strip().split(',')]
 
 	with open(args.errors, 'w') as outfile_err, open(args.all, 'w') as outfile_all, open(args.intervals, 'w') as outfile_intervals:
 
@@ -164,7 +166,8 @@ if __name__ == '__main__':
 			fields = line.strip().split()
 			if fields[6] != 'PASS':
 				continue
-			if 'chrY' in line:
+
+			if fields[0] in skip_chromosomes:
 				continue
 
 			chrom = fields[0]
