@@ -7,9 +7,9 @@ consensus_haplotypes:
         HPRC2-unpolished:
                 agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/unpolished-haplotypes/pangenie_all-samples_unfiltered_unpolished.agc"
                 names: "input-files/readsets-unfiltered-full.tsv"
-#        HPRC2-polished:
-#                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/polishing-benchmarks/results-hprc2/polishing/HPRC2-PG/all/polished/HPRC2-PG_25_polished.agc"
-#                names: "input-files/readsets-25-full.tsv"
+        HPRC2-polished:
+                agc: "input-files/evaluation-haplotypes.agc"
+                names: "input-files/readsets-25-full.tsv"
 
 outname: "results-hprc2-full"
 assemblies: "input-files/assemblies-full.tsv"
@@ -21,23 +21,23 @@ sex_chromosomes:
 
 ################# optional: compare variant spectra of assemblies and haplotypes ##################
 
-#overlaps:
-#        HPRC2:
-#                callsets:
-#                        - HPRC2-unpolished
-#                        - HPRC2-polished
-#                samples:
-#                        - HG02953
-#                        - HG02769
-#                        - HG01114
-#                        - NA19650
-#                        - HG00171
-#                        - HG01505
-#                        - NA18989
-#                        - HG00864
-#                        - NA20847
-#                        - HG02492 
-#                reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/chm13v2.0_maskedY_rCRS.fa"
-#                bubbles: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/hprc-v2.0-mc-chm13.vcf.gz"
-#                variants:  "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/mc-vcf/mc_filtered_ids_biallelic.vcf.gz"
-#                callable_regions: "beds/chm13-centromeres.bed"
+overlaps:
+        HPRC2:
+                callsets:
+                        - HPRC2-unpolished
+                        - HPRC2-polished
+                samples:
+                        - HG02953
+                        - HG01890
+                        - HG02554
+                        - HG00731
+                        - NA18989
+                        - HG01596
+                        - HG00171
+                        - HG00096
+                        - HG03009
+                        - NA20847
+                reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/chm13v2.0_maskedY_rCRS.fa"
+                bubbles: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/hprc-v2.0-mc-chm13.vcf.gz"
+                variants:  "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/mc-vcf/mc_filtered_ids_biallelic.vcf.gz"
+                callable_regions: "beds/chm13-centromeres.bed"

@@ -9,14 +9,14 @@ rule histogram_extract_haplotype:
 	output:
 		temp("{results}/assembly/{sample}.fa")
 	conda:
-		"..envs/histogram.yml"
+		"../envs/histogram.yml"
 	log:
 		"{results}/{sample}/assembly/{sample}.log"
 	resources:
 		mem_mb = 40000
 	shell:
 		"""
-		agc getset {input} {wildcards.sample} | bgzip > {output}
+		agc getset {input} {wildcards.sample} > {output}
 		samtools faidx {output}
 		"""
 
@@ -62,6 +62,8 @@ rule histogram_substract_repeats_from_segdups:
 		combined = "{results}/{sample}/plots/{sample}_repeats-segdups.bed"
 	conda:
 		"../envs/histogram.yml"
+	resources:
+		mem_mb = 30000
 	shell:
 		"""
 		bedtools subtract -a {input.biser_bed} -b {input.repeatmasker_bed} > {output.segdups}

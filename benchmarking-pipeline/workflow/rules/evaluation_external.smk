@@ -368,3 +368,16 @@ rule external_collect_results:
 		"""
 		ls {input} | python3 workflow/scripts/collect-external-stats.py -outname {params.outname} 
 		"""
+
+
+rule external_plot_across_methods:
+	input:
+		expand("{{results}}/external-calls/evaluation/plots/{{truthset}}/external_{{truthset}}_{region}.tsv", region = EVALUATION_REGIONS)
+	output:
+		"{results}/external-calls/evaluation/plots/{truthset}/{sample}_{vartype}_{truthset}.pdf"
+	conda:
+		"../envs/genotyping.yml"
+	shell:
+		"""
+		cat {input} | python3 workflow/scripts/plot-external.py {wildcards.vartype} {wildcards.sample} {output}
+		"""

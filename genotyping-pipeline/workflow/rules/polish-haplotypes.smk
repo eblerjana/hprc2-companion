@@ -11,7 +11,7 @@ rule polish_fasta_to_fastq:
 	benchmark:
 		"{results}/polishing/fastqs/{sample}.benchmark.txt"
 	resources:
-		walltime = "10:00:00"
+		walltime = "20:00:00"
 	conda:
 		"../envs/whatshap.yml"
 	shell:
@@ -61,7 +61,7 @@ rule polish_align_illumina:
 		haplotype = "hap1|hap2"
 	resources:
 		mem_mb = 90000,
-		walltime = "03:00:00" 
+		walltime = "08:00:00" 
 	conda:
 		"../envs/strobealign.yml"
 #		"../envs/bwa.yml"
@@ -94,8 +94,8 @@ rule polish_align_ont:
 	wildcard_constraints:
 		haplotype = "hap1|hap2"
 	resources:
-		mem_mb = 30000,
-		walltime = "06:00:00"
+		mem_mb = 80000,
+		walltime = "45:00:00"
 	conda:
 		"../envs/minimap.yml"
 	log:
@@ -106,7 +106,7 @@ rule polish_align_ont:
 	threads: 24
 	params:
 		readgroup = lambda wildcards:  (f'"@RG\\tID:{wildcards.sample}-{wildcards.haplotype}'f'\\tSM:{wildcards.sample}-{wildcards.haplotype}"'),
-		sam_threads = 8,
+		sam_threads = 12,
 		tech = lambda wildcards: "map-hifi" if READ_TECH[wildcards.sample] == "HIFI" else "map-ont",
 		format = lambda wildcards: "samtools fastq --reference " + CRAM_REF if ONT[wildcards.sample].endswith("am") else "zcat"
 	shell:
@@ -192,7 +192,7 @@ rule polish_call_small_variants:
 	priority: 2
 	resources:
 		mem_mb = 30000,
-		walltime = "01:30:00"
+		walltime = "05:30:00"
 	shell:
 		"""
 		 /opt/deepvariant/bin/run_deepvariant \

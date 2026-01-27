@@ -1,5 +1,9 @@
 name: histogram
 dependencies:
   - agc
+  - samtools
   - bedtools
   - matplotlib
+  - gsl=2.5
+  - bcftools
+

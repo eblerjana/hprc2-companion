@@ -96,6 +96,13 @@ external_callsets:
                 evaluation_samples:
 #                        - HG002
                         - HG01891
+        MC-wave-hgsvc3:
+                vcf: "input-data/hgsvc3-2024-02-23-mc-chm13-vcfbub.a100k.wave.norm.vcf.gz"
+                callable_regions: "input-data/chm13.bed"
+                variants: ["sv"]
+                evaluation_samples:
+                        - HG00096
+                        - HG00171
 
 
 ##### Parameters and files for evaluating population genotypes #####

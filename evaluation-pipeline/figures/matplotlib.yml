@@ -1,0 +1,6 @@
+name: matplot
+dependencies:
+  - matplotlib
+  - pandas
+  - seaborn
+  - upsetplot

@@ -80,6 +80,11 @@ if LEAVE_ONE_OUT_SAMPLES:
 
 external_callsets_results = expand("{results}/external-calls/evaluation/plots/{truthset}/external_{truthset}_{region}.pdf", results = OUTNAME, truthset = EXTERNAL.keys(), region = ["all"] + [k for k in EVALUATION_REGIONS.keys()] )
 
+for truthset in EXTERNAL:
+	for variant in EXTERNAL[truthset]["variants"]:
+			for sample in EXTERNAL[truthset]["evaluation_samples"]:
+				external_callsets_results.extend(expand("{results}/external-calls/evaluation/plots/{truthset}/{sample}_{vartype}_{truthset}.pdf", results = OUTNAME, truthset = truthset, sample = sample, vartype = variant))
+
 population_results = []
 
 if POPULATION_GENOTYPES:

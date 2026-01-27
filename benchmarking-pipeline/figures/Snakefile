@@ -1,0 +1,100 @@
+
+
+ALLOWED_VARIANTS = ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex', 'sv']
+SAMPLING_SIZES = ["pangenie-sampled-5-5x0.01", "pangenie-sampled-10-5x0.01", "pangenie-sampled-15-5x0.01", "pangenie-sampled-25-5x0.01", "pangenie-subset-108"]
+GENOTYPERS = ["pangenie-sampled-5-5x0.01", "pangenie-sampled-10-5x0.01", "pangenie-sampled-15-5x0.01", "pangenie-sampled-25-5x0.01", "pangenie-subset-108"]
+LEAVE_ONE_OUT_SAMPLES = [
+         "HG002",
+         "HG01891",
+         "NA20129",
+         "HG03516",
+         "HG03540",
+         "HG01258",
+         "HG01928",
+         "HG00735",
+         "HG01123",
+         "HG00438",
+         "HG00621",
+         "HG00673",
+         "HG02080"
+]
+
+EXTERNAL_EVALUATION = {}
+
+EXTERNAL_EVALUATION["MC-wave-hgsvc3"] = [
+"../results-hprc2/external-calls/evaluation/plots/MC-wave-hgsvc3/external_MC-wave-hgsvc3_kage.tsv",
+"../results-hprc2/external-calls/evaluation/plots/MC-wave-hgsvc3/external_MC-wave-hgsvc3_easy-kage.tsv",
+"../results-hprc2/external-calls/evaluation/plots/MC-wave-hgsvc3/external_MC-wave-hgsvc3_segdup-kage.tsv",
+"../results-hprc2/external-calls/evaluation/plots/MC-wave-hgsvc3/external_MC-wave-hgsvc3_repeat-kage.tsv"
+]
+
+EXTERNAL_EVALUATION["PAV-hgsvc3"] = [
+"../results-hprc2/external-calls/evaluation/plots/PAV-hgsvc3/external_PAV-hgsvc3_kage.tsv",
+"../results-hprc2/external-calls/evaluation/plots/PAV-hgsvc3/external_PAV-hgsvc3_easy-kage.tsv",
+"../results-hprc2/external-calls/evaluation/plots/PAV-hgsvc3/external_PAV-hgsvc3_segdup-kage.tsv", 
+"../results-hprc2/external-calls/evaluation/plots/PAV-hgsvc3/external_PAV-hgsvc3_repeat-kage.tsv"
+]
+
+EXTERNAL_SAMPLES = ["HG00171", "HG01891"]
+
+
+
+rule all:
+	input:
+		expand("sampling-sizes_{metric}_{regions}.pdf", metric = ["concordance", "vcfeval-typable", "truvari-typable"], regions = ["all", "biallelic", "multiallelic"]),
+		"sampling-size_resources.pdf",
+		expand("{sample}_sv_{truthset}.pdf", sample = EXTERNAL_SAMPLES, truthset = EXTERNAL_EVALUATION.keys())
+
+
+
+
+rule plot_across_samplings:
+	"""
+	Compare concordances across different sampling sizes.
+	"""
+	input:
+		lambda wildcards: expand("../results-hprc2/leave-one-out/plots-old/{{metric}}/{{metric}}_{method}_{{regions}}_{vartype}.tsv", method = SAMPLING_SIZES, vartype = [v for v in ALLOWED_VARIANTS if "large" in v] + ['sv'] if wildcards.metric == "truvari-typable" else ALLOWED_VARIANTS)
+	output:
+		"sampling-sizes_{metric}_{regions}.pdf"
+	wildcard_constraints:
+		metric = "concordance|vcfeval-typable|truvari-typable"
+	conda:
+		"matplotlib.yml"
+	params:
+		sources = lambda wildcards: ' '.join([ m + '_' + wildcards.regions for m in SAMPLING_SIZES])
+	shell:
+		"""
+		python3 plot-results-bar.py -files {input} -outname {output} -metric {wildcards.metric} -sources {params.sources}
+		"""
+
+
+rule plot_resources:
+	"""
+	Plot resources (single core CPU time / max RSS)	for different sampling sizes.
+	"""
+	input:
+		expand("../results-hprc2/leave-one-out/{method}/{sample}/{sample}_{method}.benchmark.txt", method = GENOTYPERS, sample = LEAVE_ONE_OUT_SAMPLES)	
+	output:
+		"sampling-size_resources.pdf"
+	conda:
+		"matplotlib.yml"
+	params:
+		outname = "sampling-size_resources"
+	shell:
+		"""
+		python3 plot-resources.py -files {input} -outname {params.outname}
+		"""
+
+
+
+rule external_plot_across_methods:
+	input:
+		lambda wildcards: EXTERNAL_EVALUATION[wildcards.truthset]
+	output:
+		"{sample}_sv_{truthset}.pdf"
+	conda:
+		"matplotlib.yml"
+	shell:
+		"""
+		cat {input} | python3 plot-external.py sv {wildcards.sample} {output}
+		"""

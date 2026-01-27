@@ -1,0 +1,150 @@
+
+unpolished_tsvs = [
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-unpolished-unfiltered_HG00096-vienna_hap1_intervals.tsv",
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-unpolished-unfiltered_HG00096-vienna_hap2_intervals.tsv",
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-unpolished-unfiltered_HG02282-miller_hap1_intervals.tsv",
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-unpolished-unfiltered_HG02282-miller_hap2_intervals.tsv",
+]
+
+polished_tsvs = [
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-polished-all-25_HG00096-vienna_hap1_intervals.tsv",
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-polished-all-25_HG02282-miller_hap1_intervals.tsv",
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-polished-all-25_HG00096-vienna_hap2_intervals.tsv",
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-polished-all-25_HG02282-miller_hap2_intervals.tsv"
+]
+
+
+kmer_qvs = [
+"../results-hprc2-full/evaluation/qvs-kmers/HPRC2-unpolished-qvs-stats.tsv",
+"../results-hprc2-full/evaluation/qvs-kmers/HPRC2-polished-qvs-stats.tsv"
+]
+
+
+variants_vQVs = [
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-unpolished-unfiltered-stats.tsv",
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-polished-all-25-stats.tsv",
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-polished-onlySNPs-25-stats.tsv",
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-polished-noSVs-25-stats.tsv",
+#"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-repolished-all-25-stats.tsv"
+]
+
+variants_kQVs = [
+"../results-hprc2-varianttypes/evaluation/qvs-kmers/HPRC2-polished-all-25-qvs-stats.tsv",
+"../results-hprc2-varianttypes/evaluation/qvs-kmers/HPRC2-polished-noSVs-25-qvs-stats.tsv",
+"../results-hprc2-varianttypes/evaluation/qvs-kmers/HPRC2-polished-onlySNPs-25-qvs-stats.tsv",
+"../results-hprc2-varianttypes/evaluation/qvs-kmers/HPRC2-unpolished-unfiltered-qvs-stats.tsv",
+#"../results-hprc2-varianttypes/evaluation/qvs-kmers/HPRC2-repolished-all-25-qvs-stats.tsv"
+]
+
+# TODO: once evaluation of unpolished / polished haplotypes is done,
+# add links to these kind of files:
+# /gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/evaluation-pipeline/results-hprc2-varianttypes/variant-overlaps/polished-all-25/evaluation/polished-all-25_HG00096-vienna_callable.tsv
+# for all evaluated samples here.
+#
+variant_overlaps = [
+"/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/evaluation-pipeline/results-hprc2-full/variant-overlaps/HPRC2/evaluation/HPRC2_HG00096_callable.tsv",
+"/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/evaluation-pipeline/results-hprc2-full/variant-overlaps/HPRC2/evaluation/HPRC2_HG00171_callable.tsv",
+#"/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/evaluation-pipeline/results-hprc2-full/variant-overlaps/HPRC2/evaluation/HPRC2_HG00731_callable.tsv",
+"/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/evaluation-pipeline/results-hprc2-full/variant-overlaps/HPRC2/evaluation/HPRC2_HG01596_callable.tsv",
+# "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/evaluation-pipeline/results-hprc2-full/variant-overlaps/HPRC2/evaluation/HPRC2_HG01890_callable.tsv",
+"/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/evaluation-pipeline/results-hprc2-full/variant-overlaps/HPRC2/evaluation/HPRC2_HG02554_callable.tsv",
+"/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/evaluation-pipeline/results-hprc2-full/variant-overlaps/HPRC2/evaluation/HPRC2_HG02953_callable.tsv",
+"/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/evaluation-pipeline/results-hprc2-full/variant-overlaps/HPRC2/evaluation/HPRC2_HG03009_callable.tsv",
+"/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/evaluation-pipeline/results-hprc2-full/variant-overlaps/HPRC2/evaluation/HPRC2_NA18989_callable.tsv",
+"/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/evaluation-pipeline/results-hprc2-full/variant-overlaps/HPRC2/evaluation/HPRC2_NA20847_callable.tsv"
+]
+
+rule all:
+	input:
+		"unpolished_qvs_hist.pdf",
+		"polished_qvs_hist.pdf",
+		"polishing_variantsets_vQVs.pdf",
+		"polishing_variantsets_kQVs.pdf",
+		"kmer-QV_boxplots.pdf",
+		"variant_overlap_improvements.pdf"
+
+"""
+Plots multiple variant-based QV value histograms into one plot
+"""
+
+rule plot_hist_unpolished:
+	input:
+		unpolished_tsvs
+	output:
+		"unpolished_qvs_hist.pdf"
+	conda:
+		"matplotlib.yml"
+	shell:
+		"""
+		ls {input} | python3 plot-score-hist.py {output} "unpolished consensus haplotypes"
+		"""
+
+
+
+rule plot_hist_polished:
+	input:
+		polished_tsvs
+	output:
+		"polished_qvs_hist.pdf"
+	conda:
+		"matplotlib.yml"
+	shell:
+		"""
+		ls {input} | python3 plot-score-hist.py {output} "polished consensus haplotypes"
+		"""
+
+
+
+rule plot_by_variants:
+	"""
+	Bar plots showing variant/kmer based QVs for polishing with only SNPs, SNPs+indels and all variants.
+	"""
+	input:
+		vqv = variants_vQVs,
+		kqv = variants_kQVs 
+	output:
+		vqv = "polishing_variantsets_vQVs.pdf",
+		kqv = "polishing_variantsets_kQVs.pdf"
+	conda:
+		"matplotlib.yml"
+	shell:
+		"""
+		ls {input.vqv} | python3 plot-by-variantset.py {output.vqv} variant
+		ls {input.kqv} | python3 plot-by-variantset.py {output.kqv} kmer
+		"""
+
+
+
+
+rule plot_variant_number_changes:
+	"""
+	Plots the differences of variant overlaps with ground truth assemblies (PAV upset plots)
+	between polished and unpolished haplotypes.
+	"""
+	input:
+		variant_overlaps
+	output:
+		"variant_overlap_improvements.pdf"
+	conda:
+		"matplotlib.yml"
+	shell:
+		"""
+		ls {input} | python3 plot_calling_improvements.py {output} 
+		"""
+
+
+rule plot_kmer_qv_boxplot:
+	"""
+	Plot boxplots of unpolished and polished haplotypes, as well as assemblies.
+	"""
+	input:
+		qvs = kmer_qvs,
+		assembly_qvs = "/gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/hgsvc3_varcall_qvest.tsv" 
+	output:
+		"kmer-QV_boxplots.pdf"
+	conda:
+		"matplotlib.yml"
+	shell:
+		"""
+		ls {input.qvs} | python3 plot-qv-merqury.py {output} -assembly {input.assembly_qvs}
+		"""
