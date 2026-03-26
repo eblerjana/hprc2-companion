@@ -53,50 +53,50 @@ if __name__ == "__main__":
 
 	plt.rcParams["font.family"] = "Nimbus Sans"
 
-	vartype = sys.argv[1]
+	metric = sys.argv[1]
 	sample = sys.argv[2]
 	outname = sys.argv[3]
 
 	callset = None
-
 	regions = []
 
-	method_to_fscore = defaultdict(list)
-	method_to_ad_fscore = defaultdict(list)
-	method_to_conc = defaultdict(list)
-
+	method_to_fscore = defaultdict(lambda: defaultdict(list))
+	method_to_conc = defaultdict(lambda: defaultdict(list))
+	method_to_precision_recall = defaultdict(lambda: defaultdict(list))
 
 	method_to_name = {
-		"kage" : "KAGE",
-		"pangenie-sampled-15-5x0.01" : "PanGenie"
+		"kage-AoU": "KAGE-decomposed",
+		"kage-AoU-bubble" : "KAGE-bubble",
+		"pangenie-sampled-15-5x0.01" : "PanGenie v4"
 	}
 
 	region_to_name = {
-		"kage" : "all",
-		"easy-kage" : "easy regions",
-		"repeat-kage": "repeat regions",
-		"segdup-kage": "segdup regions"
+		"autosomes" : "all",
+		"easy-autosomes" : "easy regions",
+		"repeat-autosomes": "repeat regions",
+		"segdup-autosomes": "segdup regions"
 	}
+
 
 	for line in sys.stdin:
 		if line.startswith("truthset"):
 			continue
 		fields = line.strip().split()
-		callset = fields[0]
-		region = fields[1]
-		filter = fields[2]
-		method = fields[3]
+		m = fields[0]
+		callset = fields[1]
+		region = fields[2]
+		filter = fields[3]
+		method = fields[4]
+		var = fields[5]
+		s = fields[6]
 
 		if not method in method_to_name:
 			continue
 
-		method = method_to_name[fields[3]]
-		region = region_to_name[fields[1]]
+		method = method_to_name[fields[4]]
+		region = region_to_name[fields[2]]
 
-		var = fields[4]
-		s = fields[5]
-
-		if vartype != var:
+		if m != metric:
 			continue
 
 		if s != sample:
@@ -105,19 +105,24 @@ if __name__ == "__main__":
 		if region not in regions:
 			regions.append(region)
 
-		if filter == "all":
-			method_to_fscore[method].append(float(fields[8]))
-			method_to_conc[method].append(float(fields[9]))
-		else:
-			method_to_ad_fscore[method].append(float(fields[8]))
+		assert filter == "all"
+		method_to_precision_recall[var][method + " (precision)"].append(float(fields[7]))
+		method_to_precision_recall[var][method + " (recall)"].append(float(fields[8]))
+		method_to_fscore[var][method].append(float(fields[9]))
+		method_to_conc[var][method].append(float(fields[10]))
+
+
 
 
 	with PdfPages(outname) as pdf:
-		bar_plot(dict(method_to_fscore), regions, "F-score", callset + ", " + sample,  total_width=.8, single_width=.9)
-		pdf.savefig()
-		
-		bar_plot(dict(method_to_ad_fscore), regions, "Adjusted F-score", callset + ", " + sample,  total_width=.8, single_width=.9)
-		pdf.savefig()
-	
-		bar_plot(dict(method_to_conc), regions, "Genotype concordance (truvari)", callset + ", " + sample,  total_width=.8, single_width=.9)
-		pdf.savefig()
+		for variant in method_to_conc:
+			bar_plot(dict(method_to_fscore[variant]), regions, "F-score (" + metric + ")", callset + ", " + sample + ", " + variant,  total_width=.8, single_width=.9)
+			pdf.savefig()
+
+			bar_plot(dict(method_to_precision_recall[variant]), regions, metric + " statistics", callset + ", " + sample + ", " + variant,  total_width=.8, single_width=.9, colors=["cornflowerblue", "royalblue", "sandybrown", "peru", "limegreen", "forestgreen"])
+			pdf.savefig()
+
+
+			if metric == "truvari":	
+				bar_plot(dict(method_to_conc[variant]), regions, "Genotype concordance (truvari)", callset + ", " + sample + ", " + variant,  total_width=.8, single_width=.9)
+				pdf.savefig()

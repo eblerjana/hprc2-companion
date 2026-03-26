@@ -23,14 +23,14 @@ def plot_concordances_all(files, outname, sources):
 	n_cols = 6
 	for source in sources:
 		for f in files:
-			if not ('_' + source + '_') in f:
+			if not ('_' + source + '_') in f and not ('..' + source + '_') in f :
 				continue
 			vartype = f.split('_')[-1][:-4]
 			type_to_file[(source, vartype)] = f
 	variants = ['snp', 'indels', 'large-deletion', 'large-insertion', 'large-complex', 'sv']
 	plot_index = 0
 	
-	fig, axs = plt.subplots(n_rows, n_cols, figsize=(25,20))
+	fig, axs = plt.subplots(n_rows, n_cols, figsize=(35,20))
 	for var in variants:
 		width = 0.16
 		all_samples = []
@@ -49,6 +49,8 @@ def plot_concordances_all(files, outname, sources):
 				if line.startswith('sample'):
 					continue
 				fields = line.split()
+				if fields[0] in ["HG002", "NA24385"]:
+					continue
 				samples.append(fields[0])
 				concordances.append(float(fields[1]))
 				concordances_absent.append(float(fields[3]))
@@ -57,6 +59,7 @@ def plot_concordances_all(files, outname, sources):
 			if is_first:
 				all_samples = samples
 			else:
+				print(all_samples, samples)
 				assert all_samples == samples
 			is_first = False
 			x_values = np.arange(len(samples))
@@ -64,7 +67,7 @@ def plot_concordances_all(files, outname, sources):
 			axs[1, plot_index].bar(x_values + width*i, concordances_absent, width=width, label=source, color=colors[i])
 			axs[2, plot_index].bar(x_values + width*i, concordances_het, width=width, label=source, color=colors[i])
 			axs[3, plot_index].bar(x_values + width*i, concordances_hom, width=width, label=source, color=colors[i])
-		axs[0, plot_index].set_ylim((70, 100))
+		axs[0, plot_index].set_ylim((60, 100))
 		axs[0, plot_index].set_title(var_to_name[var])
 		axs[0, plot_index].set_xticks(x_values + width*len(sources)/2 - width/2)
 		axs[0, plot_index].set_xticklabels(all_samples, rotation='vertical')

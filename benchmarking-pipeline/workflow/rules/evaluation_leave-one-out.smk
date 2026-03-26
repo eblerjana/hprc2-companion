@@ -337,7 +337,7 @@ rule plot_across_samplings:
 	Compare concordances across different sampling sizes for a fixed region.
 	"""
 	input:
-		lambda wildcards: expand("{{results}}/leave-one-out/plots/{{metric}}/{{metric}}_{method}_{{regions}}_{vartype}.tsv", method = GENOTYPERS, vartype = [v for v in ALLOWED_VARIANTS if "large" in v] + ['sv'] if wildcards.metric == "truvari-typable" else ALLOWED_VARIANTS)
+		lambda wildcards: expand("{{results}}/leave-one-out/plots/{{metric}}/{{metric}}_{method}_{{regions}}_{vartype}.tsv", method = L_GENOTYPERS, vartype = [v for v in ALLOWED_VARIANTS if "large" in v] + ['sv'] if wildcards.metric == "truvari-typable" else ALLOWED_VARIANTS)
 	output:
 		"{results}/leave-one-out/plots/{metric}_{regions}.pdf"
 	wildcard_constraints:
@@ -346,7 +346,7 @@ rule plot_across_samplings:
 	conda:
 		"../envs/genotyping.yml"
 	params:
-		sources = lambda wildcards: ' '.join([ m + '_' + wildcards.regions for m in GENOTYPERS])
+		sources = lambda wildcards: ' '.join([ m + '_' + wildcards.regions for m in L_GENOTYPERS])
 	shell:
 		"""
 		python3 workflow/scripts/plot-results-bar.py -files {input} -outname {output} -metric {wildcards.metric} -sources {params.sources}
@@ -358,14 +358,14 @@ rule plot_concordance_vs_untyped:
 	Compare concordance + untyped variants across different sampling sizes for a fixed region.
 	"""
 	input:
-		expand("{{results}}/leave-one-out/plots/concordance/concordance_{method}_{{regions}}_{vartype}.tsv", method = GENOTYPERS, vartype = ALLOWED_VARIANTS)
+		expand("{{results}}/leave-one-out/plots/concordance/concordance_{method}_{{regions}}_{vartype}.tsv", method = L_GENOTYPERS, vartype = ALLOWED_VARIANTS)
 	output:
 		"{results}/leave-one-out/plots/concordance-vs-untyped_{regions}.pdf"
 	priority: 1
 	conda:
 		"../envs/genotyping.yml"
 	params:
-		sources = lambda wildcards: ' '.join([ m + '_' + wildcards.regions for m in GENOTYPERS])
+		sources = lambda wildcards: ' '.join([ m + '_' + wildcards.regions for m in L_GENOTYPERS])
 	shell:
 		"""
 		python3 workflow/scripts/plot-results-bar.py -files {input} -outname {output} -metric concordance-vs-untyped -sources {params.sources}
@@ -377,7 +377,7 @@ rule plot_resources:
 	Plot resources (single core CPU time / max RSS)	for different sampling sizes.
 	"""
 	input:
-		expand("{{results}}/leave-one-out/{method}/{sample}/{sample}_{method}.benchmark.txt", method = [g for g in GENOTYPERS if g != "kage"], sample = LEAVE_ONE_OUT_SAMPLES)	
+		expand("{{results}}/leave-one-out/{method}/{sample}/{sample}_{method}.benchmark.txt", method = [g for g in L_GENOTYPERS if g != "kage"], sample = LEAVE_ONE_OUT_SAMPLES)	
 	output:
 		"{results}/leave-one-out/plots/resources.pdf"
 	conda:

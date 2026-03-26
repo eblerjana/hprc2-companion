@@ -49,8 +49,8 @@ for filename in sys.stdin:
 		var_set = "onlySNPs"
 	elif "noSV" in filename:
 		var_set = "noSVs"
-#	elif "repolish" in filename:
-#		var_set = "repolished"
+	elif "repolish" in filename:
+		var_set = "repolished"
 	elif "all" in filename:
 		var_set = "all"
 
@@ -79,9 +79,9 @@ with PdfPages(outname) as pdf:
 	plt.figure()
 	df = pd.DataFrame([	['unpolished'] + [qvs["unpolished"][n] for n in names],
 			['SNPs'] + [qvs["onlySNPs"][n] for n in names],
-			['SNPs + indels'] + [qvs["noSVs"][n] for n in names],
-			['SNPs + indels + SVs'] + [qvs["all"][n] for n in names]], 
-#			['repolished'] + [qvs["repolished"][n] for n in names]],
+			['SNPs,indels'] + [qvs["noSVs"][n] for n in names],
+			['SNPs,indels,SVs'] + [qvs["all"][n] for n in names], 
+			['repolished'] + [qvs["repolished"][n] for n in names]],
 			columns = ['haplotypes'] + names  )
 	ylabel = "Variant-based QV" if qv_type == 'variant' else "K-mer based QV"
 	ax = df.plot(x='haplotypes',

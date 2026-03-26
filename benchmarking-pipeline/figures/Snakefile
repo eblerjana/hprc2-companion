@@ -21,21 +21,22 @@ LEAVE_ONE_OUT_SAMPLES = [
 
 EXTERNAL_EVALUATION = {}
 
-EXTERNAL_EVALUATION["MC-wave-hgsvc3"] = [
-"../results-hprc2/external-calls/evaluation/plots/MC-wave-hgsvc3/external_MC-wave-hgsvc3_kage.tsv",
-"../results-hprc2/external-calls/evaluation/plots/MC-wave-hgsvc3/external_MC-wave-hgsvc3_easy-kage.tsv",
-"../results-hprc2/external-calls/evaluation/plots/MC-wave-hgsvc3/external_MC-wave-hgsvc3_segdup-kage.tsv",
-"../results-hprc2/external-calls/evaluation/plots/MC-wave-hgsvc3/external_MC-wave-hgsvc3_repeat-kage.tsv"
-]
+REGIONS = ["autosomes", "easy-autosomes", "segdup-autosomes", "repeat-autosomes"]
+EXTERNAL_SAMPLES = ["HG00171","NA18989","NA20847","HG02106","HG02554"]
 
-EXTERNAL_EVALUATION["PAV-hgsvc3"] = [
-"../results-hprc2/external-calls/evaluation/plots/PAV-hgsvc3/external_PAV-hgsvc3_kage.tsv",
-"../results-hprc2/external-calls/evaluation/plots/PAV-hgsvc3/external_PAV-hgsvc3_easy-kage.tsv",
-"../results-hprc2/external-calls/evaluation/plots/PAV-hgsvc3/external_PAV-hgsvc3_segdup-kage.tsv", 
-"../results-hprc2/external-calls/evaluation/plots/PAV-hgsvc3/external_PAV-hgsvc3_repeat-kage.tsv"
-]
+def get_external(wildcards):
+	results = []
+	for sample in EXTERNAL_SAMPLES:
+		for method in ["kage-AoU", "kage-AoU-bubble", "pangenie-sampled-15-5x0.01"]:
+			if wildcards.metric == "truvari":
+				results.append("../results-hprc2/external-calls/evaluation/{truthset}/{sample}/truvari-{sample}/truvari_{sample}_{method}_sv_all_region-autosomes/summary.txt".format(truthset=wildcards.truthset, sample=sample, method = method))
+			elif wildcards.metric == "vcfeval":
+				results.append("../results-hprc2/external-calls/evaluation/{truthset}/{sample}/vcfeval-{sample}/vcfeval_{sample}_{method}_snp-indel_all_region-autosomes/summary.txt".format(truthset=wildcards.truthset, sample=sample, method = method))
+			else:
+				assert wildcards.metric == "vcfdist"
+				results.append("../results-hprc2/external-calls/evaluation/{truthset}/{sample}/vcfdist-{sample}/vcfdist_{sample}_{method}_all_all_region-autosomes/precision-recall-summary.tsv".format(truthset=wildcards.truthset, sample=sample, method = method))
+	return results	
 
-EXTERNAL_SAMPLES = ["HG00171", "HG01891"]
 
 
 
@@ -43,9 +44,10 @@ rule all:
 	input:
 		expand("sampling-sizes_{metric}_{regions}.pdf", metric = ["concordance", "vcfeval-typable", "truvari-typable"], regions = ["all", "biallelic", "multiallelic"]),
 		"sampling-size_resources.pdf",
-		expand("{sample}_sv_{truthset}.pdf", sample = EXTERNAL_SAMPLES, truthset = EXTERNAL_EVALUATION.keys())
-
-
+		expand("{sample}_{metric}_{truthset}.pdf", sample = EXTERNAL_SAMPLES, truthset = ["MC-wave-hgsvc3", "PAV-hgsvc3"], metric = ["truvari", "vcfeval"]),
+		expand("external_{metric}_{truthset}_autosomes.pdf", metric = ["truvari", "vcfeval"],  truthset = ["PAV-hgsvc3", "MC-wave-hgsvc3"]),
+		expand("hgsvc-hprc_{metric}_{regions}.pdf", metric = "concordance", regions = "all"),
+		"concordance_pangenie-sampled-15-5x0.01_chrX.pdf"
 
 
 rule plot_across_samplings:
@@ -53,7 +55,7 @@ rule plot_across_samplings:
 	Compare concordances across different sampling sizes.
 	"""
 	input:
-		lambda wildcards: expand("../results-hprc2/leave-one-out/plots-old/{{metric}}/{{metric}}_{method}_{{regions}}_{vartype}.tsv", method = SAMPLING_SIZES, vartype = [v for v in ALLOWED_VARIANTS if "large" in v] + ['sv'] if wildcards.metric == "truvari-typable" else ALLOWED_VARIANTS)
+		lambda wildcards: expand("../results-hprc2/leave-one-out/plots/{{metric}}/{{metric}}_{method}_{{regions}}_{vartype}.tsv", method = SAMPLING_SIZES, vartype = [v for v in ALLOWED_VARIANTS if "large" in v] + ['sv'] if wildcards.metric == "truvari-typable" else ALLOWED_VARIANTS)
 	output:
 		"sampling-sizes_{metric}_{regions}.pdf"
 	wildcard_constraints:
@@ -66,6 +68,28 @@ rule plot_across_samplings:
 		"""
 		python3 plot-results-bar.py -files {input} -outname {output} -metric {wildcards.metric} -sources {params.sources}
 		"""
+
+
+
+rule plot_hgsvc_hprc_comparison:
+	"""
+	Compare concordances across HPRC and HGSVC for sampling size 15.
+	"""
+	input:
+		lambda wildcards: expand("../results-{result}/leave-one-out/plots/{{metric}}/{{metric}}_{method}_{{regions}}_{vartype}.tsv", result = ["hgsvc3", "hprc2"], method = "pangenie-sampled-15-5x0.01", vartype = [v for v in ALLOWED_VARIANTS if "large" in v] + ['sv'] if wildcards.metric == "truvari-typable" else ALLOWED_VARIANTS)
+	output:
+		"hgsvc-hprc_{metric}_{regions}.pdf"
+	wildcard_constraints:
+		metric = "concordance|vcfeval-typable|truvari-typable"
+	conda:
+		"matplotlib.yml"
+	params:
+		sources = lambda wildcards: ' '.join(['/results-' + m + '/leave-one-out/plots/' + wildcards.metric + '/' + wildcards.metric + '_pangenie-sampled-15-5x0.01_' + wildcards.regions for m in ["hprc2", "hgsvc3"]])
+	shell:
+		"""
+		python3 plot-results-bar.py -files {input} -outname {output} -metric {wildcards.metric} -sources {params.sources}
+		"""
+
 
 
 rule plot_resources:
@@ -89,12 +113,44 @@ rule plot_resources:
 
 rule external_plot_across_methods:
 	input:
-		lambda wildcards: EXTERNAL_EVALUATION[wildcards.truthset]
+		expand("../results-hprc2/external-calls/evaluation/plots/{{truthset}}/external_{{metric}}_{{truthset}}_{region}.tsv", region = REGIONS)
 	output:
-		"{sample}_sv_{truthset}.pdf"
+		"{sample}_{metric}_{truthset}.pdf"
+	wildcard_constraints:
+		truthset = "PAV-hgsvc3|MC-wave-hgsvc3"
 	conda:
 		"matplotlib.yml"
 	shell:
 		"""
-		cat {input} | python3 plot-external.py sv {wildcards.sample} {output}
+		cat {input} | python3 plot-external.py {wildcards.metric} {wildcards.sample} {output}
 		"""
+
+
+rule external_collect_results:
+	input:
+		get_external
+	output:
+		"external_{metric}_{truthset}_autosomes.pdf"
+	wildcard_constraints:
+		truthset = "PAV-hgsvc3|MC-wave-hgsvc3"
+	conda:
+		"matplotlib.yml"
+	params:
+		outname = "external_{metric}_{truthset}_autosomes"
+	shell:
+		"""
+		ls {input} | python3 collect-external-stats.py -outname {params.outname}
+		"""
+
+
+rule external_plot_chrX:
+	input:
+		expand("../results-hprc2/leave-one-out/plots/concordance/concordance_pangenie-sampled-15-5x0.01_{region}_{vartype}.tsv", region=["chrX", "autosomes"], vartype = ["snp", "indels", "large-deletion", "large-insertion", "large-complex", "sv"])
+	output:
+		"concordance_pangenie-sampled-15-5x0.01_chrX.pdf"
+	conda:
+		"matplotlib.yml"
+	shell:
+		"""
+		python3 plot-results.py -files {input} -sources chrX autosomes -outname {output} -metric concordance
+		""" 

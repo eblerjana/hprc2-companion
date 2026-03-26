@@ -53,30 +53,29 @@ if __name__ == "__main__":
 
 	plt.rcParams["font.family"] = "Nimbus Sans"
 
-	vartype = sys.argv[1]
+	metric = sys.argv[1]
 	sample = sys.argv[2]
 	outname = sys.argv[3]
 
 	callset = None
-
 	regions = []
 
-	method_to_fscore = defaultdict(list)
-	method_to_ad_fscore = defaultdict(list)
-	method_to_conc = defaultdict(list)
+	method_to_fscore = defaultdict(lambda: defaultdict(list))
+	method_to_conc = defaultdict(lambda: defaultdict(list))
 
 	for line in sys.stdin:
 		if line.startswith("truthset"):
 			continue
 		fields = line.strip().split()
-		callset = fields[0]
-		region = fields[1]
-		filter = fields[2]
-		method = fields[3]
-		var = fields[4]
-		s = fields[5]
+		m = fields[0]
+		callset = fields[1]
+		region = fields[2]
+		filter = fields[3]
+		method = fields[4]
+		var = fields[5]
+		s = fields[6]
 
-		if vartype != var:
+		if m != metric:
 			continue
 
 		if s != sample:
@@ -85,19 +84,16 @@ if __name__ == "__main__":
 		if region not in regions:
 			regions.append(region)
 
-		if filter == "all":
-			method_to_fscore[method].append(float(fields[8]))
-			method_to_conc[method].append(float(fields[9]))
-		else:
-			method_to_ad_fscore[method].append(float(fields[8]))
+		assert filter == "all"
+		method_to_fscore[var][method].append(float(fields[9]))
+		method_to_conc[var][method].append(float(fields[10]))
 
 
 	with PdfPages(outname) as pdf:
-		bar_plot(dict(method_to_fscore), regions, "F-score", callset + ", " + sample,  total_width=.8, single_width=.9)
-		pdf.savefig()
-		
-		bar_plot(dict(method_to_ad_fscore), regions, "Adjusted F-score", callset + ", " + sample,  total_width=.8, single_width=.9)
-		pdf.savefig()
-	
-		bar_plot(dict(method_to_conc), regions, "Genotype concordance (truvari)", callset + ", " + sample,  total_width=.8, single_width=.9)
-		pdf.savefig()
+		for variant in method_to_conc:
+			bar_plot(dict(method_to_fscore[variant]), regions, "F-score (" + metric + ")", callset + ", " + sample + ", " + variant,  total_width=.8, single_width=.9)
+			pdf.savefig()
+
+			if metric == "truvari":	
+				bar_plot(dict(method_to_conc[variant]), regions, "Genotype concordance (truvari)", callset + ", " + sample + ", " + variant,  total_width=.8, single_width=.9)
+				pdf.savefig()

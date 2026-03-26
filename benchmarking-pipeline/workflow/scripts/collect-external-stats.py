@@ -4,6 +4,23 @@ import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 
+def parse_precision_recall_vcfdist(filename, vartype):
+	precision = None
+	recall = None
+	fscore = None
+
+	for line in open(filename, 'r'):
+		fields = line.strip().split()
+		if (fields[0] == vartype) and (fields[1] == "NONE"):
+			precision = float(fields[7])
+			recall = float(fields[8])
+			fscore = float(fields[9])
+
+	assert precision is not None
+	assert recall is not None
+	assert fscore is not None
+	return precision, recall, fscore, 0.0
+
 
 def parse_precision_recall_vcfeval(filename):
 	precision = None
@@ -14,9 +31,9 @@ def parse_precision_recall_vcfeval(filename):
 			fields = line.strip().split()
 			assert len(fields) == 8
 			assert fields[0] == 'None'
-			precision = float(fields[5])
-			recall = float(fields[6])
-			fscore = float(fields[7])
+			precision = float(fields[5]) if fields[5] != "NaN" else 0.0
+			recall = float(fields[6]) if fields[6] != "NaN" else 0.0
+			fscore = float(fields[7]) if fields[7] != "NaN" else 0.0
 		if line.startswith('0 total baseline variants'):
 			precision = 0.0
 			recall = 0.0
@@ -42,13 +59,13 @@ def parse_precision_recall_truvari(filename):
 		fields = line.strip().split()
 		if "precision" in fields[0]:
 			assert precision is None
-			precision = float(fields[-1][:-1])
+			precision = float(fields[-1][:-1]) if fields[-1][:-1] != "null" else 0.0
 		if "recall" in fields[0]:
 			assert recall is None
-			recall = float(fields[-1][:-1])
+			recall = float(fields[-1][:-1]) if fields[-1][:-1] != "null" else 0.0
 		if "f1" in fields[0]:
 			assert fscore is None
-			fscore = float(fields[-1][:-1])
+			fscore = float(fields[-1][:-1]) if fields[-1][:-1] != "null" else 0.0
 		if "gt_concordance" in fields[0]:
 			assert concordance is None
 			concordance = float(fields[-1][:-1])
@@ -60,7 +77,7 @@ def parse_precision_recall_truvari(filename):
 
 def print_data(data, truthset, region, filters, samples, vartypes, genotypers, outname):
 	with open(outname, 'w') as outfile:
-		outfile.write('\t'.join(['truthset', 'region', 'filter', 'genotyper', 'vartype', 'sample', 'precision', 'recall', 'fscore', 'gt_concordance']) + '\n')
+		outfile.write('\t'.join(['evaluation_tool', 'truthset', 'region', 'filter', 'genotyper', 'vartype', 'sample', 'precision', 'recall', 'fscore', 'gt_concordance']) + '\n')
 		for filter in filters:
 			for vartype in vartypes:
 				for sample in samples:
@@ -69,7 +86,8 @@ def print_data(data, truthset, region, filters, samples, vartypes, genotypers, o
 						recall = data[(truthset, region, filter, sample, vartype, genotyper)][1]
 						fscore = data[(truthset, region, filter, sample, vartype, genotyper)][2]
 						concordance = data[(truthset, region, filter, sample, vartype, genotyper)][3]
-						outfile.write('\t'.join([truthset, region, filter, genotyper, vartype, sample, str(precision), str(recall), str(fscore), str(concordance)]) + '\n')
+						method = data[(truthset, region, filter, sample, vartype, genotyper)][4]
+						outfile.write('\t'.join([method, truthset, region, filter, genotyper, vartype, sample, str(precision), str(recall), str(fscore), str(concordance)]) + '\n')
 
 
 	
@@ -78,7 +96,10 @@ def plot_data(data, truthset, region, filters, samples, vartypes, genotypers, ou
 	plt.rcParams["font.family"] = "Nimbus Sans"
 	var_to_name = {
 		'snp-indel': 'SNPs + indels (1-49bp)',
-		'sv': 'SVs (≥ 50bp)'
+		'sv': 'SVs (≥ 50bp)',
+		'SNP': 'SNPs',
+		'INDEL': 'indels (1-49bp)',
+		'SV': 'SVs (≥ 50bp)'
 	}
 
 	colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#808080', '#f7ce37', '#bc202c', '#251188']
@@ -165,17 +186,34 @@ if __name__ == '__main__':
 		sample = file.strip().split('/')[-4]
 		if "vcfeval" in file:
 			precision, recall, fscore, conc = parse_precision_recall_vcfeval(file.strip())
-		else:
+			vartypes.add(vartype)
+			truthsets.add(truthset)
+			regions.add(region)
+			filters.add(filter)
+			samples.add(sample)
+			genotypers.add(genotyper)
+			data[(truthset, region, filter, sample, vartype, genotyper)] = [precision, recall, fscore, conc, "vcfeval"]
+		
+		elif "truvari" in file:
 			precision, recall, fscore, conc = parse_precision_recall_truvari(file.strip())
+			vartypes.add(vartype)
+			truthsets.add(truthset)
+			regions.add(region)
+			filters.add(filter)
+			samples.add(sample)
+			genotypers.add(genotyper)
+			data[(truthset, region, filter, sample, vartype, genotyper)] = [precision, recall, fscore, conc, "truvari"]
 
-		truthsets.add(truthset)
-		regions.add(region)
-		filters.add(filter)
-		samples.add(sample)
-		vartypes.add(vartype)
-		genotypers.add(genotyper)
-
-		data[(truthset, region, filter, sample, vartype, genotyper)] = [precision, recall, fscore, conc]
+		else:
+			for var in ["SNP", "INDEL", "SV"]:
+				precision, recall, fscore, conc = parse_precision_recall_vcfdist(file.strip(), var)
+				data[(truthset, region, filter, sample, var, genotyper)] = [precision, recall, fscore, conc, "vcfdist"]
+				vartypes.add(var)
+			truthsets.add(truthset)
+			regions.add(region)
+			filters.add(filter)
+			samples.add(sample)
+			genotypers.add(genotyper)
 
 	truthsets = sorted(list(truthsets))
 	regions = sorted(list(regions))
@@ -187,5 +225,5 @@ if __name__ == '__main__':
 
 	for truthset in truthsets:
 		for region in regions:
-			print_data(data, truthset, region, filters, samples, vartypes, genotypers, args.outname + '_' + truthset + '_' + region + '.tsv')
-			plot_data(data, truthset, region, filters, samples, vartypes, genotypers, args.outname + '_' + truthset + '_' + region + '.pdf')
+			print_data(data, truthset, region, filters, samples, vartypes, genotypers, args.outname + '.tsv')
+			plot_data(data, truthset, region, filters, samples, vartypes, genotypers, args.outname + '.pdf')

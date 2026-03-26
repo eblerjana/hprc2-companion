@@ -45,7 +45,6 @@ def parse_vcf(filename, callsetname, outfile, length, sample_to_pop, annotations
 		# find allele frequency
 		info_field = { k.split('=')[0] : k.split('=')[1] for k in fields[7].split(';') if '=' in k }
 		assert 'AF' in info_field
-		print(line)
 		allele_freq = float(info_field['AF'])
 
 		af_category = ""
@@ -119,13 +118,14 @@ def run_plotting(vcfs, names, outname, length, populations, annotations, only_re
 		# (1) plot number of SVs for different allele frequency cutoffs in all regions
 
 		df_plot = df[df['region'] == 'all']
-		fig, ax = plt.subplots(figsize=(15,5))
+		fig, ax = plt.subplots(figsize=(5,6))
 		# Hide the right and top spines
 		ax.spines['right'].set_visible(False)
 		ax.spines['top'].set_visible(False)
 
 		# grouped violinplot
-		sns.violinplot(ax=ax, data=df_plot, x='allele frequency', y=y_name, hue='callset', cut=0)
+		sns.violinplot(ax=ax, data=df_plot, x='allele frequency', y=y_name, hue='callset', scale='width', cut=0)
+		plt.tight_layout()
 		pdf.savefig()
 		plt.close()
 
@@ -139,19 +139,21 @@ def run_plotting(vcfs, names, outname, length, populations, annotations, only_re
 
 		# grouped violinplot
 		sns.violinplot(ax=ax, data=df_plot, x='allele frequency', y=y_name, hue='callset-population', cut=0)
+		plt.tight_layout()
 		pdf.savefig()
 		plt.close()
 
 
 		# (3) same plot as before, but only <1% allele frequency
 		df_plot_rare = df_plot[df_plot['allele frequency'] == '<1%']
-		fig, ax = plt.subplots(figsize=(15,5))
+		fig, ax = plt.subplots(figsize=(10,10))
 		# Hide the right and top spines
 		ax.spines['right'].set_visible(False)
 		ax.spines['top'].set_visible(False)
 
 		# grouped violinplot
 		sns.violinplot(ax=ax, data=df_plot_rare, x='allele frequency', y=y_name, hue='callset-population', cut=0)
+		plt.tight_layout()
 		pdf.savefig()
 		plt.close()
 
@@ -171,6 +173,7 @@ def run_plotting(vcfs, names, outname, length, populations, annotations, only_re
 		# grouped violinplot
 		fig.suptitle('all allele frequencies')
 		sns.violinplot(ax=ax, data=df_plot, x='region', y=y_name, hue='callset', cut=0)
+		plt.tight_layout()
 		pdf.savefig()
 		plt.close()
 
@@ -182,7 +185,7 @@ def run_plotting(vcfs, names, outname, length, populations, annotations, only_re
 			df_plot = df_plot[df_plot['region'] != 'all']
 		else:
 			df_plot = df_plot[df_plot['region'] != 'none']
-		fig, ax = plt.subplots(figsize=(15,5))
+		fig, ax = plt.subplots(figsize=(5,5))
 		# Hide the right and top spines
 		ax.spines['right'].set_visible(False)
 		ax.spines['top'].set_visible(False)
@@ -202,7 +205,7 @@ def run_plotting(vcfs, names, outname, length, populations, annotations, only_re
 			df_plot = df_plot[df_plot['region'] != 'all']
 		else:
 			df_plot = df_plot[df_plot['region'] != 'none']
-		fig, ax = plt.subplots(figsize=(15,5))
+		fig, ax = plt.subplots(figsize=(5,5))
 		# Hide the right and top spines
 		ax.spines['right'].set_visible(False)
 		ax.spines['top'].set_visible(False)

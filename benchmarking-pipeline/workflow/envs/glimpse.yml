@@ -1,0 +1,5 @@
+name: glimpse
+dependencies:
+  - bcftools
+  - gsl=2.5
+  - glimpse-bio=1.1.1

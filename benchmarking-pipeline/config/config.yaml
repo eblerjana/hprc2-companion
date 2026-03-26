@@ -62,47 +62,72 @@ subsetting_sizes:
 
 evaluation_regions:
         all: "input-data/chm13.bed"
-        kage: "input-data/kage-chromosomes.bed"
-        easy-kage: "input-data/CHM13_notinalldifficultregions_kage.bed"
-        segdup-kage: "input-data/CHM13_alllowmapandsegdupregions_kage.bed"
-        repeat-kage: "input-data/CHM13_AllTandemRepeatsandHomopolymers_slop5_kage.bed"
+        autosomes: "input-data/autosomes.bed"
+        easy-autosomes: "input-data/CHM13_notinalldifficultregions_autosomes.bed"
+        segdup-autosomes: "input-data/CHM13_alllowmapandsegdupregions_autosomes.bed"
+        repeat-autosomes: "input-data/CHM13_AllTandemRepeatsandHomopolymers_slop5_autosomes.bed"
+        chrX: "input-data/chrX.bed"
+
+
+maps:
+ chr10: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr10_noMask.scaled.gmap.gz"
+ chr11: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr11_noMask.scaled.gmap.gz"
+ chr12: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr12_noMask.scaled.gmap.gz"
+ chr13: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr13_noMask.scaled.gmap.gz"
+ chr14: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr14_noMask.scaled.gmap.gz"
+ chr15: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr15_noMask.scaled.gmap.gz"
+ chr16: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr16_noMask.scaled.gmap.gz"
+ chr17: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr17_noMask.scaled.gmap.gz"
+ chr18: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr18_noMask.scaled.gmap.gz"
+ chr19: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr19_noMask.scaled.gmap.gz"
+ chr1: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr1_noMask.scaled.gmap.gz"
+ chr20: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr20_noMask.scaled.gmap.gz"
+ chr21: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr21_noMask.scaled.gmap.gz"
+ chr22: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr22_noMask.scaled.gmap.gz"
+ chr2: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr2_noMask.scaled.gmap.gz"
+ chr3: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr3_noMask.scaled.gmap.gz"
+ chr4: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr4_noMask.scaled.gmap.gz"
+ chr5: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr5_noMask.scaled.gmap.gz"
+ chr6: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr6_noMask.scaled.gmap.gz"
+ chr7: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr7_noMask.scaled.gmap.gz"
+ chr8: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr8_noMask.scaled.gmap.gz"
+ chr9: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chr9_noMask.scaled.gmap.gz"
+ chrX: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/recombination_maps/chrX_noMask.scaled.gmap.gz"
+
+
 
 # name of the output folder
 outname: "results-hprc2"
 
 
 ###### Parameters and files for external callset evaluation step #####
-#
+
+
+kage_external: "input-data/HGSVC_GWAS.5-samples.kage.glimpse.vcf.gz"
+
+
 ## optional. Set to {} if not provided.
 external_callsets:
         PAV-hgsvc3:
-                vcf: "input-data/variants_T2T-CHM13_sv_insdel_alt_HGSVC2024v1.0.HG002.vcf.gz"
+                vcf: "input-data/variants_T2T-CHM13_all.vcf.gz"
                 callable_regions: "input-data/chm13.bed"
-                variants: ["sv"]
+                metric: ["vcfeval", "truvari"] #, "vcfdist"]
                 evaluation_samples:
-#                        - HG002
-                        - HG00096
-                        - HG00171
-#        GIAB-draft-HG002:
-#                vcf: "input-data/CHM13v2.0_HG2-T2TQ100-V1.1_stvar.vcf.gz"
-#                callable_regions: "input-data/CHM13v2.0_HG2-T2TQ100-V1.1_stvar.benchmark.bed"
-#                variants: ["sv"]
-#                evaluation_samples:
-#                        - HG002
-        MC-wave:
-                vcf: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/hprc-v2.0-mc-chm13.wave.vcf.gz"
-                callable_regions: "input-data/chm13.bed"
-                variants: ["sv"]
-                evaluation_samples:
-#                        - HG002
-                        - HG01891
+                        - HG00171 # EUR
+                        - NA18989 # EAS
+                        - NA20847 # SAS
+                        - HG02106 # AMR
+                        - HG02554 # AFR
         MC-wave-hgsvc3:
                 vcf: "input-data/hgsvc3-2024-02-23-mc-chm13-vcfbub.a100k.wave.norm.vcf.gz"
                 callable_regions: "input-data/chm13.bed"
-                variants: ["sv"]
+                metric: ["vcfeval", "truvari"] #, "vcfdist"]
                 evaluation_samples:
-                        - HG00096
-                        - HG00171
+                        - HG00171 # EUR
+                        - NA18989 # EAS
+                        - NA20847 # SAS
+                        - HG02106 # AMR
+                        - HG02554 # AFR
 
 
 ##### Parameters and files for evaluating population genotypes #####
@@ -110,9 +135,9 @@ external_callsets:
 # optional. Set to {} if not provided.
 population_genotypes:
         illumina-hg38:
-                vcf: "/gpfs/project/projects/medbioinf/users/ebler/minigraph-cactus-paper/genotyping-experiments-hg38/input-vcfs/1KGP_3202.gatksv_svtools_novelins.freeze_V3.wAF.vcf.gz"
+                vcf: "input-data/1KGP_3202.gatksv_svtools_novelins.freeze_V3.wAF.vcf.gz"
                 collapse: False
-                reference: "/gpfs/project/projects/medbioinf/users/ebler/minigraph-cactus-paper/genotyping-experiments-hg38/results/data/fasta/hg38.fa" 
+                reference: "/gpfs/project/projects/medbioinf/data/references/hg38.fasta" 
         hgsvc3-1kg:
                 vcf: "/gpfs/project/projects/medbioinf/users/ebler/hgsvc3/experiments/genotyping-1kg/results/benchmarking-pipeline/population-typing/MC-hgsvc3-hprc-chm13/pangenie-108/full/merged-vcfs/filtered/all-samples_bi_all_lenient.vcf.gz"
                 collapse: True

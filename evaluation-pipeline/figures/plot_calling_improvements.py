@@ -7,6 +7,7 @@ import numpy as np
 import upsetplot
 import pandas as pd
 import gzip
+import statistics
 
 outname = sys.argv[1]
 
@@ -67,3 +68,10 @@ with PdfPages(outname) as outpdf:
 	plt.close()
 
 
+	# print out some stats
+	for v,l in zip(values, labels):
+		print(l)
+		print('Median: ', statistics.median(v))
+		print('Max: ', max(v))
+		print('Min: ', min(v))
+		

@@ -35,9 +35,9 @@ def parse_precision_recall_vcfeval(filename):
 			fields = line.strip().split()
 			assert len(fields) == 8
 			assert fields[0] == 'None'
-			precision = float(fields[5])
-			recall = float(fields[6])
-			fscore = float(fields[7])
+			precision = float(fields[5]) if fields[5] != "NaN" else 0.0
+			recall = float(fields[6]) if fields[6] != "NaN" else 0.0
+			fscore = float(fields[7]) if fields[7] != "NaN" else 0.0
 		if line.startswith('0 total baseline variants'):
 			precision = 0.0
 			recall = 0.0
@@ -63,13 +63,13 @@ def parse_precision_recall_truvari(filename):
 		fields = line.strip().split()
 		if "precision" in fields[0]:
 			assert precision is None
-			precision = float(fields[-1][:-1])
+			precision = float(fields[-1][:-1]) if fields[-1][:-1] != "null" else 0.0
 		if "recall" in fields[0]:
 			assert recall is None
-			recall = float(fields[-1][:-1])
+			recall = float(fields[-1][:-1]) if fields[-1][:-1] != "null" else 0.0
 		if "f1" in fields[0]:
 			assert fscore is None
-			fscore = float(fields[-1][:-1])
+			fscore = float(fields[-1][:-1]) if fields[-1][:-1] != "null" else 0.0
 		if "gt_concordance" in fields[0]:
 			assert concordance is None
 			concordance = float(fields[-1][:-1]) * 100.0

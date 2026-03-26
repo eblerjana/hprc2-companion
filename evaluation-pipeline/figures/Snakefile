@@ -25,7 +25,7 @@ variants_vQVs = [
 "../results-hprc2-varianttypes/evaluation/qvs/HPRC2-polished-all-25-stats.tsv",
 "../results-hprc2-varianttypes/evaluation/qvs/HPRC2-polished-onlySNPs-25-stats.tsv",
 "../results-hprc2-varianttypes/evaluation/qvs/HPRC2-polished-noSVs-25-stats.tsv",
-#"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-repolished-all-25-stats.tsv"
+"../results-hprc2-varianttypes/evaluation/qvs/HPRC2-repolished-all-25-stats.tsv"
 ]
 
 variants_kQVs = [
@@ -33,7 +33,7 @@ variants_kQVs = [
 "../results-hprc2-varianttypes/evaluation/qvs-kmers/HPRC2-polished-noSVs-25-qvs-stats.tsv",
 "../results-hprc2-varianttypes/evaluation/qvs-kmers/HPRC2-polished-onlySNPs-25-qvs-stats.tsv",
 "../results-hprc2-varianttypes/evaluation/qvs-kmers/HPRC2-unpolished-unfiltered-qvs-stats.tsv",
-#"../results-hprc2-varianttypes/evaluation/qvs-kmers/HPRC2-repolished-all-25-qvs-stats.tsv"
+"../results-hprc2-varianttypes/evaluation/qvs-kmers/HPRC2-repolished-all-25-qvs-stats.tsv"
 ]
 
 # TODO: once evaluation of unpolished / polished haplotypes is done,
@@ -127,9 +127,11 @@ rule plot_variant_number_changes:
 		"variant_overlap_improvements.pdf"
 	conda:
 		"matplotlib.yml"
+	log:
+		"variant_overlap_improvements.log"
 	shell:
 		"""
-		ls {input} | python3 plot_calling_improvements.py {output} 
+		ls {input} | python3 plot_calling_improvements.py {output} &> {log}
 		"""
 
 
@@ -144,7 +146,9 @@ rule plot_kmer_qv_boxplot:
 		"kmer-QV_boxplots.pdf"
 	conda:
 		"matplotlib.yml"
+	log:
+		"kmer-QV_boxplots.log"
 	shell:
 		"""
-		ls {input.qvs} | python3 plot-qv-merqury.py {output} -assembly {input.assembly_qvs}
+		ls {input.qvs} | python3 plot-qv-merqury.py {output} -assembly {input.assembly_qvs} &> {log}
 		"""

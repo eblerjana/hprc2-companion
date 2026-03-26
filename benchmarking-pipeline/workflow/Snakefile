@@ -24,14 +24,19 @@ EVALUATION_REGIONS = config["evaluation_regions"]
 AVG_ILLUMINA_COV = config["avg_illumina_cov"]
 KAGE_CHROMOSOMES = [line.strip().split()[0] for line in open(config["kage_chromosomes"], 'r')]
 
+MAPS = config["maps"]
+
 SAMPLING_SIZES = config["sampling_sizes"]
 SUBSAMPLING_SIZES = config["subsetting_sizes"]
-GENOTYPERS = ["kage"]
+GENOTYPERS = ["kage-AoU", "kage-AoU-bubble"]  # "kage", "kage-glimpse"
+L_GENOTYPERS = []
 
 for s in SAMPLING_SIZES:
 	GENOTYPERS.append("pangenie-sampled-" + str(s))
+	L_GENOTYPERS.append("pangenie-sampled-" + str(s))
 for s in SUBSAMPLING_SIZES:
 	GENOTYPERS.append("pangenie-subset-" + str(s))
+	L_GENOTYPERS.append("pangenie-subset-" + str(s))
 
 
 CHROMOSOMES = set(['chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22', 'chrX', 'chrY'])
@@ -53,6 +58,9 @@ for line in gzip.open(PANEL_BI, 'rt'):
 		PANEL_SAMPLES = [s for s in fields[9:] if s != "CHM13" and s != "GRCh38"]
 		break
 
+KAGE_AOU = ""
+if "kage_external" in config:
+	KAGE_AOU = config["kage_external"]
 POPULATION_GENOTYPES = config["population_genotypes"]
 
 
@@ -61,12 +69,15 @@ POPULATION_GENOTYPES = config["population_genotypes"]
 
 include: "rules/leave-one-out_prepare.smk"
 include: "rules/leave-one-out_pangenie.smk"
-include: "rules/leave-one-out_kage.smk"
+#include: "rules/leave-one-out_kage.smk"
 include: "rules/evaluation_leave-one-out.smk"
 include: "rules/evaluation_panel.smk"
 include: "rules/evaluation_external.smk"
 include: "rules/external_pangenie.smk"
-include: "rules/external_kage.smk"
+#include: "rules/external_kage.smk"
+include: "rules/external_glimpse1.smk"
+include: "rules/external_kage-glimpse1.smk"
+include: "rules/external_kage-glimpse-AoU.smk"
 include: "rules/compute-sv-counts-collapse.smk"
 
 leave_one_out_results = []
@@ -78,12 +89,13 @@ if LEAVE_ONE_OUT_SAMPLES:
 	leave_one_out_results.extend(expand("{results}/leave-one-out/plots/recombination-stats.pdf", results = OUTNAME))
 	leave_one_out_results.extend(expand("{results}/leave-one-out/plots/afs-missed-alleles.pdf", results = OUTNAME))
 
-external_callsets_results = expand("{results}/external-calls/evaluation/plots/{truthset}/external_{truthset}_{region}.pdf", results = OUTNAME, truthset = EXTERNAL.keys(), region = ["all"] + [k for k in EVALUATION_REGIONS.keys()] )
+external_callsets_results = []
 
 for truthset in EXTERNAL:
-	for variant in EXTERNAL[truthset]["variants"]:
+	for metric in EXTERNAL[truthset]["metric"]:
+			external_callsets_results.extend(expand("{results}/external-calls/evaluation/plots/{truthset}/external_{metric}_{truthset}_{region}.pdf", results = OUTNAME, truthset = truthset, metric = metric, region = ["all"] + [k for k in EVALUATION_REGIONS.keys()]))
 			for sample in EXTERNAL[truthset]["evaluation_samples"]:
-				external_callsets_results.extend(expand("{results}/external-calls/evaluation/plots/{truthset}/{sample}_{vartype}_{truthset}.pdf", results = OUTNAME, truthset = truthset, sample = sample, vartype = variant))
+				external_callsets_results.extend(expand("{results}/external-calls/evaluation/plots/{truthset}/{sample}_{metric}_{truthset}.pdf", results = OUTNAME, truthset = truthset, sample = sample, metric = metric))
 
 population_results = []
 

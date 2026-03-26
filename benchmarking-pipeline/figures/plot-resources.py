@@ -58,43 +58,43 @@ def plot_resources(files, outname):
 	with PdfPages(outname +  '.pdf') as pdf:
 		# plot runtimes
 		width = 0.16
-		fig, ax = plt.subplots()
-		for size in sizes:
-			line_runtimes = [runtimes[(sample, size)] for sample in samples]
-			ax.plot(x_values, line_runtimes, label=size, marker='o')
-		ax.set_xticks(x_values)
-		ax.set_xticklabels(samples, rotation='vertical')
+		fig, ax = plt.subplots(figsize=(3, 4.5))
+		values = []
+		for sample in samples:
+			line_runtimes = [runtimes[(sample, size)] for size in sizes]
+			values.append(line_runtimes)
+		ax.boxplot(values, tick_labels=samples)
 		ax.set_ylabel('Single core CPU seconds')
 		ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
-		ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+		plt.xticks(rotation=90)
 		plt.tight_layout()
 		pdf.savefig()
 		plt.close()
 
 		# plot wallclock times
-		fig, ax = plt.subplots()
-		for size in sizes:
-			line_wallclock = [wallclock_times[(sample, size)] for sample in samples]
-			ax.plot(x_values, line_wallclock, label=size, marker='o')
-		ax.set_xticks(x_values)
-		ax.set_xticklabels(samples, rotation='vertical')
+		fig, ax = plt.subplots(figsize=(3, 4.5))
+		values = []
+		for sample in samples:
+			line_wallclock = [wallclock_times[(sample, size)] for size in sizes]
+			values.append(line_wallclock)
+		ax.boxplot(values, tick_labels=samples)
 		ax.set_ylabel('Wallclock seconds')
 		ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
-		ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+		plt.xticks(rotation=90)
 		plt.tight_layout()
 		pdf.savefig()
 		plt.close()	
 
 		# plot resources
-		fig, ax = plt.subplots()
-		for size in sizes:
-			line_rss = [ rss[(sample, size)] for sample in samples]
-			ax.plot(x_values, line_rss, label=size, marker='o')
-		ax.set_xticks(x_values)
-		ax.set_xticklabels(samples, rotation='vertical')
+		fig, ax = plt.subplots(figsize=(3, 4.5))
+		values = []
+		for sample in samples:
+			line_rss = [ rss[(sample, size)] for size in sizes]
+			values.append(line_rss)
+		ax.boxplot(values, tick_labels=samples)
 		ax.set_ylabel('Max RSS [GB]')
 		ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
-		ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+		plt.xticks(rotation=90)
 		plt.tight_layout()
 		pdf.savefig()
 		plt.close()
