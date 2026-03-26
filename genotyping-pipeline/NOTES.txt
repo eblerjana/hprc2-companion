@@ -1,5 +1,0 @@
-No illumina data found for these samples:
-
-HG02109 HG02109 0       0       2       ACB     AFR     empty.fa.gz
-HG03471 HG03471 0       0       1       MSL     AFR     empty.fa.gz
-HG06807 HG06807 0       0       2       UNKNOWN UNKNOWN empty.fa.gz

@@ -1,19 +1,39 @@
+rule evaluate_prepare_mapping:
+	input:
+		bed = lambda wildcards: ANNOTATION[wildcards.sample][wildcards.haplotype],
+		vcf = "{results}/evaluation/pav_{callset}_{sample}_{haplotype}/{callset}_{sample}_{haplotype}.vcf.gz",
+		fai = lambda wildcards: ASSEMBLIES[wildcards.sample][wildcards.haplotype] + ".fai"
+	output:
+		"{results}/evaluation/mapping_{callset}_{sample}_{haplotype}/{callset}_{sample}_{haplotype}_mapping.tsv"
+	log:
+		"{results}/evaluation/mapping_{callset}_{sample}_{haplotype}/{callset}_{sample}_{haplotype}_mapping.log"
+	conda:
+		"../envs/plotting.yaml"	
+	params:
+		outname = "{results}/evaluation/mapping_{callset}_{sample}_{haplotype}/{callset}_{sample}_{haplotype}"
+	shell:
+		"""
+		python3 workflow/scripts/create-mapping.py {input.bed} {input.vcf} {input.fai} {params.outname} &> {log}
+		"""
+		
+
 
 rule evaluate_calls:
 	input:
 		vcf = "{results}/evaluation/pav_{callset}_{sample}_{haplotype}/{callset}_{sample}_{haplotype}.vcf.gz",
 		hap1 = "{results}/evaluation/{callset}/{sample}_hap1/{sample}_hap1_consensus.fa.gz",
-		hap2 = "{results}/evaluation/{callset}/{sample}_hap2/{sample}_hap2_consensus.fa.gz"
+		hap2 = "{results}/evaluation/{callset}/{sample}_hap2/{sample}_hap2_consensus.fa.gz",
+		mapping = "{results}/evaluation/mapping_{callset}_{sample}_{haplotype}/{callset}_{sample}_{haplotype}_mapping.tsv"
 	output:
 		tsv = "{results}/evaluation/qvs/{callset}_{sample}_{haplotype}.tsv",
 		bed_all = "{results}/evaluation/qvs/{callset}_{sample}_{haplotype}_all.bed",
 		bed_err = "{results}/evaluation/qvs/{callset}_{sample}_{haplotype}_err.bed",
 		intervals = "{results}/evaluation/qvs/{callset}_{sample}_{haplotype}_intervals.tsv"
 	params:
-		ref = "consensus"
+		ref = "assembly"
 	shell:
 		"""
-		zcat {input.vcf} | python3 workflow/scripts/evaluate-assemblies-intervals.py --name {wildcards.callset}_{wildcards.sample}_{wildcards.haplotype} --hap1 {input.hap1} --hap2 {input.hap2} --errors {output.bed_err} --all {output.bed_all} --reference {params.ref} --intervals {output.intervals} > {output.tsv}
+		zcat {input.vcf} | python3 workflow/scripts/evaluate-assemblies-intervals-mapping.py --name {wildcards.callset}_{wildcards.sample}_{wildcards.haplotype} --hap1 {input.hap1} --hap2 {input.hap2} --errors {output.bed_err} --all {output.bed_all} --reference {params.ref} --intervals {output.intervals} --mapping {input.mapping} > {output.tsv}
 		"""
 
 

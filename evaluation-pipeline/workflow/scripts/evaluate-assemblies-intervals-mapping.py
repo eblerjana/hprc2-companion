@@ -5,6 +5,19 @@ import gzip
 import math
 import statistics
 
+
+def parse_mapping(filename):
+	interval_lengths = {}
+	mapping = {}
+	for line in open(filename, "r"):
+		fields = line.strip().split()
+		if line.startswith('#'):
+			interval_lengths[fields[1]] = int(fields[2])
+		else:
+			mapping[(fields[0], fields[1])] = fields[2]
+	return interval_lengths, mapping
+
+
 def compute_length(filename):
 	total = 0
 	for line in gzip.open(filename, 'rt'):
@@ -134,34 +147,29 @@ if __name__ == '__main__':
 	parser.add_argument('--all', required = True, metavar='ALL', help="Write all variants into this BED file.")
 	parser.add_argument('--reference', required = True, choices = ['assembly', 'consensus'], help="Which sequence was used as a reference.")
 	parser.add_argument('--intervals', required = True, metavar='INTERVAL', help="Write interval based scores into this file.")
+	parser.add_argument('--mapping', required=True, metavar="MAPPING", help="Mapping between variants and intervals.")
 	parser.add_argument('--skip-chroms', required = False, default = "", metavar='CHROMS', help="Comma-separated list of chromosomes to skip.")
 	args = parser.parse_args()
 
-	chrom_to_length = {}
 	len_h1 = compute_length(args.hap1)
 	len_h2 = compute_length(args.hap2)
-	interval_length = 1000000
+
+	interval_lengths, interval_mapping = parse_mapping(args.mapping)
 	
 	total_stats = Statistics(0, 0, len_h1+len_h2)
-	interval_stats = defaultdict(list)
-
+	interval_stats = defaultdict(lambda: {})
 	skip_chromosomes = [c for c in args.skip_chroms.strip().split(',')]
 
 	with open(args.errors, 'w') as outfile_err, open(args.all, 'w') as outfile_all, open(args.intervals, 'w') as outfile_intervals:
 
 		for line in sys.stdin:
 			if line.startswith('##'):
-				if "contig=<ID=" in line:
-					chrom, length = parse_chromosome_length(line)
-					chrom_to_length[chrom] = length
 				continue
 			if line.startswith('#'):
 				# all header lines read. Initialize intervals
-				for chrom, length in chrom_to_length.items():
-					for interval_id in range(0, (length // interval_length) + 1):
-						interval_start = interval_id*interval_length
-						interval_end = min((interval_id + 1) * interval_length, length)
-						interval_stats[chrom].append(Statistics(interval_start, interval_end, 2*(interval_end - interval_start)))
+				for interval_id, interval_len in interval_lengths.items():
+					chrom = "_".join(interval_id.split('_')[1:])
+					interval_stats[chrom][interval_id] = Statistics(0,0,2*interval_len)
 				continue
 			fields = line.strip().split()
 			if fields[6] != 'PASS':
@@ -183,7 +191,8 @@ if __name__ == '__main__':
 			gt = fields[9].strip().split('|')
 			label = analyze_gt_assemb(gt[2], gt[0], gt[1]) if (args.reference == "assembly") else analyze_gt_cons(gt[2], gt[0], gt[1])
 			end = int(fields[1]) + len(fields[3])
-			interval_id = int(fields[1]) // interval_length
+			assert (fields[0], fields[1]) in interval_mapping
+			interval_id = interval_mapping[(fields[0], fields[1])]
 			if label:
 				outfile_all.write('\t'.join([fields[0], fields[1], str(end), str(bp_change), info_fields['ID'], label]) + '\n')
 				total_stats.stats[label] += 1
@@ -211,8 +220,7 @@ if __name__ == '__main__':
 		skip_header = False
 		interval_scores = []
 		for chrom, stats in interval_stats.items():
-			for s in stats:
-				interval_name = args.name + '_' + chrom + ':' + str(s.start) + '-' + str(s.end)
+			for interval_name, s in stats.items():
 				outfile_intervals.write(s.to_string(interval_name, 'nan', 'nan', skip_header) + '\n')
 				skip_header = True
 				phred = s.compute_phred_score()

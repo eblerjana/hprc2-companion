@@ -1,5 +1,0 @@
-name: histogram
-dependencies:
-  - agc
-  - bedtools
-  - matplotlib

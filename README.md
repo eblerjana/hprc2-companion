@@ -1,3 +1,3 @@
-# hprc2-companion-paper
+# Chromosome Y paper
 
-Pipelines written for the HPRC2 genotyping companion paper
+Pipelines written for the chrY paper.

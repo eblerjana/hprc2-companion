@@ -1,4 +1,6 @@
 import sys
+from collections import defaultdict
+
 configfile: "config/config.yaml"
 
 RESULTS = config["results"]
@@ -9,6 +11,7 @@ SAMPLES = []
 CRAM_REF = config["cram_ref"]
 READ_TECH = {}
 
+HAPLOID_CHROMS = defaultdict(lambda: [])
 WINDOW_WIDTHS = [25] #, 100, 250]
 
 #### check if required input files are provided
@@ -83,6 +86,15 @@ for callset in CALLSETS:
 
 print(CONSENSUS)
 
+# parse names of haploid chromosomes if available
+if config["haploid_chroms"]:
+	for line in open(config["haploid_chroms"], 'r'):
+		fields = line.strip().split()
+		chroms = [c for c in fields[1].split(',')]
+		HAPLOID_CHROMS[fields[0]] = chroms
+
+print(HAPLOID_CHROMS)
+
 
 #### main rule
 
@@ -96,9 +108,9 @@ rule all:
 		expand("{results}/polishing/{callset}/all/polished/{callset}_{windowsize}_polished.agc", results = RESULTS, callset = CALLSETS, sample = SAMPLES, windowsize = WINDOW_WIDTHS),
 		expand("{results}/polishing/{callset}/all/errors/errors_{sample}_{haplotype}_{windowsize}.stats", results = RESULTS, callset = CALLSETS, sample = SAMPLES, haplotype = ["hap1", "hap2"], windowsize = WINDOW_WIDTHS),
 
-		expand("{results}/polishing/{callset}/no-svs/polished/{callset}_{windowsize}_polished.agc", results = RESULTS, callset = CALLSETS, sample = SAMPLES, windowsize = WINDOW_WIDTHS),
-		expand("{results}/polishing/{callset}/no-svs/errors/errors_{sample}_{haplotype}_{windowsize}.stats", results = RESULTS, callset = CALLSETS, sample = SAMPLES, haplotype = ["hap1", "hap2"], windowsize = WINDOW_WIDTHS),
+#		expand("{results}/polishing/{callset}/no-svs/polished/{callset}_{windowsize}_polished.agc", results = RESULTS, callset = CALLSETS, sample = SAMPLES, windowsize = WINDOW_WIDTHS),
+#		expand("{results}/polishing/{callset}/no-svs/errors/errors_{sample}_{haplotype}_{windowsize}.stats", results = RESULTS, callset = CALLSETS, sample = SAMPLES, haplotype = ["hap1", "hap2"], windowsize = WINDOW_WIDTHS),
 
-		expand("{results}/polishing/{callset}/only-snps/polished/{callset}_{windowsize}_polished.agc", results = RESULTS, callset = CALLSETS, sample = SAMPLES, windowsize = WINDOW_WIDTHS),
-		expand("{results}/polishing/{callset}/only-snps/errors/errors_{sample}_{haplotype}_{windowsize}.stats", results = RESULTS, callset = CALLSETS, sample = SAMPLES, haplotype = ["hap1", "hap2"], windowsize = WINDOW_WIDTHS)
+#		expand("{results}/polishing/{callset}/only-snps/polished/{callset}_{windowsize}_polished.agc", results = RESULTS, callset = CALLSETS, sample = SAMPLES, windowsize = WINDOW_WIDTHS),
+#		expand("{results}/polishing/{callset}/only-snps/errors/errors_{sample}_{haplotype}_{windowsize}.stats", results = RESULTS, callset = CALLSETS, sample = SAMPLES, haplotype = ["hap1", "hap2"], windowsize = WINDOW_WIDTHS)
 

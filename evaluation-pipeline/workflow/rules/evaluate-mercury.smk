@@ -1,25 +1,4 @@
 
-rule merqury_extract_autosomes:
-	"""
-	Extract only autosomes.
-	"""
-	input:
-		"{results}/evaluation/{callset}/{sample}_{haplotype}/{sample}_{haplotype}_consensus.fa.gz"
-	output:
-		consensus = temp("{results}/evaluation/qvs-kmers/temp/{callset}_{sample}_{haplotype}_consensus.fa.gz"),
-		contig_names = "{results}/evaluation/qvs-kmers/{callset}_{sample}_{haplotype}_contigs.txt"
-	conda:
-		"../envs/shapeit.yaml"
-	params:
-		chromosomes = "--exclude " + " ".join(SEX_CHROMOSOMES) if SEX_CHROMOSOMES else ""
-	shell:
-		"""
-		zcat {input} | python3 workflow/scripts/get-contig-names.py {params.chromosomes} > {output.contig_names}
-		samtools faidx -r {output.contig_names} {input} | bgzip > {output.consensus}
-		samtools faidx {output.consensus}
-		"""
-		
-
 rule merqury_counting:
 	"""
 	Counting kmers using meryl
@@ -33,7 +12,7 @@ rule merqury_counting:
 	resources:
 		mem_mb = 32768,
 		mem_gb = 32,
-		walltime = "02:00:00"
+		walltime = "05:00:00"
 	conda:
 		"../envs/merqury.yaml"
 	log:
@@ -48,7 +27,7 @@ rule merqury_counting:
 rule merqury_evaluate_calls:
 	input:
 		counts = "{results}/evaluation/qvs-kmers/read-counts-meryl/{sample}.meryl", 
-		assembly = "{results}/evaluation/qvs-kmers/temp/{callset}_{sample}_{haplotype}_consensus.fa.gz"
+		assembly = "{results}/evaluation/{callset}/{sample}_{haplotype}/{sample}_{haplotype}_consensus.fa.gz"
 	output:
 		qv = "{results}/evaluation/qvs-kmers/{callset}_{sample}_{haplotype}.qv",
 		completeness = "{results}/evaluation/qvs-kmers/{callset}_{sample}_{haplotype}.completeness.stats"

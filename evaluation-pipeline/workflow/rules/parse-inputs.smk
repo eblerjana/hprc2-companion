@@ -5,6 +5,7 @@ PHASED_VCFS = config["phased_vcfs"]
 UNPHASED_VCFS = config["unphased_vcfs"]
 OUTNAME = config["outname"]
 ASSEMBLIES = {}
+ANNOTATION = {}
 CONSENSUS_NAMES = {}
 READS = {}
 
@@ -70,6 +71,8 @@ for line in open(config['assemblies'], 'r'):
 	sample = fields[0]
 	assem1 = fields[1]
 	assem2 = fields[2]
+	annotation1 = fields[3]
+	annotation2 = fields[4]
 
 	# make sure all files are gzipped and indexed
 	for f in [assem1, assem2]:
@@ -79,11 +82,14 @@ for line in open(config['assemblies'], 'r'):
 			raise RuntimeError('File ' + f + ' does not have a .fai index.')
 
 	ASSEMBLIES[sample] = {}
+	ANNOTATION[sample] = {}
 	ASSEMBLIES[sample]["hap1"] = assem1
 	ASSEMBLIES[sample]["hap2"] = assem2
+	ANNOTATION[sample]["hap1"] = annotation1
+	ANNOTATION[sample]["hap2"] = annotation2
 
-	if len(fields) > 3:
-		READS[sample] = fields[3]	
+	if len(fields) > 5:
+		READS[sample] = fields[5]	
 
 
 # for each callset, find overlap between assemblies and callset samples
@@ -94,7 +100,7 @@ for callset in CONSENSUS_NAMES:
 		if sample in ASSEMBLIES.keys():
 			SAMPLES[callset].append(sample)
 
-SEX_CHROMOSOMES = config["sex_chromosomes"] if "sex_chromosomes" in config else []
+SEX_CHROMOSOMES = config["skip_chromosomes"] if "skip_chromosomes" in config else []
 
 # check overlap input if provided
 for combination in OVERLAPS:

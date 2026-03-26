@@ -2,10 +2,11 @@
 
 rule prepare_assembly_table:
 	input:
-		cons1 = lambda wildcards: ASSEMBLIES[wildcards.sample]['hap1'],
-		cons2 = lambda wildcards: ASSEMBLIES[wildcards.sample]['hap2'],
-		assembly = lambda wildcards: "{results}/evaluation/{callset}/{sample}_hap2/{sample}_hap2_consensus.fa.gz" if wildcards.haplotype == "hap1" else "{results}/evaluation/{callset}/{sample}_hap1/{sample}_hap1_consensus.fa.gz",
-		reference = "{results}/evaluation/{callset}/{sample}_{haplotype}/{sample}_{haplotype}_consensus.fa.gz"
+		cons1 = "{results}/evaluation/{callset}/{sample}_hap1/{sample}_hap1_consensus.fa.gz",
+		cons2 = "{results}/evaluation/{callset}/{sample}_hap2/{sample}_hap2_consensus.fa.gz",
+		assembly = lambda wildcards: ASSEMBLIES[wildcards.sample]['hap2'] if wildcards.haplotype == "hap1" else ASSEMBLIES[wildcards.sample]['hap1'],
+		reference = lambda wildcards: ASSEMBLIES[wildcards.sample][wildcards.haplotype]
+
 	output:
 		tsv = "{results}/evaluation/pav_{callset}_{sample}_{haplotype}/assemblies.tsv",
 		h1 = temp("{results}/evaluation/pav_{callset}_{sample}_{haplotype}/h1.fa.gz"),

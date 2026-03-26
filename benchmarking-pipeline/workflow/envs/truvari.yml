@@ -1,4 +1,0 @@
-name: truvari
-dependencies:
-  - bcftools
-  - truvari
