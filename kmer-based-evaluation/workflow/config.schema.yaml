@@ -1,0 +1,21 @@
+$schema: "https://json-schema.org/draft-07/schema#"
+description: Input parameters
+properties:
+  consensus_haplotypes:
+    type: object
+    default: {}
+  phased_vcfs:
+    type: object
+    default: {}
+  unphased_vcfs:
+    type: object
+    default: {}
+  outname:
+    type: string
+    default: "results"
+  reads:
+    type: string
+
+required:
+   - reads
+   

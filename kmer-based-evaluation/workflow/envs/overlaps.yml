@@ -1,0 +1,7 @@
+name: overlaps
+dependencies:
+  - bcftools
+  - gsl=2.5
+  - bedtools
+  - matplotlib
+  - upsetplot

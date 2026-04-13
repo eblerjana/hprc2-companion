@@ -1,0 +1,5 @@
+name: truvari
+dependencies:
+  - bcftools
+  - gsl=2.5
+  - truvari

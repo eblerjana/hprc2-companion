@@ -1,0 +1,8 @@
+name: shapeit
+dependencies:
+  - gsl=2.5
+  - bcftools
+  - bedtools
+  - samtools
+  - pyfaidx
+  - shapeit5

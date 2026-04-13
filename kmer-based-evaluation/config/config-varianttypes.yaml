@@ -1,0 +1,57 @@
+
+
+consensus_haplotypes:
+        PG-unpolished:
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/tests-polishing/PanGenie-SHAPEIT_all_consensus-haplotypes.agc"
+                names: "input-files/pg-unpolished.tsv"
+        HPRC2-unpolished-unfiltered:
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/unpolished-haplotypes/pangenie_all-samples_unfiltered_unpolished.agc"
+                names: "input-files/readsets-unfiltered.tsv"
+        HPRC2-polished-all-25:
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/polishing-benchmarks/results-hprc2/polishing/HPRC2-PG/all/polished/HPRC2-PG_25_polished.agc"
+                names: "input-files/readsets-25.tsv"
+        HPRC2-polished-noSVs-25:
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/polishing-benchmarks/results-hprc2/polishing/HPRC2-PG/no-svs/polished/HPRC2-PG_25_polished.agc"
+                names: "input-files/readsets-25.tsv"
+        HPRC2-polished-onlySNPs-25:
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/polishing-benchmarks/results-hprc2/polishing/HPRC2-PG/only-snps/polished/HPRC2-PG_25_polished.agc"
+                names: "input-files/readsets-25.tsv"
+        HPRC2-repolished-all-25:
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/polishing-benchmarks/results-hprc2-repolish/polishing/HPRC2-PG/all/polished/HPRC2-PG_25_polished.agc" 
+                names: "input-files/readsets-25.tsv"
+
+outname: "results-hprc2-varianttypes"
+assemblies: "input-files/assemblies-readset.tsv"
+
+sex_chromosomes:
+        - chrX
+        - chrY
+
+
+################# optional: compare variant spectra of assemblies and haplotypes ##################
+
+overlaps:
+        polished-all-25:
+                callsets:
+                        - HPRC2-unpolished-unfiltered
+                        - HPRC2-polished-all-25
+                samples:
+                        - HG00096-vienna
+                        - HG00096-hifi
+                        - HG02282-miller
+                reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/chm13v2.0_maskedY_rCRS.fa"
+                bubbles: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/hprc-v2.0-mc-chm13.vcf.gz"
+                variants:  "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/mc-vcf/mc_filtered_ids_biallelic.vcf.gz"
+                callable_regions: "beds/chm13-centromeres.bed"
+        polished-noSVs-25:
+                callsets:
+                        - HPRC2-unpolished-unfiltered
+                        - HPRC2-polished-noSVs-25
+                samples:
+                        - HG00096-vienna
+                        - HG00096-hifi
+                        - HG02282-miller
+                reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/chm13v2.0_maskedY_rCRS.fa"
+                bubbles: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/hprc-v2.0-mc-chm13.vcf.gz"
+                variants:  "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/mc-vcf/mc_filtered_ids_biallelic.vcf.gz"
+                callable_regions: "beds/chm13-centromeres.bed"
