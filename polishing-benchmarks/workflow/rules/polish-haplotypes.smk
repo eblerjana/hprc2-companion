@@ -358,6 +358,7 @@ def input_polish_call_svs(wildcards):
 				results = wildcards.results,
 				callset = wildcards.callset,
 				haplotype = wildcards.haplotype,
+				sample = wildcards.sample,
 				chrom = wildcards.chrom
 			) 
 	else:
@@ -376,7 +377,7 @@ rule polish_call_svs:
 	Keep only homozygous calls and remove BND calls.
 	"""
 	input:
-		bam = "{results}/polishing/{callset}/all/haplotag/split_{sample}_{haplotype}_{chrom}.bam",
+		bam = input_polish_call_svs,
 		reference = "{results}/polishing/{callset}/consensus/{sample}_{haplotype}.fa",
 #		bed = "{results}/polishing/{callset}/all/haplotag/switched_{sample}_{haplotype}_{chrom}.bed"
 	output:

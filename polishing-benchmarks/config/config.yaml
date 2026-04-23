@@ -1,5 +1,5 @@
 # name of the output folder
-results: "results-chrY-single"
+results: "results-chrY"
 
 # archive with compressed haplotypes
 agc:

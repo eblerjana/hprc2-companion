@@ -19,7 +19,7 @@ rule merqury_counting:
 		"{results}/evaluation/qvs-kmers/read-counts-meryl/{sample}.log"
 	shell:
 		"""
-		meryl count k=21 memory={resources.mem_gb} threads={threads} {input} output {output} &> {log}
+		meryl count k=31 memory={resources.mem_gb} threads={threads} {input} output {output} &> {log}
 		"""
 
 

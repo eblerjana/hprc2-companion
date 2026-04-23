@@ -10,8 +10,8 @@ samples = [
 
 fais = {
 	"HG01596-HG00609": "/gpfs/project/projects/medbioinf/data/00_RESTRUCTURE/shares/globus/outgoing/hgsvc/sig_chry/v2/external-incoming/nhgri/arang-rhie/asm-annot/hgsvc/chrY_assemblies/HG01596_chrY.fa.gz.fai",
-	"HG01596-HG01258": "/gpfs/project/projects/medbioinf/data/00_RESTRUCTURE/shares/globus/outgoing/hgsvc/sig_chry/v2/external-incoming/nhgri/arang-rhie/asm-annot/hgsvc/chrY_assemblies/HG01596_chrY.fa.gz.fai",
 	"HG01596-HG03009": "/gpfs/project/projects/medbioinf/data/00_RESTRUCTURE/shares/globus/outgoing/hgsvc/sig_chry/v2/external-incoming/nhgri/arang-rhie/asm-annot/hgsvc/chrY_assemblies/HG01596_chrY.fa.gz.fai",
+	"HG01596-HG01258": "/gpfs/project/projects/medbioinf/data/00_RESTRUCTURE/shares/globus/outgoing/hgsvc/sig_chry/v2/external-incoming/nhgri/arang-rhie/asm-annot/hgsvc/chrY_assemblies/HG01596_chrY.fa.gz.fai",	
 	"HG01596-NA12877": "/gpfs/project/projects/medbioinf/data/00_RESTRUCTURE/shares/globus/outgoing/hgsvc/sig_chry/v2/external-incoming/nhgri/arang-rhie/asm-annot/hgsvc/chrY_assemblies/HG01596_chrY.fa.gz.fai",
 	"HG01596-NA18983": "/gpfs/project/projects/medbioinf/data/00_RESTRUCTURE/shares/globus/outgoing/hgsvc/sig_chry/v2/external-incoming/nhgri/arang-rhie/asm-annot/hgsvc/chrY_assemblies/HG01596_chrY.fa.gz.fai",
 	"HG01596-NA19331": "/gpfs/project/projects/medbioinf/data/00_RESTRUCTURE/shares/globus/outgoing/hgsvc/sig_chry/v2/external-incoming/nhgri/arang-rhie/asm-annot/hgsvc/chrY_assemblies/HG01596_chrY.fa.gz.fai"
@@ -20,7 +20,9 @@ fais = {
 rule all:
 	input:
 		expand("QVs_per_region_{sample}.pdf", sample = samples),
-		expand("variants_{callset}_{sample}.pdf", sample = samples, callset = ["polished", "unpolished"])
+		expand("variants_{callset}_{sample}.pdf", sample = samples, callset = ["polished", "unpolished"]),
+		"qv_changes.pdf",
+		"qvs-kmers.pdf"
 
 
 rule plot_qvs_bar:
@@ -49,4 +51,41 @@ rule plot_variant_distr:
 	shell:
 		"""
 		ls {input.bed} | python3 plot-variant-dist.py {input.mapping} {input.fai} {output}
+		"""
+
+
+rule plot_collect_stats:
+	input:
+		polished = "../results-chrY-single/evaluation/qvs/polished_{sample}_hap1_intervals.tsv",
+		unpolished = "../results-chrY-single/evaluation/qvs/unpolished_{sample}_hap1_intervals.tsv"
+	output:
+		"{sample}_hap1_intervals.tsv"
+	shell:
+		"""
+		paste {input.polished} {input.unpolished} | cut -f 1,17,39 > {output}
+		"""
+
+rule plot_qv_changes:
+	input:
+		expand("{sample}_hap1_intervals.tsv", sample = samples)
+	output:
+		"qv_changes.pdf"
+	conda:
+		"plotting.yaml"
+	shell:
+		"""
+		ls {input} | python3 plot-qv-changes.py {output}
+		"""
+
+rule plot_kmer_qvs:
+	input:
+		polished = "../results-chrY-single/evaluation/qvs-kmers/polished-qvs-stats.tsv",
+		unpolished = "../results-chrY-single/evaluation/qvs-kmers/unpolished-qvs-stats.tsv"
+	output:
+		"qvs-kmers.pdf"
+	conda:
+		"plotting.yaml"
+	shell:
+		"""
+		python3 plot-kmer-qvs.py {input.unpolished} {input.polished} {output}
 		"""

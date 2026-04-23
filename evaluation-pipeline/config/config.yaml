@@ -2,7 +2,7 @@
 
 consensus_haplotypes:
         polished:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/chrY-paper/hprc2-companion-paper/polishing-benchmarks/results-chrY-single/polishing/CHRY/all/polished/CHRY_25_polished.agc"
+                agc: "/gpfs/project/projects/medbioinf/users/ebler/chrY-paper/hprc2-companion-paper/polishing-benchmarks/results-chrY/polishing/CHRY/all/polished/CHRY_25_polished.agc"
                 names: "names-single.tsv"
         unpolished:
                 agc: "/gpfs/project/projects/medbioinf/users/ebler/chrY-paper/prepare-haplotypes/results/consensus.agc"
