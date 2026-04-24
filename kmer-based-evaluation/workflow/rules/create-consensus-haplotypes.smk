@@ -8,11 +8,11 @@ rule consensus_compute_consensus:
 		vcf = lambda wildcards: PHASED_VCFS[wildcards.callset]["vcf"],
 		reference = lambda wildcards: PHASED_VCFS[wildcards.callset]["reference"]
 	output:
-		temp("{results}/haplotypes/{callset}/{callset}_{sample}_hap{haplotype}.fasta.gz")
+		temp("{results}/haplotypes/{callset}/all/{callset}_all_{sample}_hap{haplotype}.fasta.gz")
 	log:
-		"{results}/haplotypes/{callset}/{callset}_{sample}_hap{haplotype}.log"
+		"{results}/haplotypes/{callset}/all/{callset}_all_{sample}_hap{haplotype}.log"
 	benchmark:
-		"{results}/haplotypes/{callset}/{callset}_{sample}_hap{haplotype}.benchmark.txt"
+		"{results}/haplotypes/{callset}/all/{callset}_all_{sample}_hap{haplotype}.benchmark.txt"
 	conda:
 		"../envs/shapeit.yaml"
 	wildcard_constraints:
@@ -28,16 +28,16 @@ rule consensus_compute_consensus:
 
 rule consensus_compress_haplotypes:
 	input:
-		genomes = lambda wildcards: expand("{{results}}/haplotypes/{{callset}}/{{callset}}_{sample}_hap{haplotype}.fasta.gz", sample = SAMPLES[wildcards.callset], haplotype = ["1", "2"]),
+		genomes = lambda wildcards: expand("{{results}}/haplotypes/{{callset}}/{{region}}/{{callset}}_{{region}}_{sample}_hap{haplotype}.fasta.gz", sample = SAMPLES[wildcards.callset], haplotype = ["1", "2"]),
 		reference = lambda wildcards: PHASED_VCFS[wildcards.callset]["reference"]
 	output:
-		"{results}/haplotypes/{callset}.agc"
+		"{results}/haplotypes/{callset}_{region}.agc"
 	log:
-		"{results}/haplotypes/{callset}.log"
+		"{results}/haplotypes/{callset}_{region}.log"
 	wildcard_constraints:
 		callset = "|".join([c for c in UNPHASED_VCFS.keys()] + [c for c in PHASED_VCFS.keys()])
 	benchmark:
-		"{results}/haplotypes/{callset}.benchmark.txt"
+		"{results}/haplotypes/{callset}_{region}.benchmark.txt"
 	conda:
 		"../envs/agc.yaml"
 	resources:

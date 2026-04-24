@@ -65,8 +65,9 @@ if __name__ == "__main__":
 	method_to_precision_recall = defaultdict(lambda: defaultdict(list))
 
 	method_to_name = {
-		"kage-AoU": "KAGE-decomposed",
-		"kage-AoU-bubble" : "KAGE-bubble",
+		"kage-AoU": "KAGE",
+#		"kage-AoU-popped": "KAGE-popped",
+#		"kage-AoU-bubble" : "KAGE-bubble",
 		"pangenie-sampled-15-5x0.01" : "PanGenie v4"
 	}
 
@@ -119,7 +120,7 @@ if __name__ == "__main__":
 			bar_plot(dict(method_to_fscore[variant]), regions, "F-score (" + metric + ")", callset + ", " + sample + ", " + variant,  total_width=.8, single_width=.9)
 			pdf.savefig()
 
-			bar_plot(dict(method_to_precision_recall[variant]), regions, metric + " statistics", callset + ", " + sample + ", " + variant,  total_width=.8, single_width=.9, colors=["cornflowerblue", "royalblue", "sandybrown", "peru", "limegreen", "forestgreen"])
+			bar_plot(dict(method_to_precision_recall[variant]), regions, metric + " statistics", callset + ", " + sample + ", " + variant,  total_width=.8, single_width=.9, colors=["cornflowerblue", "royalblue", "sandybrown", "peru", "limegreen", "forestgreen", "pink", "hotpink"])
 			pdf.savefig()
 
 

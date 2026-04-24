@@ -4,10 +4,10 @@ rule merqury_extract_autosomes:
 	Extract only autosomes.
 	"""
 	input:
-		"{results}/evaluation/{callset}/{sample}_{haplotype}/{sample}_{haplotype}_consensus.fa.gz"
+		"{results}/evaluation/{callset}/{sample}_{region}_{haplotype}/{sample}_{region}_{haplotype}_consensus.fa.gz"
 	output:
-		consensus = temp("{results}/evaluation/qvs-kmers/temp/{callset}_{sample}_{haplotype}_consensus.fa.gz"),
-		contig_names = "{results}/evaluation/qvs-kmers/{callset}_{sample}_{haplotype}_contigs.txt"
+		consensus = temp("{results}/evaluation/qvs-kmers/temp/{callset}_{sample}_{region}_{haplotype}_consensus.fa.gz"),
+		contig_names = "{results}/evaluation/qvs-kmers/{callset}_{sample}_{region}_{haplotype}_contigs.txt"
 	conda:
 		"../envs/shapeit.yaml"
 	params:
@@ -48,10 +48,10 @@ rule merqury_counting:
 rule merqury_evaluate_calls:
 	input:
 		counts = "{results}/evaluation/qvs-kmers/read-counts-meryl/{sample}.meryl", 
-		assembly = "{results}/evaluation/qvs-kmers/temp/{callset}_{sample}_{haplotype}_consensus.fa.gz"
+		assembly = "{results}/evaluation/qvs-kmers/temp/{callset}_{sample}_{region}_{haplotype}_consensus.fa.gz"
 	output:
-		qv = "{results}/evaluation/qvs-kmers/{callset}_{sample}_{haplotype}.qv",
-		completeness = "{results}/evaluation/qvs-kmers/{callset}_{sample}_{haplotype}.completeness.stats"
+		qv = "{results}/evaluation/qvs-kmers/{callset}_{sample}_{region}_{haplotype}.qv",
+		completeness = "{results}/evaluation/qvs-kmers/{callset}_{sample}_{region}_{haplotype}.completeness.stats"
 	threads:
 		24
 	resources:
@@ -63,9 +63,9 @@ rule merqury_evaluate_calls:
 	conda:
 		"../envs/merqury.yaml"
 	log:
-		"{results}/evaluation/qvs-kmers/{callset}_{sample}_{haplotype}.log"
+		"{results}/evaluation/qvs-kmers/{callset}_{sample}_{region}_{haplotype}.log"
 	params:
-		out_prefix = "{results}/evaluation/qvs-kmers/{callset}_{sample}_{haplotype}"
+		out_prefix = "{results}/evaluation/qvs-kmers/{callset}_{sample}_{region}_{haplotype}"
 	shell:
 		"""
 		./workflow/scripts/compute-qv.sh {input.counts} {input.assembly} {params.out_prefix} {threads} {resources.mem_gb} &> {log}
@@ -75,9 +75,9 @@ rule merqury_evaluate_calls:
 
 rule merqury_aggregate_qvs:
 	input:
-		lambda wildcards: expand("{{results}}/evaluation/qvs-kmers/{{callset}}_{sample}_{haplotype}.qv", sample = [s for s in SAMPLES[wildcards.callset] if s in READS], haplotype = ["hap1", "hap2"])
+		lambda wildcards: expand("{{results}}/evaluation/qvs-kmers/{{callset}}_{sample}_{{region}}_{haplotype}.qv", sample = [s for s in SAMPLES[wildcards.callset] if s in READS], haplotype = ["hap1", "hap2"])
 	output:
-		"{results}/evaluation/qvs-kmers/{callset}-qvs-stats.tsv"
+		"{results}/evaluation/qvs-kmers/{callset}_{region}-qvs-stats.tsv"
 	shell:
 		"""
 		cat {input} > {output}
@@ -86,9 +86,9 @@ rule merqury_aggregate_qvs:
 
 rule merqury_aggregate_completeness:
 	input:
-		lambda wildcards: expand("{{results}}/evaluation/qvs-kmers/{{callset}}_{sample}_{haplotype}.completeness.stats", sample = [s for s in SAMPLES[wildcards.callset] if s in READS], haplotype = ["hap1", "hap2"])
+		lambda wildcards: expand("{{results}}/evaluation/qvs-kmers/{{callset}}_{sample}_{{region}}_{haplotype}.completeness.stats", sample = [s for s in SAMPLES[wildcards.callset] if s in READS], haplotype = ["hap1", "hap2"])
 	output:
-		"{results}/evaluation/qvs-kmers/{callset}-completeness-stats.tsv"
+		"{results}/evaluation/qvs-kmers/{callset}_{region}-completeness-stats.tsv"
 	shell:
 		"""
 		cat {input} > {output}

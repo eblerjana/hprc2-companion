@@ -10,11 +10,13 @@ rule external_kage_AoU_bubble:
 	Prepare Kage VCF in bubble representation
 	"""
 	input:
-		lambda wildcards: KAGE_AOU
+		lambda wildcards: KAGE_AOU if wildcards.genotyper == "kage-AoU-bubble" else KAGE_AOU_POPPED
 	output:
-		"{results}/external-calls/kage-AoU-bubble/{sample}/{sample}_kage-AoU-bubble_bi_genotyping.vcf.gz"
+		"{results}/external-calls/{genotyper}/{sample}/{sample}_{genotyper}_bi_genotyping.vcf.gz"
 	conda:
 		"../envs/genotyping.yml"
+	wildcard_constraints:
+		genotyper = "kage-AoU-bubble|kage-AoU-popped"
 	resources:
 		mem_mb = 50000
 	shell:

@@ -1,12 +1,12 @@
 
 
 consensus_haplotypes:
-        HGSVC3-unpolished:
-                agc: "../evaluation-pipeline/data/PanGenie-SHAPEIT_all_consensus-haplotypes.agc"
-                names: "input-files/pg-unpolished-full.tsv"
-        HPRC2-unpolished:
-                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/unpolished-haplotypes/pangenie_all-samples_unfiltered_unpolished.agc"
-                names: "input-files/readsets-unfiltered-full.tsv"
+#        HGSVC3-unpolished:
+#                agc: "../evaluation-pipeline/data/PanGenie-SHAPEIT_all_consensus-haplotypes.agc"
+#                names: "input-files/pg-unpolished-full.tsv"
+#        HPRC2-unpolished:
+#                agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/unpolished-haplotypes/pangenie_all-samples_unfiltered_unpolished.agc"
+#                names: "input-files/readsets-unfiltered-full.tsv"
         HPRC2-polished:
                 agc: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/hprc2-companion-paper/genotyping-pipeline/results-hprc2-full/polishing/pangenie_all-samples_unfiltered/all/polished/pangenie_all-samples_unfiltered_25_polished.agc"
                 names: "input-files/readsets-25-full.tsv"
@@ -15,6 +15,16 @@ phased_vcfs:
         1kGP-HC:
                 vcf: "input-files/1kGP_high_coverage_Illumina.filtered.SNV_INDEL_SV_phased_panel.vcf.gz"
                 reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/hg38.no_alt.fa"
+        HGSVC3-unpolished:
+                vcf: "/gpfs/project/projects/medbioinf/users/ebler/hgsvc3/experiments/phasing-1kg/results-with-rare/shapeit/shapeit/phased_shapeit.vcf.gz"
+                reference: "/gpfs/project/projects/medbioinf/users/ebler/hgsvc3/data/reference/chm13v2.0.fa"
+                regions:
+                        synthenic: "input-files/chm13-shared-hg38.bed"
+        HPRC2-unpolished:
+                vcf: "input-files/pangenie_all-samples_unfiltered_shapeit.vcf.gz"
+                reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/chm13v2.0_maskedY_rCRS.fa"
+                regions:
+                        synthenic: "input-files/chm13-shared-hg38.bed"
 
 
 outname: "results-hprc2"

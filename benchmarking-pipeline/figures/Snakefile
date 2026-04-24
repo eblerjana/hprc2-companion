@@ -27,7 +27,7 @@ EXTERNAL_SAMPLES = ["HG00171","NA18989","NA20847","HG02106","HG02554"]
 def get_external(wildcards):
 	results = []
 	for sample in EXTERNAL_SAMPLES:
-		for method in ["kage-AoU", "kage-AoU-bubble", "pangenie-sampled-15-5x0.01"]:
+		for method in ["kage-AoU", "pangenie-sampled-15-5x0.01"]: #, "kage-AoU-popped",  "kage-AoU-bubble", "pangenie-sampled-15-5x0.01"]:
 			if wildcards.metric == "truvari":
 				results.append("../results-hprc2/external-calls/evaluation/{truthset}/{sample}/truvari-{sample}/truvari_{sample}_{method}_sv_all_region-autosomes/summary.txt".format(truthset=wildcards.truthset, sample=sample, method = method))
 			elif wildcards.metric == "vcfeval":

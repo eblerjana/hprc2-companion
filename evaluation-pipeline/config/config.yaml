@@ -11,6 +11,12 @@ consensus_haplotypes:
                 agc: "input-files/evaluation-haplotypes.agc"
                 names: "input-files/readsets-25-full.tsv"
 
+phased_vcfs:
+        1kGP-HC:
+                vcf: "input-files/1kGP_high_coverage_Illumina.filtered.SNV_INDEL_SV_phased_panel.vcf.gz"
+                reference: "/gpfs/project/projects/medbioinf/users/ebler/haplotype-sampling/companion-paper/data/hg38.no_alt.fa"
+
+
 outname: "results-hprc2-full"
 assemblies: "input-files/assemblies-full.tsv"
 

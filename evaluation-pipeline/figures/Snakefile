@@ -20,6 +20,12 @@ kmer_qvs = [
 ]
 
 
+variant_qvs = [
+"../results-hprc2-full/evaluation/qvs/HPRC2-unpolished-stats.tsv",
+"../results-hprc2-full/evaluation/qvs/HPRC2-polished-stats.tsv"
+]
+
+
 variants_vQVs = [
 "../results-hprc2-varianttypes/evaluation/qvs/HPRC2-unpolished-unfiltered-stats.tsv",
 "../results-hprc2-varianttypes/evaluation/qvs/HPRC2-polished-all-25-stats.tsv",
@@ -61,6 +67,7 @@ rule all:
 		"polishing_variantsets_vQVs.pdf",
 		"polishing_variantsets_kQVs.pdf",
 		"kmer-QV_boxplots.pdf",
+		"variant-QV_boxplots.pdf",
 		"variant_overlap_improvements.pdf"
 
 """
@@ -137,7 +144,7 @@ rule plot_variant_number_changes:
 
 rule plot_kmer_qv_boxplot:
 	"""
-	Plot boxplots of unpolished and polished haplotypes, as well as assemblies.
+	Plot boxplots of unpolished and polished kmer-based QVs, as well as assemblies.
 	"""
 	input:
 		qvs = kmer_qvs,
@@ -151,4 +158,22 @@ rule plot_kmer_qv_boxplot:
 	shell:
 		"""
 		ls {input.qvs} | python3 plot-qv-merqury.py {output} -assembly {input.assembly_qvs} &> {log}
+		"""
+
+
+rule plot_variant_qv_boxplot:
+	"""
+	Plot boxplots of unpolished and polished variant-based QVs.
+	"""
+	input:
+		qvs = variant_qvs
+	output:
+		"variant-QV_boxplots.pdf"
+	conda:
+		"matplotlib.yml"
+	log:
+		"variant-QV_boxplots.log"
+	shell:
+		"""
+		ls {input.qvs} | python3 plot-qv-pav.py {output} &> {log}
 		"""

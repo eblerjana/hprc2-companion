@@ -7,6 +7,7 @@ validate(config, "config.schema.yaml")
 include: "rules/validate-inputs.smk"
 include: "rules/parse-inputs.smk"
 include: "rules/create-consensus-haplotypes.smk"
+include: "rules/create-consensus-haplotypes-regions.smk"
 include: "rules/extract-consensus-fasta.smk"
 include: "rules/phase-genotypes.smk"
 include: "rules/evaluate-mercury.smk"
@@ -15,7 +16,8 @@ def consensus_files(wildcards):
 	result = []
 	for callset in SAMPLES:
 		for sample in SAMPLES[callset]:
-			result.extend(expand("{results}/evaluation/{callset}/{sample}_{haplotype}/{sample}_{haplotype}_consensus.fa.gz", results = OUTNAME, callset = callset, sample = sample, haplotype = ["hap1", "hap2"]))
+			for region in CALLSET_REGIONS[callset]:
+				result.extend(expand("{results}/evaluation/{callset}/{sample}_{region}_{haplotype}/{sample}_{region}_{haplotype}_consensus.fa.gz", results = OUTNAME, callset = callset, region = region, sample = sample, haplotype = ["hap1", "hap2"]))
 	return result
 
 
@@ -24,10 +26,11 @@ def sample_specific_results(wildcards):
 	for callset in SAMPLES:
 		reads_present = False
 		for sample in SAMPLES[callset]:
-			result.extend(expand("{results}/evaluation/qvs-kmers/{callset}_{sample}_{haplotype}.completeness.stats", results = OUTNAME, callset = callset, sample = sample, haplotype = ["hap1", "hap2"]))
-			result.extend(expand("{results}/evaluation/qvs-kmers/{callset}_{sample}_{haplotype}.qv", results = OUTNAME, callset = callset, sample = sample, haplotype = ["hap1", "hap2"]))
-			result.extend(expand("{results}/evaluation/qvs-kmers/{callset}-qvs-stats.tsv", results = OUTNAME, callset = callset))
-			result.extend(expand("{results}/evaluation/qvs-kmers/{callset}-completeness-stats.tsv", results = OUTNAME, callset = callset))
+			for region in CALLSET_REGIONS[callset]:
+				result.extend(expand("{results}/evaluation/qvs-kmers/{callset}_{sample}_{region}_{haplotype}.completeness.stats", results = OUTNAME, callset = callset, sample = sample, region = region, haplotype = ["hap1", "hap2"]))
+				result.extend(expand("{results}/evaluation/qvs-kmers/{callset}_{sample}_{region}_{haplotype}.qv", results = OUTNAME, callset = callset, sample = sample, region = region, haplotype = ["hap1", "hap2"]))
+				result.extend(expand("{results}/evaluation/qvs-kmers/{callset}_{region}-qvs-stats.tsv", results = OUTNAME, region = region, callset = callset))
+				result.extend(expand("{results}/evaluation/qvs-kmers/{callset}_{region}-completeness-stats.tsv", results = OUTNAME, region = region, callset = callset))
 	return result
 
 rule all:

@@ -1,26 +1,32 @@
 import gzip
 
-CONSENSUS_HAPLOTYPES = config["consensus_haplotypes"]
+CONSENSUS_HAPLOTYPES = {}
+for callset in config["consensus_haplotypes"]:
+	CONSENSUS_HAPLOTYPES[callset] = {}
+	CONSENSUS_HAPLOTYPES[callset]["all"] = config["consensus_haplotypes"][callset]
+
 PHASED_VCFS = config["phased_vcfs"]
 UNPHASED_VCFS = config["unphased_vcfs"]
 OUTNAME = config["outname"]
 CONSENSUS_NAMES = {}
 READS = {}
+REGIONS = set([])
 
 OVERLAPS = config["overlaps"] if "overlaps" in config else {}
 
 # parse consensus names
 for callset in CONSENSUS_HAPLOTYPES:
 	CONSENSUS_NAMES[callset] = {}
-	for line in open(CONSENSUS_HAPLOTYPES[callset]["names"], 'r'):
+	CONSENSUS_NAMES[callset]["all"] = {}
+	for line in open(CONSENSUS_HAPLOTYPES[callset]["all"]["names"], 'r'):
 		fields = line.strip().split()
 		if len(fields) < 3:
 			raise RuntimeError("names file for callset " + callset + " is malformatted.")
 			sys.exit(1)
 		sample = fields[0]
-		CONSENSUS_NAMES[callset][sample] = {}
-		CONSENSUS_NAMES[callset][sample]["hap1"] = fields[1]
-		CONSENSUS_NAMES[callset][sample]["hap2"] = fields[2]
+		CONSENSUS_NAMES[callset]["all"][sample] = {}
+		CONSENSUS_NAMES[callset]["all"][sample]["hap1"] = fields[1]
+		CONSENSUS_NAMES[callset]["all"][sample]["hap2"] = fields[2]
 
 
 # determine list of samples in VCFs
@@ -50,16 +56,35 @@ for callset in UNPHASED_VCFS.keys():
 	PHASED_VCFS[callset]["reference"] = UNPHASED_VCFS[callset]["reference"]
 	PHASED_VCFS[callset]["samples"] = UNPHASED_VCFS[callset]["samples"]
 
+	if not "regions" in  UNPHASED_VCFS[callset]:
+		UNPHASED_VCFS[callset]["regions"] = {}
+	for region in UNPHASED_VCFS[callset]["regions"]:
+		if region == "all":
+			raise RuntimeError("Region cannot be named all.")
+		REGIONS.add(region)
+
+	PHASED_VCFS[callset]["regions"] = UNPHASED_VCFS[callset]["regions"]
+
 
 # add newly generated consensus haplotypes
 for callset in PHASED_VCFS:
 	CONSENSUS_HAPLOTYPES[callset] = {}
 	CONSENSUS_NAMES[callset] = {}
-	CONSENSUS_HAPLOTYPES[callset]["agc"] = "{results}/haplotypes/{callset}.agc".format(callset = callset, results = OUTNAME)
-	for sample in PHASED_VCFS[callset]["samples"]:
-		CONSENSUS_NAMES[callset][sample] = {}
-		CONSENSUS_NAMES[callset][sample]["hap1"] = callset + "_" + sample + "_hap1" 
-		CONSENSUS_NAMES[callset][sample]["hap2"] = callset + "_" + sample + "_hap2"
+
+	if not "regions" in PHASED_VCFS[callset]:
+		PHASED_VCFS[callset]["regions"] = {}
+	for region in PHASED_VCFS[callset]["regions"]:
+		if region == "all":
+			raise RuntimeError("Region cannot be named all.")
+		REGIONS.add(region)	
+	for region in ["all"] + [k for k in PHASED_VCFS[callset]["regions"].keys()]:
+		CONSENSUS_HAPLOTYPES[callset][region] = {}
+		CONSENSUS_NAMES[callset][region] = {}
+		CONSENSUS_HAPLOTYPES[callset][region]["agc"] = "{results}/haplotypes/{callset}_{region}.agc".format(callset = callset, results = OUTNAME, region = region)
+		for sample in PHASED_VCFS[callset]["samples"]:
+			CONSENSUS_NAMES[callset][region][sample] = {}
+			CONSENSUS_NAMES[callset][region][sample]["hap1"] = callset + "_" + region + "_" + sample + "_hap1" 
+			CONSENSUS_NAMES[callset][region][sample]["hap2"] = callset + "_" + region + "_" + sample + "_hap2"
 
 # parse reads
 for line in open(config['reads'], 'r'):
@@ -71,14 +96,17 @@ for line in open(config['reads'], 'r'):
 
 # for each callset, find overlap between reads and callset samples
 SAMPLES = {}
+CALLSET_REGIONS = {}
 for callset in CONSENSUS_NAMES:
 	SAMPLES[callset] = []
-	for sample in CONSENSUS_NAMES[callset].keys():
+	CALLSET_REGIONS[callset] = [r for r in CONSENSUS_NAMES[callset].keys()]
+	for sample in CONSENSUS_NAMES[callset]["all"].keys():
 		if sample in READS.keys():
 			SAMPLES[callset].append(sample)
 
 SEX_CHROMOSOMES = config["sex_chromosomes"] if "sex_chromosomes" in config else []
 
+REGIONS = list(REGIONS)
 #print(CONSENSUS_NAMES)
 #print(CONSENSUS_HAPLOTYPES)
 #print(PHASED_VCFS)

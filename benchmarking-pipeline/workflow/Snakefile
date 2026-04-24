@@ -28,7 +28,7 @@ MAPS = config["maps"]
 
 SAMPLING_SIZES = config["sampling_sizes"]
 SUBSAMPLING_SIZES = config["subsetting_sizes"]
-GENOTYPERS = ["kage-AoU", "kage-AoU-bubble"]  # "kage", "kage-glimpse"
+GENOTYPERS = []
 L_GENOTYPERS = []
 
 for s in SAMPLING_SIZES:
@@ -61,6 +61,11 @@ for line in gzip.open(PANEL_BI, 'rt'):
 KAGE_AOU = ""
 if "kage_external" in config:
 	KAGE_AOU = config["kage_external"]
+	GENOTYPERS.extend(["kage-AoU", "kage-AoU-bubble"])
+if "kage_external_popped" in config:
+	KAGE_AOU_POPPED = config["kage_external_popped"]
+	GENOTYPERS.append("kage-AoU-popped")
+
 POPULATION_GENOTYPES = config["population_genotypes"]
 
 

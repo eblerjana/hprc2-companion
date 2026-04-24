@@ -110,7 +110,7 @@ def plot_data(data, truthset, region, filters, samples, vartypes, genotypers, ou
 	plot_index = 1
 	for filter in filters:
 		for var in vartypes:
-			width = 0.12
+			width = 0.2
 			plt.subplot(n_rows, n_cols, plot_index)
 			plot_index += 1
 			for i,genotyper in enumerate(genotypers):
@@ -119,7 +119,7 @@ def plot_data(data, truthset, region, filters, samples, vartypes, genotypers, ou
 					fscores.append(data[(truthset, region, filter, sample, var, genotyper)][2])
 				x_values = np.arange(len(samples))
 				plt.bar(x_values + width*i, fscores, width=width, label=genotyper, color=colors[i])
-			plt.title(var_to_name[var])
+			plt.title(truthset + ', ' + var_to_name[var])
 			plt.xticks(x_values + width*len(genotypers)/2 - width/2, samples, rotation=90)
 			ylabel = ""
 			if filter == "all":
@@ -132,7 +132,7 @@ def plot_data(data, truthset, region, filters, samples, vartypes, genotypers, ou
 		# plot genotype concordances
 		if filter == "all":
 			for var in vartypes:
-				width = 0.12
+				width = 0.2
 				plt.subplot(n_rows, n_cols, plot_index)
 				plot_index += 1
 				for i,genotyper in enumerate(genotypers):
@@ -141,7 +141,7 @@ def plot_data(data, truthset, region, filters, samples, vartypes, genotypers, ou
 						concordances.append(data[(truthset, region, filter, sample, var, genotyper)][3])
 					x_values = np.arange(len(samples))
 					plt.bar(x_values + width*i, concordances, width=width, label=genotyper, color=colors[i])
-				plt.title(var_to_name[var])
+				plt.title(truthset + ', ' + var_to_name[var])
 				plt.xticks(x_values + width*len(genotypers)/2 - width/2, samples, rotation=90)
 				ylabel = "gt_concordance"
 				plt.ylabel(ylabel)
@@ -150,10 +150,18 @@ def plot_data(data, truthset, region, filters, samples, vartypes, genotypers, ou
 		
 
         # create legend
+	method_to_name = {
+		"kage-AoU": "KAGE",
+		"kage-AoU-popped": "KAGE-popped",
+		"kage-AoU-bubble" : "KAGE-bubble",
+		"pangenie-sampled-15-5x0.01" : "PanGenie v4"
+	}
+
+
 	handles = []
 	labels = []
 	for i, genotyper in enumerate(genotypers):
-		label = genotyper
+		label = method_to_name[genotyper]
 		line = matplotlib.lines.Line2D([],[], color=colors[i], markersize=100, linewidth=2.0, linestyle='-', label=label)
 		handles.append(line)
 		labels.append(label)

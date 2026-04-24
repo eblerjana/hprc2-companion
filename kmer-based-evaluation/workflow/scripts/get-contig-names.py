@@ -9,5 +9,11 @@ if __name__ == '__main__':
 	for line in sys.stdin:
 		if line.startswith('>'):
 			name = line.strip().split()[0][1:]
-			if not name in args.exclude:
+			include_contig = True
+			for f in args.exclude:
+				if name == f:
+					include_contig = False
+				if name.startswith(f + "_"):
+					include_contig = False
+			if include_contig:
 				print(name)

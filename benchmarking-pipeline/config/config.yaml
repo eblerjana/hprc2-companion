@@ -104,7 +104,7 @@ outname: "results-hprc2"
 
 
 kage_external: "input-data/HGSVC_GWAS.5-samples.kage.glimpse.vcf.gz"
-
+kage_external_popped: "input-data/HGSVC_GWAS.5-samples.kage.glimpse.popped.SV.vcf.gz"
 
 ## optional. Set to {} if not provided.
 external_callsets:
